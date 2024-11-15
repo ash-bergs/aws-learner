@@ -1,5 +1,5 @@
-const nextConfig = {
-  /* config options here */
+module.exports = {
+  env: {
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'default-secret',
+  },
 };
-
-export default nextConfig;
