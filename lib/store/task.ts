@@ -19,6 +19,13 @@ export const useTaskStore = create<TaskStore>((set) => ({
     set({ tasks: allTasks });
   },
 
+  /**
+   * Add a new task to the store. This function will add the task to the dexie
+   * database and then update the store with the new task.
+   *
+   * @param {Task} task The task to add to the store.
+   * @returns {void}
+   */
   addTask: async (task: Task) => {
     // add the task to the dexie database
     const newTask = await taskService.addTask(task);

@@ -3,6 +3,15 @@
 import { useState } from 'react';
 import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
+
+/**
+ * A component that renders a text input and an "Add" button.
+ *
+ * When the button is clicked, it adds a new task to the store with the text
+ * entered in the input and clears the input.
+ *
+ * @returns {React.ReactElement} The JSX element representing the component.
+ */
 const AddTasks = () => {
   const { addTask } = useTaskStore();
   const [taskText, setTaskText] = useState('');
