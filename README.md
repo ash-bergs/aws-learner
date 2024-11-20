@@ -1,10 +1,59 @@
-# Next.js Project with AWS Deployment
+# 📝 Productivity Hub
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app). The project was developed with the goal of deploying it on AWS Amplify, but encountered various configuration and environment setup issues along the way.
+Welcome to **Productivity Hub**, a feature-rich mini productivity app designed to help users track tasks, link them to notes, and build routines — all in one place. This app aims to make staying productive fun and engaging through gamification, including a points system that unlocks badges for completing tasks and sticking to routines.
 
-## Getting Started
+This project began as a Next.js take-home challenge deployed on AWS Amplify but is evolving into an app featuring modern libraries and tooling like **Dexie.js**, **Zustand**, and **Tailwind CSS**.
 
-To get started, first run the development server:
+---
+
+## 🚀 Features
+
+- **Task Management**: Create, edit, and track tasks with categories and statuses.
+- **Notes Linking**: (Coming Soon) Attach notes to tasks for better context and organization.
+- **Routine Builder**: (Planned) Develop daily, weekly, and monthly routines.
+- **Gamification**: (Planned) Earn points for completing tasks and unlock badges to stay motivated.
+- **AWS Amplify Deployment**: Fully deployed on AWS with CI/CD integration for seamless updates.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js](https://nextjs.org) (App Router)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs)
+- **Database**: [Dexie.js](https://dexie.org) for client-side data persistence.
+- **Styling**: [Tailwind CSS](https://tailwindcss.com) for modern and responsive design.
+- **Authentication**: [NextAuth.js](https://next-auth.js.org) (planned for secure user sessions).
+- **Deployment**: [AWS Amplify](https://aws.amazon.com/amplify) with CI/CD pipeline.
+
+---
+
+## 🌟 Vision for the App
+
+### 1. **Unified Productivity Space**
+
+A central hub where users can track tasks, add contextual notes, and design routines that keep them on track.
+
+### 2. **Engagement Through Gamification**
+
+Earn points for completing tasks and routines, with weekly/monthly badges to celebrate consistency.
+
+### 3. **Accessible and Reusable**
+
+Deployable on any AWS account with minimal configuration, allowing other developers to fork and build upon it.
+
+---
+
+## 🛠️ Getting Started
+
+Clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/your-repo/productivity-hub.git
+cd productivity-hub
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
@@ -12,44 +61,82 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can begin editing the page by modifying `app/page.tsx`
+---
 
-## AWS Deployment Issues
+## 🖥️ Deployment on AWS Amplify
 
-During the development process, deployment was done through AWS Amplify, but several issues arose, including:
+The app is fully deployable on AWS Amplify. To set up your own deployment:
 
-### 1. **Next.js Nested `web` Folder**
+### 1. **Environment Variables**
 
-The project structure had the Next.js app in a nested folder. This caused issues with the Amplify build process.
+Add the following to your Amplify environment:
 
-### 2. **Missing Environment Variables**
+- `NEXTAUTH_SECRET`: Your app’s NextAuth secret.
+- `NEXTAUTH_URL`: The app's deployment URL (e.g., `https://your-app.amplifyapp.com`).
 
-Key environment variables, such as `NEXTAUTH_SECRET` and `NEXTAUTH_URL`, were missing in both the Next.js configuration and the AWS Amplify environment variables. This led to issues with authentication and other app features.
+### 2. **Build Settings**
 
-### 3. **Configuration Issues**
+Ensure your `amplify.yml` or `buildspec.yml` is configured to build a Next.js app:
 
-Initially, the project was configured with a `next.config.ts` file, which caused build failures since AWS Amplify only supports `next.config.js` or `next.config.mjs`. This was corrected by renaming the file and modifying the configuration accordingly. These changes arose after having to downgrade next, react, and react-dom to support the current version of next-auth.
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: out
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
 
-### 4. **Amplify Build Spec**
+---
 
-Understanding and configuring the `buildspec.yml` for AWS Amplify required extra time, as the documentation needed to be carefully followed to ensure the build process was correctly set up for a Next.js app. This was ultimately solved by adjusting build settings and environment variables.
+## 🐞 Troubleshooting Deployment Issues
 
-### 5. **NextAuth Setup**
+### 1. **Environment Variables**
 
-Adding `next-auth` for authentication was a choice I made, as auth of some type was a key requirement. However, it created complexities in the build and deployment processes. This was mostly due to missing environment variables and misconfiguration in Next.js and Amplify. The solution involved ensuring that all necessary secrets were available to both the app and Amplify.
+Ensure all required secrets (e.g., `NEXTAUTH_SECRET`) are set in the Amplify environment.
 
-## Reusability for Different AWS Accounts
+### 2. **Next.js Configuration**
 
-To meet the requirement of making this project reusable, the following steps were taken:
+- Ensure your `next.config.js` is properly formatted. AWS Amplify doesn’t support `next.config.ts`.
+- Use the correct target output: `export` for static deployment or `server` for dynamic features.
 
-1. **Environment Variables**: All sensitive information such as secrets (`NEXTAUTH_SECRET`, etc.) will be managed securely using AWS Secrets Manager or environment variables configured in AWS Amplify. This ensures that the app can be deployed on any AWS account with minimal configuration changes.
+---
 
-2. **Dynamic Configuration**: The `next.config.js` and other configuration files are set up to adjust based on the AWS account and GitHub repo associated with the project, ensuring portability across different accounts and repositories.
+## 🔮 Future Roadmap
 
-3. **Scalable Deployment**: Using AWS Amplify’s CI/CD pipeline, the app can be deployed automatically on each push to the GitHub repository, ensuring that any account can deploy the project with ease.
+- [ ] **Notes Integration**: Link notes to tasks.
+- [ ] **Routine Tracker**: Add support for routines (daily, weekly, monthly).
+- [ ] **Gamification**: Implement a points system and badges.
+- [ ] **User Authentication**: Secure user sessions with NextAuth.js.
+- [ ] **Responsive Design**: Further enhance usability across all devices.
+- [ ] **Cloud Syncing**: Sync tasks and routines across devices using AWS services.
+
+---
+
+## 🧩 Reusability for Other AWS Accounts
+
+To make the app deployable on any AWS account:
+
+1. Configure secrets in **AWS Secrets Manager** or Amplify’s environment variables.
+2. Use dynamic configuration in `next.config.js` to adapt based on the deployment environment.
+3. Leverage Amplify’s CI/CD pipelines to handle builds automatically on push to your GitHub repository.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! If you have ideas for features or improvements, feel free to open an issue or submit a pull request.
