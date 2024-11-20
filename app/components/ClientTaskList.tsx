@@ -1,19 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { db, Task } from '@/lib/db';
+import React, { useEffect } from 'react';
+import { useTaskStore } from '@/lib/store/task';
 
 const ClientTaskList = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { tasks, fetchTasks } = useTaskStore();
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const allTasks = await db.tasks.toArray();
-      setTasks(allTasks);
-    };
-
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   return (
     <ul>

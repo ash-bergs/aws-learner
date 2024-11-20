@@ -22,7 +22,7 @@ export default function LoginPage() {
     });
 
     if (res?.ok) {
-      router.push('/video'); // Redirect to the protected page
+      router.push('/dashboard'); // Redirect to the protected page
     } else {
       setError('Please provide valid credentials');
     }

@@ -21,10 +21,18 @@ class AppDatabase extends Dexie {
 
   constructor() {
     super('ProductivityAppDB');
+
     this.version(1).stores({
       tasks: 'id, text, completed, dateAdded, dateUpdated',
       notes: 'id, text, dateAdded, dateUpdated',
     });
+
+    // &id - marks the id as a unique primary key
+    this.version(2).stores({
+      tasks: '&id, text, completed, dateAdded, dateUpdated',
+      notes: '&id, text, dateAdded, dateUpdated',
+    });
+
     this.tasks = this.table('tasks');
     this.notes = this.table('notes');
   }
