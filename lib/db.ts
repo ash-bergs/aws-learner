@@ -22,13 +22,12 @@ class AppDatabase extends Dexie {
   constructor() {
     super('ProductivityAppDB');
 
-    // this setup does not automatically handle creation of ids and incrementing them
-    // &id - marks the id as a primary key, dexie will handle the rest
     this.version(1).stores({
       tasks: 'id, text, completed, dateAdded, dateUpdated',
       notes: 'id, text, dateAdded, dateUpdated',
     });
 
+    // &id - marks the id as a unique primary key
     this.version(2).stores({
       tasks: '&id, text, completed, dateAdded, dateUpdated',
       notes: '&id, text, dateAdded, dateUpdated',
