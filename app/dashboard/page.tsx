@@ -1,4 +1,5 @@
 import ClientTaskList from '../components/ClientTaskList';
+import AddTasks from '../components/AddTasks';
 
 export default async function VideoPage() {
   // // check for valid session
@@ -7,9 +8,9 @@ export default async function VideoPage() {
   // console.log(session);
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 text-black">
-      <p>Video Player Page</p>
+    <div className="flex flex-col gap-8 h-screen items-center justify-center bg-gray-100 text-black">
       <ClientTaskList />
+      <AddTasks />
     </div>
   );
 }
