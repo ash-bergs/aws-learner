@@ -11,7 +11,7 @@ import { useTaskStore } from '@/lib/store/task';
  * @param {Task} props.task The task to render.
  * @returns {React.ReactElement} A JSX element representing the task list item.
  */
-export const TaskItem = ({ task }: { task: Task }) => {
+export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false); // TODO: move menu to its own component
 
   const { deleteTask, toggleComplete } = useTaskStore();
