@@ -16,6 +16,12 @@ const TextEditor = (): React.ReactElement => {
       <p> Write your notes here! </p>`,
   });
 
+  const saveNote = () => {
+    const content = editor?.getJSON();
+
+    console.log('📝 Note saved: ', content);
+  };
+
   return (
     <div className="border rounded-md p4">
       <Toolbar editor={editor} />
@@ -26,6 +32,7 @@ const TextEditor = (): React.ReactElement => {
       <button
         className="w-full text-center font-bold py-2 px-4 mt-4 rounded-md
         bg-blue-500 hover:bg-blue-600 text-white"
+        onClick={saveNote}
       >
         Save Note
       </button>
