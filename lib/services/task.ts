@@ -36,4 +36,17 @@ export class TaskService {
     // delete the task from the database
     await db.tasks.delete(id);
   };
+
+  toggleComplete = async (id: string) => {
+    const task = await db.tasks.get(id);
+
+    if (task) {
+      const updatedTask = {
+        ...task,
+        completed: !task.completed,
+        dateUpdated: new Date(),
+      };
+      await db.tasks.update(id, updatedTask);
+    }
+  };
 }
