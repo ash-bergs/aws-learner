@@ -6,9 +6,10 @@ interface TaskStore {
   tasks: Task[];
   fetchTasks: () => Promise<void>;
   addTask: (task: Task) => void;
+  deleteTask: (id: string) => void;
+  toggleComplete: (id: string) => void;
   //TODO:
   // updateTask: (updatedTask: Task) => void;
-  // removeTask: (taskId: string) => void;
 }
 
 export const useTaskStore = create<TaskStore>((set) => ({
@@ -32,6 +33,38 @@ export const useTaskStore = create<TaskStore>((set) => ({
     // update the store with the new task
     set((state) => ({
       tasks: [...state.tasks, newTask],
+    }));
+  },
+
+  /**
+   * Remove a task from the store. This function will delete the task from the
+   * Dexie database and then update the store without the task.
+   *
+   * @param {string} id The id of the task to remove from the store.
+   * @returns {void}
+   */
+  deleteTask: async (id: string) => {
+    // remove the task from the dexie database
+    await taskService.deleteTask(id);
+    // update the store with the new task
+    set((state) => ({
+      tasks: state.tasks.filter((task) => task.id !== id),
+    }));
+  },
+
+  // toggle task completion
+  toggleComplete: async (id: string) => {
+    // update the task in the dexie database
+    await taskService.toggleComplete(id);
+    // update the store with the new task
+    // what would be a more direct way to update this? get the task back from the dexie database and use that?
+    set((state) => ({
+      tasks: state.tasks.map((task) => {
+        if (task.id === id) {
+          return { ...task, completed: !task.completed };
+        }
+        return task;
+      }),
     }));
   },
 }));

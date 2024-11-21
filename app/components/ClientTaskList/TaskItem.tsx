@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Task } from '@/lib/db';
+import { useTaskStore } from '@/lib/store/task';
 
 /**
  * A component to render a single task.
@@ -13,21 +14,19 @@ import { Task } from '@/lib/db';
 export const TaskItem = ({ task }: { task: Task }) => {
   const [menuOpen, setMenuOpen] = useState(false); // TODO: move menu to its own component
 
+  const { deleteTask, toggleComplete } = useTaskStore();
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   return (
     <li className="flex items-center justify-between p-4 mb-2 bg-white border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow">
-      <div
-        className="flex items-center space-x-4"
-        //style={{ border: '2px solid red' }}
-      >
+      <div className="flex items-center space-x-4">
         <input
           type="checkbox"
           checked={task.completed}
           className="form-checkbox h-5 w-5 text-blue-500 rounded focus:ring focus:ring-blue-200"
-          onChange={() => console.log('Handle completion toggle here')} //TODO: Handle completion toggle
+          onChange={() => toggleComplete(task.id)}
         />
         <span
           className={`text-gray-800 ${
@@ -74,17 +73,18 @@ export const TaskItem = ({ task }: { task: Task }) => {
         {/* Dropdown Menu */}
         {menuOpen && (
           <ul className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg text-sm z-10">
-            <li>
+            {/* TODO: Add edit functionality */}
+            {/* <li>
               <button
                 //onClick={handleEdit}
                 className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
               >
                 Edit
               </button>
-            </li>
+            </li> */}
             <li>
               <button
-                //onClick={handleDelete}
+                onClick={() => deleteTask(task.id)}
                 className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
               >
                 Delete
