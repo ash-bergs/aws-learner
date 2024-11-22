@@ -13,16 +13,9 @@ export class TaskService {
   }
 
   addTask = async (task: Task) => {
-    console.log('In task service add task', task);
     // get the task, and add a time stamp, and add the task to the database
-    const newTask = {
-      ...task,
-      id: uuidv4(),
-      dateAdded: new Date(),
-      dateUpdated: new Date(),
-    };
-    await db.tasks.add(newTask);
-    return newTask;
+    await db.tasks.add(task);
+    return task;
   };
 
   updateTask = async (task: Task) => {
