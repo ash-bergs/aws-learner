@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { useNoteStore } from '@/lib/store/note';
 import Toolbar from './Toolbar';
 
 /**
@@ -10,6 +11,8 @@ import Toolbar from './Toolbar';
  * @returns {React.ReactElement} The JSX element representing the text editor.
  */
 const TextEditor = (): React.ReactElement => {
+  const { addNote } = useNoteStore();
+
   const editor = useEditor({
     extensions: [StarterKit],
     content: `
@@ -18,8 +21,9 @@ const TextEditor = (): React.ReactElement => {
 
   const saveNote = () => {
     const content = editor?.getJSON();
+    if (!content) return;
 
-    console.log('📝 Note saved: ', content);
+    addNote(content);
   };
 
   return (

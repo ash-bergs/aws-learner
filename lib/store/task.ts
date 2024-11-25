@@ -5,7 +5,7 @@ import { taskService } from '@/lib/services';
 interface TaskStore {
   tasks: Task[];
   fetchTasks: () => Promise<void>;
-  addTask: (task: Task) => void;
+  addTask: (task: string) => void;
   deleteTask: (id: string) => void;
   toggleComplete: (id: string) => void;
   //TODO:
@@ -27,7 +27,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
    * @param {Task} task The task to add to the store.
    * @returns {void}
    */
-  addTask: async (task: Task) => {
+  addTask: async (task: string) => {
     // add the task to the dexie database
     const newTask = await taskService.addTask(task);
     // update the store with the new task

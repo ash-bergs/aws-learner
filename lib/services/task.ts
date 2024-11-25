@@ -1,5 +1,4 @@
 import { db, Task } from '../db';
-import { v4 as uuidv4 } from 'uuid';
 
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
@@ -12,12 +11,11 @@ export class TaskService {
     return await db.tasks.toArray();
   }
 
-  addTask = async (task: Task) => {
-    console.log('In task service add task', task);
-    // get the task, and add a time stamp, and add the task to the database
-    const newTask = {
-      ...task,
-      id: uuidv4(),
+  addTask = async (task: string) => {
+    const newTask: Task = {
+      id: crypto.randomUUID(),
+      text: task,
+      completed: false,
       dateAdded: new Date(),
       dateUpdated: new Date(),
     };

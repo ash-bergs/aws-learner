@@ -10,7 +10,7 @@ export interface Task {
 
 export interface Note {
   id: string;
-  text: string;
+  content: Record<string, object>; // better reflect the JSON received from TipTap
   dateAdded: Date;
   dateUpdated: Date;
 }
@@ -31,6 +31,12 @@ class AppDatabase extends Dexie {
     this.version(2).stores({
       tasks: '&id, text, completed, dateAdded, dateUpdated',
       notes: '&id, text, dateAdded, dateUpdated',
+    });
+
+    // update Note table structure (text -> content)
+    this.version(3).stores({
+      tasks: '&id, text, completed, dateAdded, dateUpdated',
+      notes: '&id, content, dateAdded, dateUpdated',
     });
 
     this.tasks = this.table('tasks');
