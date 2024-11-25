@@ -10,7 +10,7 @@ export interface Task {
 
 export interface Note {
   id: string;
-  content: Record<string, any>; // better reflect the JSON received from TipTap
+  content: Record<string, object>; // better reflect the JSON received from TipTap
   dateAdded: Date;
   dateUpdated: Date;
 }

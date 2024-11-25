@@ -1,5 +1,4 @@
 import { db, Note } from '../db';
-import { v4 as uuidv4 } from 'uuid';
 
 /** This file holds the Note service
  * The service is responsible for CRUD operations on the notes table in the database
@@ -10,7 +9,14 @@ export class NoteService {
     return await db.notes.toArray();
   }
 
-  addNote = async (note: Note) => {
+  addNote = async (content: Record<string, object>) => {
+    const note = {
+      id: crypto.randomUUID(),
+      content,
+      dateAdded: new Date(),
+      dateUpdated: new Date(),
+    };
+
     await db.notes.add(note);
     return note;
   };

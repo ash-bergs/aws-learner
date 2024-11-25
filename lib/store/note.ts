@@ -5,7 +5,7 @@ import { noteService } from '@/lib/services';
 interface NoteStore {
   notes: Note[];
   fetchNotes: () => Promise<void>;
-  addNote: (note: Note) => void;
+  addNote: (content: Record<string, object>) => void;
   deleteNote: (id: string) => void;
 }
 
@@ -17,11 +17,11 @@ export const useNoteStore = create<NoteStore>((set) => ({
     set({ notes: allNotes });
   },
 
-  addNote: async (note: Note) => {
-    const newTask = await noteService.addNote(note);
+  addNote: async (content: Record<string, object>) => {
+    const newNote = await noteService.addNote(content);
 
     set((state) => ({
-      notes: [...state.notes, newTask],
+      notes: [...state.notes, newNote],
     }));
   },
 

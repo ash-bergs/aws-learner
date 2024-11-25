@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
 
 /**
@@ -17,15 +16,7 @@ const AddTasks = () => {
   const [taskText, setTaskText] = useState('');
 
   const handleAddTask = async () => {
-    const newTask: Task = {
-      id: crypto.randomUUID(),
-      text: taskText,
-      completed: false,
-      dateAdded: new Date(),
-      dateUpdated: new Date(),
-    };
-
-    await addTask(newTask);
+    await addTask(taskText);
     setTaskText('');
     document.getElementById('task')?.focus();
   };

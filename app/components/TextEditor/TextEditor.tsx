@@ -23,14 +23,7 @@ const TextEditor = (): React.ReactElement => {
     const content = editor?.getJSON();
     if (!content) return;
 
-    const note = {
-      id: crypto.randomUUID(),
-      content,
-      dateAdded: new Date(),
-      dateUpdated: new Date(),
-    };
-
-    addNote(note);
+    addNote(content);
   };
 
   return (
