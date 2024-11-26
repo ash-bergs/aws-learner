@@ -14,8 +14,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'JS Fullstack Challenge',
-  description: '',
+  title: 'Habit Nest',
+  description: 'Stay on track with your habits',
 };
 
 export default function RootLayout({
