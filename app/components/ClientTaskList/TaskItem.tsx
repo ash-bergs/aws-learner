@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
+import MeatballMenu from '../MeatballMenu';
 
 /**
  * A component to render a single task.
@@ -12,12 +13,19 @@ import { useTaskStore } from '@/lib/store/task';
  * @returns {React.ReactElement} A JSX element representing the task list item.
  */
 export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
-  const [menuOpen, setMenuOpen] = useState(false); // TODO: move menu to its own component
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { deleteTask, toggleComplete } = useTaskStore();
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const menuItems = [
+    {
+      label: 'Delete',
+      onClick: () => deleteTask(task.id),
+    },
+  ];
 
   return (
     <li className="flex items-center justify-between p-4 mb-2 bg-white border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow">
@@ -55,44 +63,11 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
         </span>
       )} */}
 
-      <div className="relative">
-        <button
-          onClick={toggleMenu}
-          className="p-2 rounded-full hover:bg-gray-200"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-600"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-          </svg>
-        </button>
-
-        {/* Dropdown Menu */}
-        {menuOpen && (
-          <ul className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg text-sm z-10">
-            {/* TODO: Add edit functionality */}
-            {/* <li>
-              <button
-                //onClick={handleEdit}
-                className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-              >
-                Edit
-              </button>
-            </li> */}
-            <li>
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-              >
-                Delete
-              </button>
-            </li>
-          </ul>
-        )}
-      </div>
+      <MeatballMenu
+        menuOpen={menuOpen}
+        toggleMenu={toggleMenu}
+        items={menuItems}
+      />
     </li>
   );
 };

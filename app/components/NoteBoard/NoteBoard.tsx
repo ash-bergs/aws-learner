@@ -15,7 +15,7 @@ const NoteBoardDisplay = (): React.ReactElement => {
   return (
     <ul>
       {notes.map((note) => (
-        <NoteDisplay key={note.id} content={note.content} />
+        <NoteDisplay key={note.id} id={note.id} content={note.content} />
       ))}
     </ul>
   );
