@@ -6,8 +6,6 @@ import StarterKit from '@tiptap/starter-kit';
 import { useNoteStore } from '@/lib/store/note';
 import MeatballMenu from '../MeatballMenu';
 
-//TODO: We want a meatball menu like the tasks have
-// we'll need to pass the note id to the meatball menu - we need to accept more metadata here
 const NoteDisplay = ({
   content,
   id,
