@@ -16,6 +16,7 @@ import { TaskItem } from './TaskItem';
 const ClientTaskList = (): React.ReactElement => {
   const { tasks, fetchTasks } = useTaskStore();
 
+  // TODO: fetch tasks differently - not in a useEffect
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);

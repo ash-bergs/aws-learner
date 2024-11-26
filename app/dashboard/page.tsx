@@ -1,5 +1,6 @@
 import AddTasks from '../components/AddTasks';
 import ClientTaskList from '../components/ClientTaskList';
+import NoteDisplay from '../components/NoteBoard';
 import TextEditor from '../components/TextEditor';
 
 export default async function VideoPage() {
@@ -18,6 +19,7 @@ export default async function VideoPage() {
         <AddTasks />
       </div>
       <div className="p-6 pl-2">
+        <NoteDisplay />
         <TextEditor />
       </div>
     </div>
