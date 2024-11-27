@@ -11,7 +11,16 @@
   --color-note: #e9f7ee;
 }
 
-.dark {
+.Tidepool {
+  --background: #f4f7f5;
+  --foreground: #f4f7f5;
+  --color-primary: #21a0a0;
+  --color-secondary: #046865;
+  --color-text: #074846;
+  --color-note: #e9f7ee;
+}
+
+.Orchid {
   --background: #332d34;
   --foreground: #f4f7f5;
   --color-primary: #52154e;

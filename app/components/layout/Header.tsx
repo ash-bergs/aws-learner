@@ -32,8 +32,8 @@ function Header(): JSX.Element {
           onChange={handleThemeChange}
           className="text-gray-900 p-2 rounded"
         >
-          <option value="light">Tidepool</option>
-          <option value="dark">Orchid</option>
+          <option value="Tidepool">Tidepool</option>
+          <option value="Orchid">Orchid</option>
           {/* <option value="custom">Custom</option> */}
         </select>
 
