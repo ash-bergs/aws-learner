@@ -22,11 +22,14 @@ const ClientTaskList = (): React.ReactElement => {
   }, [fetchTasks]);
 
   return (
-    <ul>
-      {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} />
-      ))}
-    </ul>
+    <>
+      <h2 className="text-text text-2xl font-bold mb-4">Tasks</h2>
+      <ul>
+        {tasks.map((task) => (
+          <TaskItem key={task.id} task={task} />
+        ))}
+      </ul>
+    </>
   );
 };
 

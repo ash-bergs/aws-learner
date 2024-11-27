@@ -1,9 +1,11 @@
 import { create } from 'zustand';
 
-export enum Theme {
-  Light = 'light',
-  Dark = 'dark',
-}
+// export enum Theme {
+//   Light = 'light',
+//   Dark = 'dark',
+// }
+// change theme to names
+export type Theme = 'Tidepool' | 'Orchid';
 
 interface AppState {
   view: {
@@ -28,6 +30,20 @@ export const useStore = create<AppState>((set) => ({
       },
     }));
   },
-  theme: Theme.Light,
-  setTheme: (theme) => set({ theme }),
+  theme: 'Tidepool',
+  // setTheme: (theme: Theme) => {
+  //   set(() => ({ theme }));
+  //   // update <html> class for Tailwind dark mode
+  //   if (typeof document !== 'undefined') {
+  //     document.documentElement.classList.toggle('dark', theme === 'dark');
+  //   }
+  // },
+  setTheme: (theme: Theme) => {
+    set(() => ({ theme }));
+
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.remove('Tidepool', 'Orchid');
+      document.documentElement.classList.add(theme);
+    }
+  },
 }));

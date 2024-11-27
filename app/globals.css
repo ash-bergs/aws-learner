@@ -3,13 +3,35 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f7f5;
+  --foreground: #f4f7f5;
+  --color-primary: #21a0a0;
+  --color-secondary: #046865;
+  --color-text: #074846;
+  --color-note: #e9f7ee;
+}
+
+.Tidepool {
+  --background: #f4f7f5;
+  --foreground: #f4f7f5;
+  --color-primary: #21a0a0;
+  --color-secondary: #046865;
+  --color-text: #074846;
+  --color-note: #e9f7ee;
+}
+
+.Orchid {
+  --background: #332d34;
+  --foreground: #f4f7f5;
+  --color-primary: #52154e;
+  --color-secondary: #310d2e;
+  --color-text: #efe9e7;
+  --color-note: #ecd5ec;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    /* --background: #0a0a0a; */
     --foreground: #ededed;
   }
 }

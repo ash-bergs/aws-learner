@@ -29,7 +29,7 @@ const MeatballMenu = ({
     <div className={`relative ${className}`}>
       <button
         onClick={toggleMenu}
-        className="p-2 rounded-full hover:bg-gray-200"
+        className="p-2 rounded-full hover:bg-gray-100 focus:outline focus:outline-primary"
         aria-haspopup="true"
         aria-expanded={menuOpen}
       >
@@ -50,11 +50,12 @@ const MeatballMenu = ({
               <button
                 onClick={onClick}
                 disabled={disabled}
-                className={`flex items-center w-full px-4 py-2 text-left ${
-                  disabled
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
+                className={`flex items-center w-full px-4 py-2 text-left 
+                  ${
+                    disabled
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
               >
                 {/* {icon && <span className="mr-2">{icon}</span>} */}
                 {label}

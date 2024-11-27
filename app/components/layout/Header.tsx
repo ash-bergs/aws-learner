@@ -23,19 +23,17 @@ function Header(): JSX.Element {
   };
 
   return (
-    <header className="bg-gray-50 dark:bg-gray-800 p-4 px-8 shadow-md flex justify-between items-center">
-      <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-        HabitNest
-      </h1>
+    <header className="sticky top-0 bg-primary p-4 px-6 shadow-md flex justify-between items-center z-10">
+      <h1 className="text-lg font-bold text-text">HabitNest</h1>
       <div className="flex items-center space-x-4">
         {/* Theme Selector */}
         <select
           value={theme}
           onChange={handleThemeChange}
-          className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded"
+          className="text-gray-900 p-2 rounded"
         >
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
+          <option value="Tidepool">Tidepool</option>
+          <option value="Orchid">Orchid</option>
           {/* <option value="custom">Custom</option> */}
         </select>
 

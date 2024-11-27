@@ -11,14 +11,16 @@ export default async function VideoPage() {
 
   return (
     <div
-      className="h-screen bg-gray-100 text-black
-      grid gap-8 grid-cols-1 md:grid-cols-2"
+      className="h-screen text-black
+      grid gap-8 grid-cols-1 md:grid-cols-2
+      px-4 py-6
+      "
     >
-      <div className="p-6 pr-2">
+      <div>
         <ClientTaskList />
         <AddTasks />
       </div>
-      <div className="p-6 pl-2">
+      <div>
         <NoteDisplay />
         <TextEditor />
       </div>
