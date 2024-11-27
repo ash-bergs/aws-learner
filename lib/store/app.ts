@@ -29,5 +29,11 @@ export const useStore = create<AppState>((set) => ({
     }));
   },
   theme: Theme.Light,
-  setTheme: (theme) => set({ theme }),
+  setTheme: (theme: Theme) => {
+    set(() => ({ theme }));
+    // update <html> class for Tailwind dark mode
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    }
+  },
 }));

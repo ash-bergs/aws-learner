@@ -14,11 +14,11 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
   if (!editor) return null;
 
   return (
-    <div className="flex space-x-2 mb-4 bg-gray-100 p-2 rounded shadow">
+    <div className="flex space-x-2 bg-gray-100 p-2 rounded-t shadow">
       {/* Bold Button */}
       <button
         className={`px-2 py-1 border rounded ${
-          editor.isActive('bold') ? 'bg-gray-300' : ''
+          editor.isActive('bold') ? 'bg-primary text-text' : ''
         }`}
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -29,7 +29,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
       {/* Italic Button */}
       <button
         className={`px-2 py-1 border rounded ${
-          editor.isActive('italic') ? 'bg-gray-300' : ''
+          editor.isActive('italic') ? 'bg-primary text-text' : ''
         }`}
         onClick={() => editor.chain().focus().toggleItalic().run()}
         disabled={!editor.can().chain().focus().toggleItalic().run()}

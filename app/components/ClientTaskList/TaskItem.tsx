@@ -28,18 +28,16 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   ];
 
   return (
-    <li className="flex items-center justify-between p-4 mb-2 bg-white border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow">
+    <li className="flex items-center justify-between p-4 mb-2 bg-note border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center space-x-4">
         <input
           type="checkbox"
           checked={task.completed}
-          className="form-checkbox h-5 w-5 text-blue-500 rounded focus:ring focus:ring-blue-200"
+          className="form-checkbox h-5 w-5 rounded focus:outline focus:outline-primary"
           onChange={() => toggleComplete(task.id)}
         />
         <span
-          className={`text-gray-800 ${
-            task.completed ? 'line-through text-gray-500' : ''
-          }`}
+          className={`text-gray-800 ${task.completed ? 'line-through' : ''}`}
         >
           {task.text}
         </span>

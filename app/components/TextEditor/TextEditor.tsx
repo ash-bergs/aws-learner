@@ -27,15 +27,15 @@ const TextEditor = (): React.ReactElement => {
   };
 
   return (
-    <div className="border rounded-md p4">
+    <div className="rounded-md p4 mt-6">
       <Toolbar editor={editor} />
       <EditorContent
         editor={editor}
-        className="h-64 overflow-y-auto bg-white border rounded p-2"
+        className="h-64 overflow-y-auto bg-white border rounded-b p-2"
       />
       <button
         className="w-full text-center font-bold py-2 px-4 mt-4 rounded-md
-        bg-blue-500 hover:bg-blue-600 text-white"
+        bg-primary hover:bg-blue-600 text-white"
         onClick={saveNote}
       >
         Save Note

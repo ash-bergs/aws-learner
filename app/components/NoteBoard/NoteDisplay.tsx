@@ -33,7 +33,7 @@ const NoteDisplay = ({
 
   return (
     <div
-      className="flex border rounded-md bg-green-100 p-4"
+      className="flex border rounded-md bg-note p-4"
       style={{
         justifyContent: 'space-between',
       }}
