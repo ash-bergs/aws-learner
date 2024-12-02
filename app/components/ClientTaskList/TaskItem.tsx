@@ -20,6 +20,7 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
     setMenuOpen(!menuOpen);
   };
 
+  //TODO: add 'Change color' menu item - figure out how this will work
   const menuItems = [
     {
       label: 'Delete',

@@ -11,11 +11,12 @@ export class TaskService {
     return await db.tasks.toArray();
   }
 
-  addTask = async (task: string) => {
+  addTask = async (task: string, color?: string) => {
     const newTask: Task = {
       id: crypto.randomUUID(),
       text: task,
       completed: false,
+      color: color,
       dateAdded: new Date(),
       dateUpdated: new Date(),
     };
@@ -46,5 +47,21 @@ export class TaskService {
       };
       await db.tasks.update(id, updatedTask);
     }
+  };
+
+  // update only the color of the task
+  // ease of use function for future on the frontend Task UI
+  // we still need to add base update functionality for the tasks
+  // but I see myself wanting to easily change the color of tasks without impacting anything else
+  updateTaskColor = async (id: string, color: string) => {
+    const task = await db.tasks.get(id);
+
+    if (task) {
+      const updatedTask = { ...task, color, dateUpdated: new Date() };
+      await db.tasks.update(id, updatedTask);
+      return updatedTask;
+    }
+
+    console.warn(`Task with id ${id} not found - color not updated 😢`);
   };
 }
