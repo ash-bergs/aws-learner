@@ -31,6 +31,13 @@ const AddTasks = () => {
         className="flex-grow bg-transparent outline-none placeholder-gray-500"
         placeholder="Add a task..."
       />
+      {/** TODO: build a Select to choose the task color - string selections like 'red' 'blue' etc */}
+      {/* <select>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+      </select> */}
+
       <button onClick={handleAddTask}>Add</button>
     </div>
   );

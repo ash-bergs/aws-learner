@@ -11,11 +11,12 @@ export class TaskService {
     return await db.tasks.toArray();
   }
 
-  addTask = async (task: string) => {
+  addTask = async (task: string, color?: string) => {
     const newTask: Task = {
       id: crypto.randomUUID(),
       text: task,
       completed: false,
+      color: color,
       dateAdded: new Date(),
       dateUpdated: new Date(),
     };
@@ -46,5 +47,22 @@ export class TaskService {
       };
       await db.tasks.update(id, updatedTask);
     }
+  };
+
+  /**
+   * Update the color of a task background in the UI
+   * @param {string} id - The id of the task to update
+   * @param {string} color - The color to update the task with
+   */
+  updateTaskColor = async (id: string, color: string) => {
+    const task = await db.tasks.get(id);
+
+    if (task) {
+      const updatedTask = { ...task, color, dateUpdated: new Date() };
+      await db.tasks.update(id, updatedTask);
+      return updatedTask;
+    }
+
+    console.warn(`Task with id ${id} not found - color not updated 😢`);
   };
 }

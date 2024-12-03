@@ -1,5 +1,6 @@
 'use client';
 
+import Placeholder from '@tiptap/extension-placeholder';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useNoteStore } from '@/lib/store/note';
@@ -13,10 +14,17 @@ import Toolbar from './Toolbar';
 const TextEditor = (): React.ReactElement => {
   const { addNote } = useNoteStore();
 
+  // following these docs: https://tiptap.dev/docs/editor/extensions/functionality/placeholder
+  // but this doesn't appear to be working as expected - wonder why?
+  // TODO: check versions, check any next js configs that might be causing issues
   const editor = useEditor({
-    extensions: [StarterKit],
-    content: `
-      <p> Write your notes here! </p>`,
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: 'Write your notes here!',
+      }),
+    ],
+    content: '',
   });
 
   const saveNote = () => {
@@ -24,6 +32,10 @@ const TextEditor = (): React.ReactElement => {
     if (!content) return;
 
     addNote(content);
+
+    // clear the contents and refocus the editor
+    editor?.commands.clearContent();
+    editor?.commands.focus();
   };
 
   return (
@@ -31,11 +43,12 @@ const TextEditor = (): React.ReactElement => {
       <Toolbar editor={editor} />
       <EditorContent
         editor={editor}
+        //className="min-h-[200px] focus:outline-none active:outline-none"
         className="h-64 overflow-y-auto bg-white border rounded-b p-2"
       />
       <button
         className="w-full text-center font-bold py-2 px-4 mt-4 rounded-md
-        bg-primary hover:bg-blue-600 text-white"
+        bg-primary hover:bg-secondary text-white"
         onClick={saveNote}
       >
         Save Note
