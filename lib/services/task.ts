@@ -49,10 +49,11 @@ export class TaskService {
     }
   };
 
-  // update only the color of the task
-  // ease of use function for future on the frontend Task UI
-  // we still need to add base update functionality for the tasks
-  // but I see myself wanting to easily change the color of tasks without impacting anything else
+  /**
+   * Update the color of a task background in the UI
+   * @param {string} id - The id of the task to update
+   * @param {string} color - The color to update the task with
+   */
   updateTaskColor = async (id: string, color: string) => {
     const task = await db.tasks.get(id);
 

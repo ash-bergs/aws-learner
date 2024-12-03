@@ -29,6 +29,11 @@ export class NoteService {
     return updatedNote;
   };
 
+  /**
+   * Update the color of a note background in the UI
+   * @param {string} id - The id of the task to update
+   * @param {string} color - The color to update the task with
+   */
   updateNoteColor = async (id: string, color: string) => {
     const note = await db.notes.get(id);
 
