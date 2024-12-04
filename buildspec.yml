@@ -6,6 +6,8 @@ frontend:
         - npm install
     build:
       commands:
+        - npm run clean
+        - npm ci
         - npm run build
   artifacts:
     baseDirectory: .next # Specify where the build output is located
