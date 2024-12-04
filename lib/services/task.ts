@@ -8,10 +8,13 @@ export class TaskService {
   // create a method to get all tasks
   async getAllTasks() {
     // return all tasks from the database
-    return await db.tasks.toArray();
+    return await db.tasks.orderBy('position').toArray();
   }
 
   addTask = async (task: string, color?: string) => {
+    const lastTask = await db.tasks.orderBy('position').last();
+    const newTaskPosition = lastTask ? lastTask.position + 1 : 1;
+
     const newTask: Task = {
       id: crypto.randomUUID(),
       text: task,
@@ -19,6 +22,7 @@ export class TaskService {
       color: color,
       dateAdded: new Date(),
       dateUpdated: new Date(),
+      position: newTaskPosition,
     };
     await db.tasks.add(newTask);
     return newTask;
@@ -64,5 +68,16 @@ export class TaskService {
     }
 
     console.warn(`Task with id ${id} not found - color not updated 😢`);
+  };
+  // TODO: remove
+  updateTaskDate = async (id: string) => {
+    const task = await db.tasks.get(id);
+    if (!task) return console.warn(`No task with ${id} to update :(`);
+
+    await db.tasks.update(id, { dateUpdated: new Date() });
+  };
+
+  updateTaskPosition = async (id: string, newPosition: number) => {
+    await db.tasks.update(id, { position: newPosition });
   };
 }

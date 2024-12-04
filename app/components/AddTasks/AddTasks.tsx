@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTaskStore } from '@/lib/store/task';
+import ColorSelector from './ColorSelector';
 
 /**
  * A component that renders a text input and an "Add" button.
@@ -14,9 +15,10 @@ import { useTaskStore } from '@/lib/store/task';
 const AddTasks = () => {
   const { addTask } = useTaskStore();
   const [taskText, setTaskText] = useState('');
+  const [taskColor, setTaskColor] = useState('green');
 
   const handleAddTask = async () => {
-    await addTask(taskText);
+    await addTask(taskText, taskColor);
     setTaskText('');
     document.getElementById('task')?.focus();
   };
@@ -32,11 +34,7 @@ const AddTasks = () => {
         placeholder="Add a task..."
       />
       {/** TODO: build a Select to choose the task color - string selections like 'red' 'blue' etc */}
-      {/* <select>
-        <option value="red">Red</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-      </select> */}
+      <ColorSelector onColorSelect={(color: string) => setTaskColor(color)} />
 
       <button onClick={handleAddTask}>Add</button>
     </div>
