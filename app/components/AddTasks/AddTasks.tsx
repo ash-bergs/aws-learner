@@ -33,7 +33,6 @@ const AddTasks = () => {
         className="flex-grow bg-transparent outline-none placeholder-gray-500"
         placeholder="Add a task..."
       />
-      {/** TODO: build a Select to choose the task color - string selections like 'red' 'blue' etc */}
       <ColorSelector onColorSelect={(color: string) => setTaskColor(color)} />
 
       <button onClick={handleAddTask}>Add</button>

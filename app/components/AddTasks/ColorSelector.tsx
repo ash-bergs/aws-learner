@@ -27,7 +27,7 @@ const ColorSelector = ({
   const [selectedColor, setSelectedColor] = useState(COLORS[2].class);
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center">
       <button
         className={`w-6 h-6 rounded-full border focus:outline-none ${selectedColor}`}
         onClick={() => setDropdownOpen(!dropdownOpen)}
