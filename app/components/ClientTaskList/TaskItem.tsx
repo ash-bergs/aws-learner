@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
 import MeatballMenu from '../MeatballMenu';
-import { COLORS } from '@/constants';
+import { COLORS } from '@/utils/constants';
 
 /**
  * A component to render a single task.

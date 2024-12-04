@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { COLORS } from '@/constants';
+import { COLORS } from '@/utils/constants';
 // we'll need to get the current theme from the app store
 //import { useStore } from '@/lib/store/app';
 
