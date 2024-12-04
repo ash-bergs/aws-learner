@@ -7,7 +7,7 @@ interface MenuItem {
 
 interface MeatballMenuProps {
   menuOpen: boolean;
-  toggleMenu: () => void;
+  toggleMenu: (e: React.MouseEvent) => void;
   items: MenuItem[];
   className?: string;
 }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
 import MeatballMenu from '../MeatballMenu';
+import { COLORS } from '@/constants';
 
 /**
  * A component to render a single task.
@@ -14,8 +15,13 @@ import MeatballMenu from '../MeatballMenu';
  */
 export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
-
   const { deleteTask, toggleComplete } = useTaskStore();
+
+  // get the background color for the task from the color col
+  const bgColor = task.color
+    ? COLORS.find((color) => color.name === task.color)?.class
+    : 'bg-note';
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -29,7 +35,9 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   ];
 
   return (
-    <li className="flex items-center justify-between p-4 mb-2 bg-note border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow">
+    <li
+      className={`flex items-center justify-between p-4 mb-2 ${bgColor} border border-gray-200 rounded-md shadow-sm hover:shadow-md transition-shadow`}
+    >
       <div className="flex items-center space-x-4">
         <input
           type="checkbox"
@@ -64,7 +72,10 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
 
       <MeatballMenu
         menuOpen={menuOpen}
-        toggleMenu={toggleMenu}
+        toggleMenu={(e: React.MouseEvent) => {
+          e.stopPropagation();
+          toggleMenu();
+        }}
         items={menuItems}
       />
     </li>

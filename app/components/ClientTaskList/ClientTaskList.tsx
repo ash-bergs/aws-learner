@@ -1,8 +1,20 @@
 'use client';
 
 import React, { useEffect } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useTaskStore } from '@/lib/store/task';
-import { TaskItem } from './TaskItem';
+import SortableTaskItem from './SortableTaskItem';
 
 /**
  * A component that renders a list of tasks.
@@ -14,21 +26,55 @@ import { TaskItem } from './TaskItem';
  * @returns {React.ReactElement} A JSX element representing the list of tasks.
  */
 const ClientTaskList = (): React.ReactElement => {
-  const { tasks, fetchTasks } = useTaskStore();
+  const { tasks, fetchTasks, reorderTask } = useTaskStore();
+
+  // https://docs.dndkit.com/api-documentation/sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   // TODO: fetch tasks differently - not in a useEffect
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
+  // dnd setup
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    if (active.id !== over.id) {
+      reorderTask(String(active.id), String(over.id));
+
+      // Refetch tasks
+      await fetchTasks();
+    }
+  };
+
   return (
     <>
       <h2 className="text-text text-2xl font-bold mb-4">Tasks</h2>
-      <ul>
-        {tasks.map((task) => (
-          <TaskItem key={task.id} task={task} />
-        ))}
-      </ul>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        sensors={sensors}
+      >
+        <SortableContext
+          items={tasks.map((task) => task.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <ul>
+            {tasks.map((task) => (
+              <SortableTaskItem key={task.id} task={task} />
+            ))}
+          </ul>
+        </SortableContext>
+      </DndContext>
     </>
   );
 };

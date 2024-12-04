@@ -1,4 +1,4 @@
-import AddTasks from '../components/AddTasks';
+import AddTasks from '../components/AddTasks/AddTasks';
 import ClientTaskList from '../components/ClientTaskList';
 import NoteDisplay from '../components/NoteBoard';
 import TextEditor from '../components/TextEditor';

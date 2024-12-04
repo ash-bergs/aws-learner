@@ -7,6 +7,7 @@ export interface Task {
   color?: string; // the user assigned color for the task background - a string
   dateAdded: Date;
   dateUpdated: Date;
+  position: number;
 }
 
 export interface Note {
@@ -15,6 +16,7 @@ export interface Note {
   color?: string; // the user assigned color for the note background - a string
   dateAdded: Date;
   dateUpdated: Date;
+  // position: number;
 }
 
 class AppDatabase extends Dexie {
@@ -48,12 +50,33 @@ class AppDatabase extends Dexie {
     this.version(4).stores({
       tasks: '&id, text, completed, color, dateAdded, dateUpdated',
       notes: '&id, content, color, dateAdded, dateUpdated',
-
       // composite key for primary key, a tuple with 2 elements
       // prevents duplicate relationships for the same task and note
       // how would this scale?
       taskNotes: '[taskId+noteId], taskId, noteId',
     });
+
+    // update:
+    // adding a position to tasks
+    // the position uses relative positions with scaled position values
+    // this is useful for reordering because we can use the average between adjacent tasks
+    // and avoid shifting the entire list when reordering
+    this.version(4)
+      .stores({
+        tasks: '&id, text, completed, color, dateAdded, dateUpdated, position',
+        notes: '&id, content, color, dateAdded, dateUpdated',
+        taskNotes: '[taskId+noteId], taskId, noteId',
+      })
+      // migrate existing tasks
+      .upgrade((tx) => {
+        return tx
+          .table('tasks')
+          .toCollection()
+          .modify((task, index) => {
+            // assign sequential positions to tasks based on the current order
+            task.position = Number(index) + 1;
+          });
+      });
 
     this.tasks = this.table('tasks');
     this.notes = this.table('notes');
