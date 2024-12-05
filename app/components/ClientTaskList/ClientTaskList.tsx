@@ -8,6 +8,7 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
+  TouchSensor,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -33,6 +34,12 @@ const ClientTaskList = (): React.ReactElement => {
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // ms delay
+        tolerance: 5,
       },
     })
   );
