@@ -33,6 +33,11 @@ const NoteBoardDisplay = (): React.ReactElement => {
             <NoteDisplay key={note.id} id={note.id} content={note.content} />
           ))}
         </ul>
+        {notes.length === 0 && (
+          <p className="text-text text-center bg-note w-[60%] mx-auto my-auto rounded-sm py-4 px-4">
+            No current notes to display{' '}
+          </p>
+        )}
       </div>
     </>
   );

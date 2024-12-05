@@ -3,6 +3,8 @@ import localFont from 'next/font/local';
 import Header from './components/layout/Header';
 import './globals.css';
 
+import '@fontsource/poppins/index.css';
+
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-geist-sans',
@@ -26,9 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`font-sans antialiased`}>
         <Header />
         {children}
       </body>

@@ -18,6 +18,9 @@ export default {
         text: 'var(--color-text)',
         note: 'var(--color-note)', // for the default note bg color
       },
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+      },
     },
   },
   plugins: [],
