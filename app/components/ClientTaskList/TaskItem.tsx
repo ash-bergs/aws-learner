@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
 import MeatballMenu from '../MeatballMenu';
-// TODO: was it the pathing? check prod
-import { COLORS } from '../../../utils/constants';
+import { COLORS } from '@/utils/constants';
 
 /**
  * A component to render a single task.
@@ -22,8 +21,6 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   const bgColor = task.color
     ? COLORS.find((color) => color.name === task.color)?.class
     : 'bg-note';
-
-  console.log('task bg color: ', bgColor);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);

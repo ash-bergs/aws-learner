@@ -18,8 +18,6 @@ const AddTasks = () => {
   const [taskColor, setTaskColor] = useState('green');
 
   const handleAddTask = async () => {
-    // TODO: rm log - test for prod
-    console.log('task color: ', taskColor);
     await addTask(taskText, taskColor);
     setTaskText('');
     document.getElementById('task')?.focus();

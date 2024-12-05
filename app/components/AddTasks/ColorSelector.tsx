@@ -22,7 +22,7 @@ const ColorSelector = ({
         onClick={() => setDropdownOpen(!dropdownOpen)}
       ></button>
       {dropdownOpen && (
-        <div className="absolute left-0 mt-2 bg-white shadow-md rounded-lg p-2 flex flex-wrap gap-2">
+        <div className="absolute left-0 mt-2 bg-white shadow-md rounded-lg p-2 flex flex-wrap gap-2 z-20">
           {COLORS.map((color) => (
             <div
               key={color.name}
