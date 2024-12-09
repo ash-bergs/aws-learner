@@ -65,7 +65,13 @@ const ClientTaskList = (): React.ReactElement => {
 
   return (
     <>
-      <h2 className="text-text text-2xl font-bold mb-4">Tasks</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-text text-2xl font-bold mb-4">Tasks</h2>
+        {/** TODO: Create function to show completed tasks (update list ordering/visibility) */}
+        {/* <button className="border p-3 py-2 rounded bg-gray-200">
+          View Completed
+        </button> */}
+      </div>
       <DndContext
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}

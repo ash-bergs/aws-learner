@@ -24,7 +24,7 @@ const AddTasks = () => {
   };
 
   return (
-    <div className="flex items-center border rounded-full px-4 py-2 bg-gray-100 space-x-2">
+    <div className="flex items-center border rounded-full px-4 py-2 bg-gray-100">
       <input
         id="task"
         type="text"
