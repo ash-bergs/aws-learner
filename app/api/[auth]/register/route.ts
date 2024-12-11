@@ -2,11 +2,26 @@ import { NextResponse } from 'next/server';
 import { db, User } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 
+/**
+ * Checks if a given password is valid according to the following rules:
+ * - At least 6 characters long
+ * - Contains at least one number
+ * - Contains at least one special character (!, @, #, $, %, ^, &, *)
+ * - Contains at least one letter
+ * @param {string} password The password to be validated
+ * @returns {boolean} True if the password is valid, false otherwise
+ */
 export function validatePassword(password: string): boolean {
   const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
   return regex.test(password);
 }
 
+/**
+ * Creates a new user
+ * @param {Request} req The request object
+ * @returns {Response} The response object
+ * @throws {Error} If there is an error creating the user
+ */
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
@@ -43,7 +58,9 @@ export async function POST(req: Request) {
       id: crypto.randomUUID(),
       email,
       password: hashedPassword,
-      theme: `default`,
+      settings: {
+        theme: `default`,
+      },
     };
 
     await db.users.add(newUser);

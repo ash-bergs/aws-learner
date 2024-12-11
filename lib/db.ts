@@ -4,10 +4,12 @@ export interface Task {
   id: string;
   text: string;
   completed: boolean;
+  completedBy?: string;
   color?: string; // the user assigned color for the task background - a string
   dateAdded: Date;
   dateUpdated: Date;
   position: number;
+  userId?: string; // the id of the user that created the task
 }
 
 export interface Note {
@@ -17,13 +19,16 @@ export interface Note {
   dateAdded: Date;
   dateUpdated: Date;
   // position: number;
+  userId?: string; // the id of the user that created the note
 }
 
 export interface User {
   id: string;
   email: string;
   password: string;
-  theme: string;
+  settings: {
+    theme: string;
+  };
 }
 
 class AppDatabase extends Dexie {
@@ -86,10 +91,11 @@ class AppDatabase extends Dexie {
     // });
 
     this.version(6).stores({
-      tasks: '&id, text, completed, color, dateAdded, dateUpdated, position',
-      notes: '&id, content, color, dateAdded, dateUpdated',
+      tasks:
+        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
+      notes: '&id, content, color, dateAdded, dateUpdated, userId',
       taskNotes: '[taskId+noteId], taskId, noteId',
-      users: '&id, email, password, theme',
+      users: '&id, email, password, settings',
     });
 
     this.tasks = this.table('tasks');
