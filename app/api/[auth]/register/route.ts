@@ -11,7 +11,7 @@ import bcrypt from 'bcryptjs';
  * @param {string} password The password to be validated
  * @returns {boolean} True if the password is valid, false otherwise
  */
-export function validatePassword(password: string): boolean {
+function validatePassword(password: string): boolean {
   const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
   return regex.test(password);
 }
