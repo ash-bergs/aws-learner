@@ -24,7 +24,10 @@ export interface Note {
 
 export interface User {
   id: string;
-  email: string;
+  email?: string;
+  username: string;
+  firstName?: string;
+  lastName?: string;
   password: string;
   settings: {
     theme: string;
@@ -96,6 +99,16 @@ class AppDatabase extends Dexie {
       notes: '&id, content, color, dateAdded, dateUpdated, userId',
       taskNotes: '[taskId+noteId], taskId, noteId',
       users: '&id, email, password, settings',
+    });
+
+    // update: Adds username, and first and last name to User
+    // makes email optional but a unique username is required
+    this.version(7).stores({
+      tasks:
+        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
+      notes: '&id, content, color, dateAdded, dateUpdated, userId',
+      taskNotes: '[taskId+noteId], taskId, noteId',
+      users: '&id, email, password, username, firstName, lastName, settings',
     });
 
     this.tasks = this.table('tasks');
