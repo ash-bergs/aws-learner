@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// TODO: Once we have a real backend, we'll need to bring in the register form/route
 export default function LoginPage() {
   // set up state for the form fields
   const [email, setEmail] = useState('');
@@ -30,7 +31,20 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div>
+      <div
+        className="image text-text bg-gray-200 flex flex-col items-center justify-center"
+        style={{ height: '100%', width: '100%' }}
+      >
+        <p>An image will go here</p>
+      </div>
+
+      {/** This is the login form, we need a new one for registration
+       * TODO: connect this to a login route
+       */}
+      <div
+        className="text-text flex flex-col items-center justify-center"
+        style={{ height: '100%', width: '100%' }}
+      >
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-4">

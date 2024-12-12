@@ -23,17 +23,18 @@ function validatePassword(password: string): boolean {
  * @throws {Error} If there is an error creating the user
  */
 export async function POST(req: Request) {
+  console.log('HITTING REGISTER ENDPOINT');
   try {
-    const { email, password } = await req.json();
+    const { email, password, username, firstName, lastName } = await req.json();
 
-    if (!email || !password) {
+    if (!password || !username) {
       return NextResponse.json(
-        { message: 'Email and password are required.' },
+        { message: 'Username and password are required.' },
         { status: 400 }
       );
     }
 
-    const existingUser = await db.users.get({ where: { email } });
+    const existingUser = await db.users.get({ where: { username } });
 
     if (existingUser) {
       return NextResponse.json(
@@ -57,9 +58,12 @@ export async function POST(req: Request) {
     const newUser: User = {
       id: crypto.randomUUID(),
       email,
+      username,
+      firstName,
+      lastName,
       password: hashedPassword,
       settings: {
-        theme: `default`,
+        theme: `tidePool`,
       },
     };
 
