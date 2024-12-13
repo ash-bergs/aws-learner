@@ -1,10 +1,5 @@
 import { create } from 'zustand';
 
-// export enum Theme {
-//   Light = 'light',
-//   Dark = 'dark',
-// }
-// change theme to names
 export type Theme = 'Tidepool' | 'Orchid';
 
 interface AppState {

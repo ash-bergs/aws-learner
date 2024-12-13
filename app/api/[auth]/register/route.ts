@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db, User } from '@/lib/db';
+import { supabase } from '@/lib/supabase/client';
 import bcrypt from 'bcryptjs';
 
 /**
@@ -34,9 +34,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const existingUser = await db.users.get({ where: { username } });
+    const { data: userExists } = await supabase
+      .from('users')
+      .select('*')
+      .or(`email.eq.${email},username.eq.${username}`);
 
-    if (existingUser) {
+    if (userExists?.length) {
       return NextResponse.json(
         { message: 'User already exists.' },
         { status: 400 }
@@ -55,28 +58,26 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      email,
-      username,
-      firstName,
-      lastName,
-      password: hashedPassword,
-      settings: {
-        theme: `tidePool`,
+    const { error } = await supabase.from('users').insert([
+      {
+        email,
+        username,
+        first_name: firstName,
+        last_name: lastName,
+        password: hashedPassword,
       },
-    };
+    ]);
 
-    await db.users.add(newUser);
+    if (error) throw error;
 
     return NextResponse.json(
-      { message: 'User created successfully.' },
+      { message: 'User registered successfully.' },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error registering user:', error);
     return NextResponse.json(
-      { message: 'Error creating user.' },
+      { message: 'Error registering user.' },
       { status: 500 }
     );
   }
