@@ -30,26 +30,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
+    <div className="flex h-screen items-center justify-center">
       <div
         className="image text-text bg-gray-200 flex flex-col items-center justify-center"
-        style={{ height: '100%', width: '100%' }}
-      >
-        <p>An image will go here</p>
-      </div>
+        style={{
+          height: '100%',
+          width: '100%',
+
+          backgroundImage: "url('/sample-splash.jpg')",
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+        }}
+      ></div>
 
       {/** This is the login form, we need a new one for registration
        * TODO: connect this to a login route
        */}
       <div
-        className="text-text flex flex-col items-center justify-center"
+        className="text-text flex flex-col items-center justify-center p-8"
         style={{ height: '100%', width: '100%' }}
       >
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
+        <h2 className="text-3xl font-bold mb-4">Login</h2>
+        <form
+          className="w-full max-w-md flex flex-col gap-6"
+          onSubmit={handleLogin}
+        >
+          <div>
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-text text-md font-bold mb-2"
               htmlFor="email"
             >
               Email
@@ -63,9 +72,9 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="mb-4">
+          <div>
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-text text-md font-bold mb-2"
               htmlFor="password"
             >
               Password
@@ -77,13 +86,29 @@ export default function LoginPage() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
+          <div>
+            <p className="text-sm text-text">
+              Don't have an account?
+              <a href="#" className="text-blue-500">
+                {' '}
+                Register Now
+              </a>
+            </p>
+          </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
           >
-            Login
-          </button>
+            <button
+              type="submit"
+              className="bg-primary hover:bg-secondary text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline w-auto"
+            >
+              Login
+            </button>
+          </div>
         </form>
         <div>{error && <p>{error}</p>}</div>
       </div>
