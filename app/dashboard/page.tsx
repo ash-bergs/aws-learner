@@ -42,7 +42,7 @@ export default async function VideoPage() {
       px-4 
       "
       >
-        <div>
+        <div className="flex flex-col gap-4">
           <ClientTaskList />
           <AddTasks />
         </div>

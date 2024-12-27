@@ -15,6 +15,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useTaskStore } from '@/lib/store/task';
+import { useNoteStore } from '@/lib/store/note';
 import SortableTaskItem from './SortableTaskItem';
 
 /**
@@ -28,6 +29,10 @@ import SortableTaskItem from './SortableTaskItem';
  */
 const ClientTaskList = (): React.ReactElement => {
   const { tasks, fetchTasks, reorderTask } = useTaskStore();
+  const { isLinking } = useNoteStore();
+  //TODO: better classes - clsx?
+  const listPadding = isLinking ? 'py-2 px-4' : '';
+  const listBorder = isLinking ? 'border-2 border-highlight rounded-lg' : '';
 
   // https://docs.dndkit.com/api-documentation/sensors
   const sensors = useSensors(
@@ -64,7 +69,7 @@ const ClientTaskList = (): React.ReactElement => {
   };
 
   return (
-    <>
+    <div>
       <div className="flex justify-between items-center">
         <h2 className="text-text text-2xl font-bold mb-4">Tasks</h2>
         {/** TODO: Create function to show completed tasks (update list ordering/visibility) */}
@@ -81,14 +86,14 @@ const ClientTaskList = (): React.ReactElement => {
           items={tasks.map((task) => task.id)}
           strategy={verticalListSortingStrategy}
         >
-          <ul>
+          <ul className={`${listPadding} ${listBorder}`}>
             {tasks.map((task) => (
               <SortableTaskItem key={task.id} task={task} />
             ))}
           </ul>
         </SortableContext>
       </DndContext>
-    </>
+    </div>
   );
 };
 

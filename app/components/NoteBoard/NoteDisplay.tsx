@@ -22,7 +22,7 @@ const NoteDisplay = ({
 
   const { deleteNote, startLinking, linkingNoteId } = useNoteStore();
   const isBeingLinked = linkingNoteId === id;
-  const borderColor = isBeingLinked ? 'border-blue-500' : 'border-note';
+  const borderColor = isBeingLinked ? 'border-highlight' : 'border-note';
   const borderThickness = isBeingLinked ? 'border-4' : 'border-2';
 
   const menuItems = [

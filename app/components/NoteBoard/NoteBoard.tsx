@@ -14,7 +14,7 @@ import LinkingControls from './LinkingControls';
  * @returns {React.ReactElement} A JSX element representing the list of notes.
  */
 const NoteBoardDisplay = (): React.ReactElement => {
-  const { notes, fetchNotes } = useNoteStore();
+  const { notes, fetchNotes, isLinking } = useNoteStore();
 
   // TODO: fetch notes differently - not in a useEffect
   useEffect(() => {
@@ -23,8 +23,12 @@ const NoteBoardDisplay = (): React.ReactElement => {
 
   return (
     <>
-      <h2 className="text-text text-2xl font-bold mb-4">Notes</h2>
-      <LinkingControls />
+      {/** if isLinking is true, don't show h2, show the LinkingControls */}
+      {!isLinking && (
+        <h2 className="text-text text-2xl font-bold mb-4">Notes</h2>
+      )}
+      {isLinking && <LinkingControls />}
+
       <div
         className="flex flex-col h-[50vh] md:h-[50vh] sm:h-auto sm:flex-grow 
                  overflow-y-auto bg-secondary

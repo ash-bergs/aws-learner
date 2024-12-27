@@ -4,17 +4,18 @@ import { noteService } from '@/lib/services';
 
 interface NoteStore {
   notes: Note[];
-  fetchNotes: () => Promise<void>;
-  addNote: (content: Record<string, object>) => void;
-  deleteNote: (id: string) => void;
-  // linkNoteToTasks: (id: string, taskIds: string[]) => void;
-
   linkingNoteId: string | null;
   selectedTaskIds: string[];
   isLinking: boolean;
+  // CRUD
+  fetchNotes: () => Promise<void>;
+  addNote: (content: Record<string, object>) => void;
+  deleteNote: (id: string) => void;
+  // Note/Task linking
   cancelLinking: () => void;
   startLinking: (noteId: string) => void;
   confirmLinking: () => void;
+  setSelectedTaskIds: (taskId: string) => void;
 }
 
 export const useNoteStore = create<NoteStore>((set, get) => ({
@@ -49,7 +50,7 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     set({ linkingNoteId: noteId, selectedTaskIds: [], isLinking: true });
   },
 
-  selectTask: (taskId: string) => {
+  setSelectedTaskIds: (taskId: string) => {
     set((state) => ({
       selectedTaskIds: state.selectedTaskIds.includes(taskId)
         ? state.selectedTaskIds.filter((id) => id !== taskId)
