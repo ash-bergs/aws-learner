@@ -88,7 +88,7 @@ export default function LoginPage() {
           </div>
           <div>
             <p className="text-sm text-text">
-              Don't have an account?
+              Don&apos;t have an account?
               <a href="#" className="text-blue-500">
                 {' '}
                 Register Now
