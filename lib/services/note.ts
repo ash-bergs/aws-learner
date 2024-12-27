@@ -51,4 +51,18 @@ export class NoteService {
   deleteNote = async (id: string) => {
     await db.notes.delete(id);
   };
+
+  // associate tasks with notes and vice versa
+  // we need to create a fn to add to the taskNotes table
+  // taskNotes: Dexie.Table<{ taskId: string; noteId: string }, [string, string]>;
+  // we can select more than one task per note
+  // should handle in a promise.all fashion
+  addNoteToTask = async (noteId: string, taskIds: string[]) => {
+    const taskNotes = taskIds.map((taskId) => ({
+      taskId,
+      noteId,
+    }));
+
+    await db.taskNotes.bulkAdd(taskNotes);
+  };
 }

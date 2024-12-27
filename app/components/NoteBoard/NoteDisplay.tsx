@@ -20,7 +20,10 @@ const NoteDisplay = ({
   });
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { deleteNote } = useNoteStore();
+  const { deleteNote, startLinking, linkingNoteId } = useNoteStore();
+  const isBeingLinked = linkingNoteId === id;
+  const borderColor = isBeingLinked ? 'border-blue-500' : 'border-note';
+  const borderThickness = isBeingLinked ? 'border-4' : 'border-2';
 
   const menuItems = [
     {
@@ -29,11 +32,20 @@ const NoteDisplay = ({
         deleteNote(id);
       },
     },
+    {
+      label: 'Link to Task',
+      onClick: () => {
+        // close the meatball menu
+        setMenuOpen(false);
+        // begin linking
+        startLinking(id);
+      },
+    },
   ];
 
   return (
     <div
-      className="flex border rounded-md bg-note p-4"
+      className={`flex border rounded-md bg-note p-4 ${borderThickness} ${borderColor}`}
       style={{
         justifyContent: 'space-between',
       }}
