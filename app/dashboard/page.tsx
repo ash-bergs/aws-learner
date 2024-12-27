@@ -23,7 +23,7 @@ export default async function VideoPage() {
       <div className="text-text px-4 py-6 flex justify-between">
         <div>
           <p className="text-2xl">
-            {message} <span className="font-bold">User</span>
+            {message} <span className="font-bold">Ash</span>
           </p>
         </div>
         {/** TODO: Make these into links, create a page for each */}
@@ -42,7 +42,7 @@ export default async function VideoPage() {
       px-4 
       "
       >
-        <div>
+        <div className="flex flex-col gap-4">
           <ClientTaskList />
           <AddTasks />
         </div>
