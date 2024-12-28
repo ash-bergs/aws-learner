@@ -10,7 +10,6 @@ export class TaskService {
     // return all tasks from the database
     return await db.tasks.orderBy('position').toArray();
   }
-
   addTask = async (task: string, color?: string) => {
     const lastTask = await db.tasks.orderBy('position').last();
     const newTaskPosition = lastTask ? lastTask.position + 1 : 1;
@@ -27,19 +26,16 @@ export class TaskService {
     await db.tasks.add(newTask);
     return newTask;
   };
-
   updateTask = async (task: Task) => {
     // get the task, and add a time stamp, and add the task to the database
     const updatedTask = { ...task, dateUpdated: new Date() };
     await db.tasks.update(task.id, updatedTask);
     return updatedTask;
   };
-
   deleteTask = async (id: string) => {
     // delete the task from the database
     await db.tasks.delete(id);
   };
-
   toggleComplete = async (id: string) => {
     const task = await db.tasks.get(id);
 
@@ -52,7 +48,6 @@ export class TaskService {
       await db.tasks.update(id, updatedTask);
     }
   };
-
   /**
    * Update the color of a task background in the UI
    * @param {string} id - The id of the task to update
@@ -76,7 +71,6 @@ export class TaskService {
 
     await db.tasks.update(id, { dateUpdated: new Date() });
   };
-
   updateTaskPosition = async (id: string, newPosition: number) => {
     await db.tasks.update(id, { position: newPosition });
   };

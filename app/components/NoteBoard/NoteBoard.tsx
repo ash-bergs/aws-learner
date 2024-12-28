@@ -1,29 +1,65 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { useNoteStore } from '@/lib/store/note';
-import NoteDisplay from './NoteDisplay';
+import SortableNoteDisplay from './SortableNoteDisplay';
 import LinkingControls from './LinkingControls';
 
 /**
- * A component that renders a list of notes.
+ * A component that renders a draggable and sortable list of notes.
  *
- * It fetches the notes from the store when mounted.
- * Each note is rendered as a `NoteDisplay` component within an unordered list.
+ * Utilizes the DndContext and SortableContext from the dnd-kit library
+ * to provide drag-and-drop functionality for notes, allowing reordering
+ * by dragging.
  *
- * @returns {React.ReactElement} A JSX element representing the list of notes.
+ * Displays a header or linking controls based on the linking state,
+ * managed by the note store.
+ *
+ * @returns {React.ReactElement} A JSX element representing the note board display.
  */
 const NoteBoardDisplay = (): React.ReactElement => {
-  const { notes, fetchNotes, isLinking } = useNoteStore();
+  const { notes, isLinking, reorderNote } = useNoteStore();
 
-  // TODO: fetch notes differently - not in a useEffect
-  useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // ms delay
+        tolerance: 5,
+      },
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    if (active.id !== over.id) {
+      reorderNote(String(active.id), String(over.id));
+    }
+  };
 
   return (
     <>
-      {/** if isLinking is true, don't show h2, show the LinkingControls */}
+      {/** if isLinking is true, don't show h2, show the LinkingControls buttons */}
       {!isLinking && (
         <h2 className="text-text text-2xl font-bold mb-4">Notes</h2>
       )}
@@ -34,11 +70,23 @@ const NoteBoardDisplay = (): React.ReactElement => {
                  overflow-y-auto bg-secondary
                  p-4 rounded shadow-md"
       >
-        <ul className="space-y-4">
-          {notes.map((note) => (
-            <NoteDisplay key={note.id} id={note.id} content={note.content} />
-          ))}
-        </ul>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+        >
+          <SortableContext
+            items={notes.map((note) => note.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ul className="space-y-4">
+              {notes.map((note) => (
+                <SortableNoteDisplay key={note.id} note={note} />
+              ))}
+            </ul>
+          </SortableContext>
+        </DndContext>
+
         {notes.length === 0 && (
           <p className="text-text text-center bg-note w-[60%] mx-auto my-auto rounded-sm py-4 px-4">
             No current notes to display{' '}
