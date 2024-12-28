@@ -6,7 +6,7 @@ import { db, Note } from '../db';
 
 export class NoteService {
   async getAllNotes() {
-    return await db.notes.toArray();
+    return await db.notes.orderBy('position').toArray();
   }
   addNote = async (content: Record<string, object>, color?: string) => {
     // get the last note and its position, add a new note right after

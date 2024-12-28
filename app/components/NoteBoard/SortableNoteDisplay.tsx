@@ -15,7 +15,6 @@ import NoteDisplay from './NoteDisplay';
  * @param {Note} props.note The note to render.
  * @returns {React.ReactElement} A JSX element representing the sortable note list item.
  */
-
 const SortableNoteDisplay = ({ note }: { note: Note }): React.ReactElement => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   DndContext,
   closestCenter,
@@ -20,15 +20,20 @@ import SortableNoteDisplay from './SortableNoteDisplay';
 import LinkingControls from './LinkingControls';
 
 /**
- * A component that renders a list of notes.
+ * A component that renders a draggable and sortable list of notes.
  *
- * It fetches the notes from the store when mounted.
- * Each note is rendered as a `NoteDisplay` component within an unordered list.
+ * Utilizes the DndContext and SortableContext from the dnd-kit library
+ * to provide drag-and-drop functionality for notes, allowing reordering
+ * by dragging.
  *
- * @returns {React.ReactElement} A JSX element representing the list of notes.
+ * Displays a header or linking controls based on the linking state,
+ * managed by the note store.
+ *
+ * @returns {React.ReactElement} A JSX element representing the note board display.
  */
+
 const NoteBoardDisplay = (): React.ReactElement => {
-  const { notes, fetchNotes, isLinking, reorderNote } = useNoteStore();
+  const { notes, isLinking, reorderNote } = useNoteStore();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -53,11 +58,6 @@ const NoteBoardDisplay = (): React.ReactElement => {
       reorderNote(String(active.id), String(over.id));
     }
   };
-
-  // TODO: fetch notes differently - not in a useEffect
-  useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
 
   return (
     <>
