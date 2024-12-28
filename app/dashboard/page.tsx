@@ -2,30 +2,16 @@ import AddTasks from '../components/AddTasks/AddTasks';
 import ClientTaskList from '../components/ClientTaskList';
 import NoteDisplay from '../components/NoteBoard';
 import TextEditor from '../components/TextEditor';
+import DashboardGreeting from '../components/DashboardGreeting';
 
-export default async function VideoPage() {
+export default async function DashboardPage() {
   // // check for valid session
   // const session = await getServerSession(authOptions);
-  // // instantiate session
-  // console.log(session);
-
-  // create a message for "Good Morning", "Good Afternoon", and "Good Evening" based on date and time
-  const time = new Date().getHours();
-  const message =
-    time < 12
-      ? 'Good Morning,'
-      : time < 18
-      ? 'Good Afternoon,'
-      : 'Good Evening,';
 
   return (
     <div>
       <div className="text-text px-4 py-6 flex justify-between">
-        <div>
-          <p className="text-2xl">
-            {message} <span className="font-bold">Ash</span>
-          </p>
-        </div>
+        <DashboardGreeting />
         {/** TODO: Make these into links, create a page for each */}
         {/* <div className="flex gap-4">
           <div>Monthly Calendar</div>
