@@ -8,7 +8,6 @@ export class NoteService {
   async getAllNotes() {
     return await db.notes.toArray();
   }
-
   addNote = async (content: Record<string, object>, color?: string) => {
     // get the last note and its position, add a new note right after
     const lastNote = await db.notes.orderBy('position').last();
@@ -26,14 +25,12 @@ export class NoteService {
     await db.notes.add(note);
     return note;
   };
-
   updateNote = async (note: Note) => {
     // get the note, and add a time stamp, and add the task to the database
     const updatedNote = { ...note, dateUpdated: new Date() };
     await db.tasks.update(note.id, updatedNote);
     return updatedNote;
   };
-
   /**
    * Update the color of a note background in the UI
    * @param {string} id - The id of the task to update
@@ -52,16 +49,9 @@ export class NoteService {
       `Note with id ${id} could not be found - color not updated 😢`
     );
   };
-
   deleteNote = async (id: string) => {
     await db.notes.delete(id);
   };
-
-  // associate tasks with notes and vice versa
-  // we need to create a fn to add to the taskNotes table
-  // taskNotes: Dexie.Table<{ taskId: string; noteId: string }, [string, string]>;
-  // we can select more than one task per note
-  // should handle in a promise.all fashion
   addNoteToTask = async (noteId: string, taskIds: string[]) => {
     const taskNotes = taskIds.map((taskId) => ({
       taskId,
@@ -69,5 +59,8 @@ export class NoteService {
     }));
 
     await db.taskNotes.bulkAdd(taskNotes);
+  };
+  updateNotePosition = async (id: string, newPosition: number) => {
+    await db.notes.update(id, { position: newPosition });
   };
 }
