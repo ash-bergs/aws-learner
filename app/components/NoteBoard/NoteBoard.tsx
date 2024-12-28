@@ -15,7 +15,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useNoteStore } from '@/lib/store/note';
-// import NoteDisplay from './NoteDisplay';
 import SortableNoteDisplay from './SortableNoteDisplay';
 import LinkingControls from './LinkingControls';
 
@@ -31,7 +30,6 @@ import LinkingControls from './LinkingControls';
  *
  * @returns {React.ReactElement} A JSX element representing the note board display.
  */
-
 const NoteBoardDisplay = (): React.ReactElement => {
   const { notes, isLinking, reorderNote } = useNoteStore();
 
