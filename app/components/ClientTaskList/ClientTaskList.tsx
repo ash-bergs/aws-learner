@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   DndContext,
   closestCenter,
@@ -19,16 +19,22 @@ import { useNoteStore } from '@/lib/store/note';
 import SortableTaskItem from './SortableTaskItem';
 
 /**
- * A component that renders a list of tasks.
+ * A component that renders a draggable and sortable list of tasks.
  *
- * It utilizes the `useTaskStore` hook to access and fetch tasks from the store.
- * On component mount, it triggers the `fetchTasks` function to load tasks.
- * Each task is rendered as a `TaskItem` within an unordered list.
+ * It utilizes the DndContext and SortableContext from the dnd-kit library
+ * to provide drag-and-drop functionality. Tasks can be reordered by dragging.
  *
- * @returns {React.ReactElement} A JSX element representing the list of tasks.
+ * The component listens to drag-end events to update the order of tasks
+ * using the reorderTask function from the task store.
+ *
+ * The appearance of the task list can change depending on whether the user is
+ * linking tasks to a note, adding specific padding and borders.
+ *
+ * @returns {React.ReactElement} A JSX element representing the task list.
  */
+
 const ClientTaskList = (): React.ReactElement => {
-  const { tasks, fetchTasks, reorderTask } = useTaskStore();
+  const { tasks, reorderTask } = useTaskStore();
   const { isLinking } = useNoteStore();
   //TODO: better classes - clsx?
   const listPadding = isLinking ? 'py-2 px-4' : '';
@@ -49,11 +55,6 @@ const ClientTaskList = (): React.ReactElement => {
     })
   );
 
-  // TODO: fetch tasks differently - not in a useEffect
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
-
   // dnd setup
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -62,9 +63,6 @@ const ClientTaskList = (): React.ReactElement => {
 
     if (active.id !== over.id) {
       reorderTask(String(active.id), String(over.id));
-
-      // Refetch tasks
-      await fetchTasks();
     }
   };
 
