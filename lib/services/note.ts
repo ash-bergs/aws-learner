@@ -10,12 +10,17 @@ export class NoteService {
   }
 
   addNote = async (content: Record<string, object>, color?: string) => {
+    // get the last note and its position, add a new note right after
+    const lastNote = await db.notes.orderBy('position').last();
+    const newNotePosition = lastNote ? lastNote.position + 1 : 1;
+
     const note = {
       id: crypto.randomUUID(),
       content,
       color,
       dateAdded: new Date(),
       dateUpdated: new Date(),
+      position: newNotePosition,
     };
 
     await db.notes.add(note);

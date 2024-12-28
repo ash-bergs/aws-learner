@@ -9,7 +9,7 @@ interface NoteStore {
   isLinking: boolean;
   // CRUD
   fetchNotes: () => Promise<void>;
-  addNote: (content: Record<string, object>) => void;
+  addNote: (content: Record<string, object>, color?: string) => void;
   deleteNote: (id: string) => void;
   // Note/Task linking
   cancelLinking: () => void;
@@ -29,8 +29,8 @@ export const useNoteStore = create<NoteStore>((set, get) => ({
     set({ notes: allNotes });
   },
 
-  addNote: async (content: Record<string, object>) => {
-    const newNote = await noteService.addNote(content);
+  addNote: async (content: Record<string, object>, color?: string) => {
+    const newNote = await noteService.addNote(content, color);
 
     set((state) => ({
       notes: [...state.notes, newNote],
