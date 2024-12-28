@@ -18,7 +18,7 @@ export interface Note {
   color?: string; // the user assigned color for the note background - a string
   dateAdded: Date;
   dateUpdated: Date;
-  // position: number;
+  position: number;
   userId?: string; // the id of the user that created the note
 }
 
@@ -107,6 +107,15 @@ class AppDatabase extends Dexie {
       tasks:
         '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
       notes: '&id, content, color, dateAdded, dateUpdated, userId',
+      taskNotes: '[taskId+noteId], taskId, noteId',
+      users: '&id, email, password, username, firstName, lastName, settings',
+    });
+
+    // update: adds position to notes
+    this.version(8).stores({
+      tasks:
+        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
+      notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
       taskNotes: '[taskId+noteId], taskId, noteId',
       users: '&id, email, password, username, firstName, lastName, settings',
     });
