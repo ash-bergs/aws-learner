@@ -24,13 +24,33 @@
 }
 
 .Orchid {
-  --background: #332d34;
+  --background: #1a171b;
   --foreground: #f4f7f5;
-  --color-primary: #52154e;
-  --color-secondary: #310d2e;
+  --color-primary: #61195c;
+  --color-secondary: #42113e;
   --color-text: #efe9e7;
   --color-note: #ecd5ec;
   --color-highlight: #e766cd;
+}
+
+.Jewel {
+  --background: #faf8f7;
+  --foreground: #ffffff;
+  --color-primary: #7e57c2;
+  --color-secondary: #26c6da;
+  --color-text: #37474f;
+  --color-note: #e0f7fa;
+  --color-highlight: #ff376c;
+}
+
+.DeepSpace {
+  --background: #0d1b2a;
+  --foreground: #1b263b;
+  --color-primary: #3c51cb;
+  --color-secondary: #7b42dd;
+  --color-text: #c5cbe3;
+  --color-note: #ccb6f1;
+  --color-highlight: #9c27b0;
 }
 
 @media (prefers-color-scheme: dark) {
