@@ -1,4 +1,4 @@
-import { db, Task } from '../db';
+import { db, Task, USER_ID } from '../db';
 
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
@@ -9,6 +9,10 @@ export class TaskService {
   async getAllTasks() {
     // return all tasks from the database
     return await db.tasks.orderBy('position').toArray();
+  }
+  async getTasksByIds(taskIds: string[]) {
+    const tasks = await db.tasks.bulkGet(taskIds);
+    return tasks;
   }
   addTask = async (task: string, color?: string) => {
     const lastTask = await db.tasks.orderBy('position').last();
@@ -22,6 +26,7 @@ export class TaskService {
       dateAdded: new Date(),
       dateUpdated: new Date(),
       position: newTaskPosition,
+      userId: USER_ID,
     };
     await db.tasks.add(newTask);
     return newTask;
