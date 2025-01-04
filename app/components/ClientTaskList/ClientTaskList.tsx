@@ -16,7 +16,9 @@ import {
 } from '@dnd-kit/sortable';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
+import { useTagStore } from '@/lib/store/tag';
 import SortableTaskItem from './SortableTaskItem';
+import TagItem from './TagItem';
 
 /**
  * A component that renders a draggable and sortable list of tasks.
@@ -34,8 +36,10 @@ import SortableTaskItem from './SortableTaskItem';
  */
 
 const ClientTaskList = (): React.ReactElement => {
-  const { tasks, reorderTask } = useTaskStore();
+  const { tasks, reorderTask, setCurrentTagId, currentTagId } = useTaskStore();
   const { isLinking } = useNoteStore();
+  const { tags } = useTagStore();
+
   //TODO: better classes - clsx?
   const listPadding = isLinking ? 'py-2 px-4' : '';
   const listBorder = isLinking ? 'border-2 border-highlight rounded-lg' : '';
@@ -55,6 +59,15 @@ const ClientTaskList = (): React.ReactElement => {
     })
   );
 
+  const handleTagChange = (tagId: string) => {
+    // if the tagId is the same as the currentTagId, reset the currentTagId
+    if (tagId === currentTagId) {
+      setCurrentTagId(null);
+      return;
+    }
+    setCurrentTagId(tagId);
+  };
+
   // dnd setup
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -69,11 +82,23 @@ const ClientTaskList = (): React.ReactElement => {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h2 className="text-text text-2xl font-bold mb-4">Tasks</h2>
+        <h2 className="text-text text-2xl font-bold">Tasks</h2>
         {/** TODO: Create function to show completed tasks (update list ordering/visibility) */}
         {/* <button className="border p-3 py-2 rounded bg-gray-200">
           View Completed
         </button> */}
+      </div>
+      <div>
+        <div className="flex gap-2 py-4">
+          {tags.map((tag) => (
+            <TagItem
+              key={tag.id}
+              tag={tag}
+              currentTagId={currentTagId}
+              handleTagChange={handleTagChange}
+            />
+          ))}
+        </div>
       </div>
       <DndContext
         collisionDetection={closestCenter}
