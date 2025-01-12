@@ -4,6 +4,10 @@ import { Task, USER_ID } from '@/lib/db';
 import { taskService, tagsService } from '@/lib/services';
 import { db } from '@/lib/db';
 
+// maybe the store is the best place to handle getting the tags associated with a task
+// in our initial fetch we can also get the taskTags and tags, and pre-process the Tasks, adding the tags
+// this still seems like it will be quite expensive to do on every fetch - maybe a tagId foreign key would be better?
+
 interface TaskStore {
   tasks: Task[];
   currentTagId: string | null;
