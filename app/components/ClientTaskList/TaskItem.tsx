@@ -6,6 +6,7 @@ import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
 import MeatballMenu from '../MeatballMenu';
 import { COLORS } from '@/utils/constants';
+import Modal from '../Modal/Modal';
 
 /**
  * A component to render a single task.
@@ -16,6 +17,7 @@ import { COLORS } from '@/utils/constants';
  */
 export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
   const { deleteTask, toggleComplete } = useTaskStore();
 
   const { setSelectedTaskIds, selectedTaskIds, isLinking } = useNoteStore();
@@ -37,6 +39,10 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
 
   //TODO: add 'Change color' menu item - figure out how this will work
   const menuItems = [
+    {
+      label: 'Due Date',
+      onClick: () => setIsDueDateModalOpen(!isDueDateModalOpen),
+    },
     {
       label: 'Delete',
       onClick: () => deleteTask(task.id),
@@ -103,6 +109,14 @@ export const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
         }}
         items={menuItems}
       />
+      <Modal
+        isOpen={isDueDateModalOpen}
+        onClose={() => setIsDueDateModalOpen(false)}
+      >
+        <h1>Add a Due Date</h1>
+        {/** Date input */}
+        <input type="date" />
+      </Modal>
     </li>
   );
 };

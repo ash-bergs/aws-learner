@@ -17,6 +17,7 @@ interface TaskStore {
   deleteTask: (id: string) => void;
   toggleComplete: (id: string) => void;
   reorderTask: (activeId: string, overId: string) => void;
+  updateTaskDueDate: (id: string, dueDate: Date) => void;
   //TODO:
   // updateTask: (updatedTask: Task) => void;
 }
@@ -148,6 +149,15 @@ export const useTaskStore = create<TaskStore>()(
             task.id === activeId ? { ...task, position: newPosition } : task
           ),
         });
+      },
+
+      updateTaskDueDate: async (id, dueDate) => {
+        await taskService.updateTaskDueDate(id, dueDate);
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === id ? { ...task, dueDate } : task
+          ),
+        }));
       },
     }),
     {
