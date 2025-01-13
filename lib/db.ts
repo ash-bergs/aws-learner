@@ -13,6 +13,7 @@ export interface Task {
   dateUpdated: Date;
   position: number;
   userId?: string; // the id of the user that created the task
+  dueDate?: Date;
 }
 
 export interface Tag {
@@ -149,6 +150,17 @@ class AppDatabase extends Dexie {
     this.version(9).stores({
       tasks:
         '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
+      notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
+      taskNotes: '[taskId+noteId], taskId, noteId',
+      users: '&id, email, password, username, firstName, lastName, settings',
+      taskTags: '[taskId+tagId], taskId, tagId',
+      tags: '&id, name, color, userId',
+    });
+
+    // update: add due dates to tasks
+    this.version(10).stores({
+      tasks:
+        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate',
       notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
       taskNotes: '[taskId+noteId], taskId, noteId',
       users: '&id, email, password, username, firstName, lastName, settings',
