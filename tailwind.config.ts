@@ -18,6 +18,7 @@ export default {
         highlight: 'var(--color-highlight)',
         text: 'var(--color-text)',
         note: 'var(--color-note)', // for the default note bg color
+        modal: 'var(--color-modal)',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],

@@ -13,6 +13,6 @@ export const THEMES = {
 
 export type Theme = keyof typeof THEMES;
 
-export const DEFAULT_THEME: Theme = 'Tidepool';
+export const DEFAULT_THEME: Theme = 'DeepSpace';
 
 export const AVAILABLE_THEMES: Theme[] = Object.keys(THEMES) as Theme[];

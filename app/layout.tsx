@@ -6,7 +6,7 @@ import '@fontsource/poppins/index.css';
 
 export const metadata: Metadata = {
   title: 'Habit Nest',
-  description: 'Stay on track with your habits',
+  description: 'Stay on track with Habit Nest',
 };
 
 export default function RootLayout({

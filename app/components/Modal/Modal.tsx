@@ -54,7 +54,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
       aria-modal="true"
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full relative text-text"
+        className="bg-background rounded-lg shadow-lg p-6 max-w-md w-auto relative text-text"
         ref={modalRef}
       >
         <button
