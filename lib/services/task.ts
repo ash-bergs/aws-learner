@@ -76,6 +76,12 @@ export class TaskService {
 
     await db.tasks.update(id, { dateUpdated: new Date() });
   };
+  updateTaskDueDate = async (id: string, dueDate: Date) => {
+    const task = await db.tasks.get(id);
+    if (!task) return console.warn(`No task with ${id} to update :(`);
+
+    await db.tasks.update(id, { dueDate: dueDate });
+  };
   updateTaskPosition = async (id: string, newPosition: number) => {
     await db.tasks.update(id, { position: newPosition });
   };
