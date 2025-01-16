@@ -19,7 +19,7 @@ const RegisterUserForm = () => {
     // registration works differently, we need to hit an api route:
     // /api/auth/register
     // future: we'll want to handle `signIn` here? Just auto-sign them in?
-    const res = await fetch('/api/auth/register', {
+    const res = await fetch('/api/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,6 +30,7 @@ const RegisterUserForm = () => {
         username,
         firstName,
         lastName,
+        settings: null,
       }),
     });
 
