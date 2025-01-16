@@ -15,15 +15,15 @@ export default function LoginPage() {
   const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
 
-    // Opted to not let next auth handle the redirect, but in a more robust solution I would set this up to be handled in the route
+    //TODO: next auth login
     const res = await signIn('credentials', {
-      redirect: false, // we'll need to redirect to video page here
+      redirect: false,
       email,
       password,
     });
 
     if (res?.ok) {
-      router.push('/dashboard'); // Redirect to the protected page
+      router.push('/dashboard');
     } else {
       setError('Please provide valid credentials');
     }

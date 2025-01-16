@@ -1,0 +1,33 @@
+name: Deploy and Migrate Database
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  workflow_dispatch: # Allow manual execution
+
+jobs:
+  migrate-database:
+    name: Migrate Database on RDS
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Install Dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run Prisma Migrations
+      - name: Apply Prisma Migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }} # Use the RDS connection string from GitHub Secrets
