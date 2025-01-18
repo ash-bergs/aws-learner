@@ -72,7 +72,7 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
     : task.completed;
 
   return (
-    <li
+    <div
       className={`flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-sm hover:shadow-md transition-shadow`}
     >
       <div>
@@ -108,7 +108,7 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
         isDueDateModalOpen={isDueDateModalOpen}
         setIsDueDateModalOpen={setIsDueDateModalOpen}
       />
-    </li>
+    </div>
   );
 };
 

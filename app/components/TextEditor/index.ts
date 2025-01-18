@@ -1,5 +1,3 @@
-import dynamic from 'next/dynamic';
-
-const TextEditor = dynamic(() => import('./TextEditor'), { ssr: false });
+import TextEditor from './TextEditor';
 
 export default TextEditor;
