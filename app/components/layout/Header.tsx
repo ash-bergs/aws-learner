@@ -1,5 +1,7 @@
 import ThemeSwitcher from './ThemeSwitcher';
 
+import type { JSX } from "react";
+
 /**
  * The top-level header component, which displays the app title and selectors
  * for the theme and view.

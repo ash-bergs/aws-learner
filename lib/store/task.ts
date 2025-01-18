@@ -24,12 +24,12 @@ interface TaskStore {
 
 export const useTaskStore = create<TaskStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       tasks: [],
       currentTagId: null,
       fetchTasks: async () => {
         try {
-          const { currentTagId } = useTaskStore.getState();
+          const { currentTagId } = get();
 
           let tasksToFetch: Task[];
 

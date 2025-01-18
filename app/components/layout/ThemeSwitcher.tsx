@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { type JSX } from 'react';
 import { useStore } from '@/lib/store/app';
 import { Theme, THEMES, AVAILABLE_THEMES } from '@/lib/core/theme.config';
 

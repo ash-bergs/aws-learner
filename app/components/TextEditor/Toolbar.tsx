@@ -1,5 +1,7 @@
 import { Editor } from '@tiptap/react';
 
+import type { JSX } from "react";
+
 /**
  * A toolbar component for the TextEditor.
  *
