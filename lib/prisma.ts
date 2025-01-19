@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import dotenv from 'dotenv';
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+//TODO: remove if this doesn't work
+// force prisma to explicitly load .env.production
+// seeing if this is why runtime environment variables are not being set
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: '.env.production' });
+}
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
-  });
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export const prisma = new PrismaClient();
