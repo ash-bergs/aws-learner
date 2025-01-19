@@ -1,3 +1,5 @@
+'use server';
+
 import AddTasks from '../components/AddTasks/AddTasks';
 import ClientTaskList from '../components/ClientTaskList';
 import NoteDisplay from '../components/NoteBoard';
@@ -5,9 +7,6 @@ import TextEditor from '../components/TextEditor';
 import DashboardGreeting from '../components/DashboardGreeting';
 
 export default async function DashboardPage() {
-  // // check for valid session
-  // const session = await getServerSession(authOptions);
-
   return (
     <div>
       <div className="text-text px-4 py-6 flex justify-between">

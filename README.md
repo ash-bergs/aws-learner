@@ -9,7 +9,7 @@ This project began as a Next.js take-home challenge deployed on AWS Amplify but 
 ## 🚀 Features
 
 - **Task Management**: Create, edit, and track tasks with categories and statuses.
-- **Notes Linking**: (Coming Soon) Attach notes to tasks for better context and organization.
+- **Notes Linking**: Attach notes to tasks for better context and organization.
 - **Routine Builder**: (Planned) Develop daily, weekly, and monthly routines.
 - **Gamification**: (Planned) Earn points for completing tasks and unlock badges to stay motivated.
 - **AWS Amplify Deployment**: Fully deployed on AWS with CI/CD integration for seamless updates.
@@ -20,7 +20,9 @@ This project began as a Next.js take-home challenge deployed on AWS Amplify but 
 
 - **Framework**: [Next.js](https://nextjs.org) (App Router)
 - **State Management**: [Zustand](https://zustand-demo.pmnd.rs)
-- **Database**: [Dexie.js](https://dexie.org) for client-side data persistence.
+- **Database**:
+  - **MySQL** deployed on [Amazon RDS](https://aws.amazon.com/rds/), managed locally with [Prisma](https://www.prisma.io)
+  - [Dexie.js](https://dexie.org) for client-side data persistence
 - **Styling**: [Tailwind CSS](https://tailwindcss.com) for modern and responsive design.
 - **Authentication**: [NextAuth.js](https://next-auth.js.org) (planned for secure user sessions).
 - **Deployment**: [AWS Amplify](https://aws.amazon.com/amplify) with CI/CD pipeline.
@@ -53,6 +55,14 @@ cd productivity-hub
 npm install
 ```
 
+Run the development database:
+
+```bash
+docker compose up
+```
+
+You should be able to authenticate and view tables in MySQLWorkbench or another database client tool.
+
 Run the development server:
 
 ```bash
@@ -77,6 +87,7 @@ Add the following to your Amplify environment:
 
 - `NEXTAUTH_SECRET`: Your app’s NextAuth secret.
 - `NEXTAUTH_URL`: The app's deployment URL (e.g., `https://your-app.amplifyapp.com`).
+- `DATABASE_URL`: `mysql://dev_user:dev_password@localhost:3306/dev_db` for local development, or the connection string for your RDS instance.
 
 ### 2. **Build Settings**
 
