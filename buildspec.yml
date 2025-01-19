@@ -8,6 +8,8 @@ frontend:
       commands:
         - npm run clean
         - npm ci
+        - echo "DATABASE_URL=$DATABASE_URL" >> .env
+        - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env
         - npm run build
   artifacts:
     baseDirectory: .next # Specify where the build output is located
