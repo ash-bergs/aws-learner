@@ -6,8 +6,8 @@ frontend:
         - npm ci
     build:
       commands:
-        - env | grep -e DATABUSE_URL -e NEXTAUTH_URL -e NEXTAUTH_SECRET >> .env.production
-        - env | grep -e NEXT_PUBLIC_ >> .env.production
+        - env | grep -e DATABUSE_URL >> .env.production
+        - env | grep -e NEXTAUTH >> .env.production
         - npm run build
   artifacts:
     baseDirectory: .next
