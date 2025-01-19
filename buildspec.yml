@@ -8,6 +8,7 @@ frontend:
       commands:
         - env | grep -e MY_APP_DATABASE_URL >> .env.production
         - env | grep -e NEXTAUTH_ >> .env.production
+        - cat .env.production
         - npm run build
   artifacts:
     baseDirectory: .next
