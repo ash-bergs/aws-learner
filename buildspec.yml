@@ -6,7 +6,7 @@ frontend:
         - npm ci
     build:
       commands:
-        - env | grep -e DATABUSE_URL >> .env.production
+        - env | grep -e DATABASE_URL >> .env.production
         - env | grep -e NEXTAUTH_ >> .env.production
         - npm run build
   artifacts:
