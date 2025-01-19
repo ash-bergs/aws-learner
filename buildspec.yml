@@ -6,8 +6,11 @@ frontend:
         - npm ci
     build:
       commands:
+        - echo "Listing all environment variables..."
+        - env
         - env | grep -e MY_APP_DATABASE_URL >> .env.production
         - env | grep -e NEXTAUTH_ >> .env.production
+        - echo "Contents of .env.production:"
         - cat .env.production
         - npm run build
   artifacts:

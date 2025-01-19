@@ -30,4 +30,4 @@ jobs:
       - name: Apply Prisma Migrations
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }} # Use the RDS connection string from GitHub Secrets
+          MY_APP_DATABASE_URL: ${{ secrets.MY_APP_DATABASE_URL }} # Use the RDS connection string from GitHub Secrets
