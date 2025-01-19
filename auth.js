@@ -46,4 +46,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     signIn: '/login',
     signOut: '/login',
   },
+  trustHost: true, // Trust the host inferred from NEXTAUTH_URL or the request's origin
 });
