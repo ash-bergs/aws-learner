@@ -1,32 +1,25 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { doCredentialLogin } from '../actions/actions';
 
-// TODO: Once we have a real backend, we'll need to bring in the register form/route
 export default function LoginPage() {
-  // set up state for the form fields
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleLogin = async (event: FormEvent) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
 
-    //TODO: next auth login
-    const res = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
-    });
-
-    if (res?.ok) {
-      router.push('/dashboard');
-    } else {
-      setError('Please provide valid credentials');
-    }
+    await doCredentialLogin(formData)
+      .then(() => {
+        router.push('/dashboard');
+      })
+      .catch((err) => {
+        console.error(err);
+        setError('Please provide valid credentials');
+      });
   };
 
   return (
@@ -44,9 +37,6 @@ export default function LoginPage() {
         }}
       ></div>
 
-      {/** This is the login form, we need a new one for registration
-       * TODO: connect this to a login route
-       */}
       <div
         className="text-text flex flex-col items-center justify-center p-8"
         style={{ height: '100%', width: '100%' }}
@@ -61,13 +51,13 @@ export default function LoginPage() {
               className="block text-text text-md font-bold mb-2"
               htmlFor="email"
             >
-              Email
+              Username
             </label>
             <input
-              type="email"
-              id="email"
-              placeholder="email@email.com"
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              name="username"
+              id="username"
+              placeholder="username"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
@@ -82,14 +72,14 @@ export default function LoginPage() {
             <input
               type="password"
               id="password"
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div>
             <p className="text-sm text-text">
               Don&apos;t have an account?
-              <a href="#" className="text-blue-500">
+              <a href="/register" className="text-blue-500">
                 {' '}
                 Register Now
               </a>

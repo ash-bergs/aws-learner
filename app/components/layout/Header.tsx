@@ -1,6 +1,7 @@
+import LogoutButton from './LogoutButton';
 import ThemeSwitcher from './ThemeSwitcher';
-
-import type { JSX } from "react";
+import { auth } from '@/auth';
+import type { JSX } from 'react';
 
 /**
  * The top-level header component, which displays the app title and selectors
@@ -13,12 +14,14 @@ import type { JSX } from "react";
  *
  * @returns {JSX.Element} The JSX element representing the header.
  */
-function Header(): JSX.Element {
+async function Header(): Promise<JSX.Element> {
+  const session = await auth();
   return (
     <header className="sticky top-0 bg-primary p-4 px-6 shadow-md flex justify-between items-center z-10">
       <h1 className="text-lg font-bold text-text">HabitNest</h1>
       <div className="flex items-center space-x-4">
         <ThemeSwitcher />
+        {session && <LogoutButton />}
         {/* TODO: View Selector */}
         {/* <select
           value={view}
