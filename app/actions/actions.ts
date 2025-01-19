@@ -11,20 +11,14 @@ export async function doCredentialLogin(formData: FormData) {
     };
   }
 
-  await signIn('credentials', {
-    username,
-    password,
+  const res = await signIn('credentials', {
+    username: formData.get('username'),
+    password: formData.get('password'),
     redirect: false,
-  })
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => {
-      console.error(err);
-      return {
-        error: 'Please provide valid credentials',
-      };
-    });
+  });
+
+  if (!res) return null;
+  return res;
 }
 
 export async function logout() {

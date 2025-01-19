@@ -4,23 +4,28 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { doCredentialLogin } from '../actions/actions';
 import SplitLayout from '../components/layout/SplitLayout';
-
 export default function LoginPage() {
+  // set up state for the form fields
   const [error, setError] = useState('');
   const router = useRouter();
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
 
-    await doCredentialLogin(formData)
-      .then(() => {
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await doCredentialLogin(formData);
+
+      if (!!response.error) {
+        console.error(response.error);
+        setError(response.error.message);
+      } else {
         router.push('/dashboard');
-      })
-      .catch((err) => {
-        console.error(err);
-        setError('Please provide valid credentials');
-      });
+      }
+    } catch (e) {
+      console.error(e);
+      setError('Check your Credentials');
+    }
   };
 
   return (
@@ -31,7 +36,10 @@ export default function LoginPage() {
         onSubmit={handleLogin}
       >
         <div>
-          <label className="block text-md font-bold mb-2" htmlFor="username">
+          <label
+            className="block text-text text-md font-bold mb-2"
+            htmlFor="email"
+          >
             Username
           </label>
           <input
@@ -39,37 +47,49 @@ export default function LoginPage() {
             name="username"
             id="username"
             placeholder="username"
-            className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight"
           />
         </div>
 
         <div>
-          <label className="block text-md font-bold mb-2" htmlFor="password">
+          <label
+            className="block text-text text-md font-bold mb-2"
+            htmlFor="password"
+          >
             Password
           </label>
           <input
             type="password"
             id="password"
             name="password"
-            className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight"
           />
         </div>
+        <div>
+          <p className="text-sm text-text">
+            Don&apos;t have an account?
+            <a href="/register" className="text-blue-500">
+              {' '}
+              Register Now
+            </a>
+          </p>
+        </div>
 
-        <p className="text-sm">
-          Don&apos;t have an account?{' '}
-          <a href="/register" className="text-blue-500">
-            Register Now
-          </a>
-        </p>
-
-        <button
-          type="submit"
-          className="bg-primary hover:bg-secondary text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline"
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
         >
-          Login
-        </button>
+          <button
+            type="submit"
+            className="bg-primary hover:bg-secondary text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline w-auto"
+          >
+            Login
+          </button>
+        </div>
       </form>
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      <div>{error && <p>{error}</p>}</div>
     </SplitLayout>
   );
 }

@@ -3,14 +3,17 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm install
+        - npm ci
     build:
       commands:
-        - npm ci
+        - env | grep -e DATABUSE_URL >> .env.production
+        - env | grep -e NEXTAUTH_ >> .env.production
         - npm run build
   artifacts:
-    baseDirectory: .next # Specify where the build output is located
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
     paths:
+      - node_modules/**/*
+      - .next/cache/**/*
