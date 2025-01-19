@@ -33,8 +33,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
           return {
             id: user.id,
-            name: user.username ?? user.firstName,
-            email: user.email,
+            name: user.username,
+            email: user.email || null,
           };
         } catch (error) {
           throw new Error(error);
@@ -46,4 +46,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     signIn: '/login',
     signOut: '/login',
   },
+  trustHost: true,
 });
