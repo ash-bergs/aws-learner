@@ -12,6 +12,7 @@ frontend:
         - env | grep -e NEXTAUTH_ >> .env.production
         - echo "Contents of .env.production:"
         - cat .env.production
+        - npx prisma generate
         - npm run build
   artifacts:
     baseDirectory: .next
