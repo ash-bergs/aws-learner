@@ -27,6 +27,6 @@ export async function doCredentialLogin(formData: FormData) {
     });
 }
 
-export async function doLogout() {
+export async function logout() {
   await signOut({ redirectTo: '/login' });
 }

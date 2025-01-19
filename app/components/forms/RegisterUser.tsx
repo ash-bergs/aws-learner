@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import SplitLayout from '../layout/SplitLayout';
 
 const RegisterUserForm = () => {
   const [email, setEmail] = useState('');
@@ -16,9 +17,6 @@ const RegisterUserForm = () => {
   const handleRegister = async (event: FormEvent) => {
     event.preventDefault();
 
-    // registration works differently, we need to hit an api route:
-    // /api/auth/register
-    // future: we'll want to handle `signIn` here? Just auto-sign them in?
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: {
@@ -34,30 +32,59 @@ const RegisterUserForm = () => {
       }),
     });
 
-    console.log('RES: ', res);
-
     if (res?.ok) {
-      router.push('/dashboard'); // Redirect to the protected page
+      router.push('/login');
     } else {
       setError('Please provide valid credentials');
     }
   };
 
   return (
-    <div
-      className="text-text flex flex-col items-center justify-center"
-      style={{ border: '4px solid red', height: '100%', width: '100%' }}
-    >
-      <h2>Sign Up</h2>
-      <form onSubmit={handleRegister}>
+    <SplitLayout imageSrc="/sample-splash.jpg">
+      <h2 className="text-3xl text-text font-bold mb-4">Sign Up</h2>
+      <form
+        className="w-full max-w-md flex flex-col gap-2"
+        onSubmit={handleRegister}
+      >
         <div className="mb-4">
           <label
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-gray-400 text-sm font-bold mb-2"
+            htmlFor="username"
+          >
+            Username
+          </label>
+          <input
+            required
+            type="username"
+            id="username"
+            onChange={(e) => setUsername(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-400 text-sm font-bold mb-2"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <input
+            required
+            type="password"
+            id="password"
+            onChange={(e) => setPassword(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-400 text-sm font-bold mb-2"
             htmlFor="email"
           >
             Email
           </label>
           <input
+            required
             type="email"
             id="email"
             placeholder="email@email.com"
@@ -65,11 +92,10 @@ const RegisterUserForm = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-
         <div className="mb-4">
           <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
+            className="block text-gray-400 text-sm font-bold mb-2"
+            htmlFor="firstName"
           >
             First Name
           </label>
@@ -80,11 +106,10 @@ const RegisterUserForm = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-
         <div className="mb-4">
           <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
+            className="block text-gray-400 text-sm font-bold mb-2"
+            htmlFor="lastName"
           >
             Last Name
           </label>
@@ -95,46 +120,23 @@ const RegisterUserForm = () => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="password"
-          >
-            Username
-          </label>
-          <input
-            type="username"
-            id="username"
-            onChange={(e) => setUsername(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-
+        <p className="text-sm">
+          Already have an account?{' '}
+          <a href="/register" className="text-blue-500">
+            Login instead
+          </a>
+        </p>
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
         >
           Register
         </button>
       </form>
-      <div>{error && <p>{error}</p>}</div>
-    </div>
+      <div role="alert" aria-live="polite">
+        {error && <p>{error}</p>}
+      </div>
+    </SplitLayout>
   );
 };
 
