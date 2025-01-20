@@ -29,7 +29,7 @@ const MeatballMenu = ({
     <div className={`relative ${className}`}>
       <button
         onClick={toggleMenu}
-        className="p-2 rounded-full hover:bg-gray-100 focus:outline focus:outline-primary"
+        className="p-2 rounded-full hover:bg-gray-100 focus:outline focus:outline-highlight"
         aria-haspopup="true"
         aria-expanded={menuOpen}
       >

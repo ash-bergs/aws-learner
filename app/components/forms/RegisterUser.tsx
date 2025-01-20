@@ -43,7 +43,7 @@ const RegisterUserForm = () => {
     <SplitLayout imageSrc="/sample-splash.jpg">
       <h2 className="text-3xl text-text font-bold mb-4">Sign Up</h2>
       <form
-        className="w-full max-w-md flex flex-col gap-2"
+        className="w-full max-w-md flex flex-col gap-2 px-8"
         onSubmit={handleRegister}
       >
         <div className="mb-4">
@@ -57,6 +57,7 @@ const RegisterUserForm = () => {
             required
             type="username"
             id="username"
+            autoComplete="username"
             onChange={(e) => setUsername(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
@@ -87,6 +88,7 @@ const RegisterUserForm = () => {
             required
             type="email"
             id="email"
+            autoComplete="email"
             placeholder="email@email.com"
             onChange={(e) => setEmail(e.target.value)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -122,7 +124,7 @@ const RegisterUserForm = () => {
         </div>
         <p className="text-sm">
           Already have an account?{' '}
-          <a href="/register" className="text-blue-500">
+          <a href="/login" className="text-blue-500">
             Login instead
           </a>
         </p>
