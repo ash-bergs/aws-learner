@@ -9,7 +9,6 @@ import { auth } from '@/auth';
 
 export default async function DashboardPage() {
   const session = await auth();
-  console.log('session', session);
   //TODO: configure user to use the prisma User type and get the user's first name if it exists
   const username = session?.user?.name || session?.user?.email || 'User';
   return (
