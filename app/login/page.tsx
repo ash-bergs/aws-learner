@@ -32,13 +32,13 @@ export default function LoginPage() {
     <SplitLayout imageSrc="/sample-splash.jpg">
       <h2 className="text-3xl font-bold mb-4">Login</h2>
       <form
-        className="w-full max-w-md flex flex-col gap-6"
+        className="w-full max-w-md flex flex-col gap-6 px-8"
         onSubmit={handleLogin}
       >
         <div>
           <label
             className="block text-text text-md font-bold mb-2"
-            htmlFor="email"
+            htmlFor="username"
           >
             Username
           </label>
@@ -46,6 +46,7 @@ export default function LoginPage() {
             type="text"
             name="username"
             id="username"
+            autoComplete="username"
             placeholder="username"
             className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight"
           />

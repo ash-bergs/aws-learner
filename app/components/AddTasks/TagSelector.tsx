@@ -13,6 +13,8 @@ const TagSelector = ({
 
   return (
     <select
+      name="tag"
+      id="tag"
       className="bg-gray-100 focus:outline focus:outline-highlight text-text rounded-full"
       value={selectedTag}
       onChange={(e) => onTagSelect(e.target.value)}

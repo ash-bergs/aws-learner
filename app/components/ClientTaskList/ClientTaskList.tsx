@@ -34,7 +34,6 @@ import TagItem from './TagItem';
  *
  * @returns {React.ReactElement} A JSX element representing the task list.
  */
-
 const ClientTaskList = (): React.ReactElement => {
   const { tasks, reorderTask, setCurrentTagId, currentTagId } = useTaskStore();
   const { isLinking } = useNoteStore();

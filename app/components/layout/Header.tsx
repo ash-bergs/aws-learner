@@ -1,7 +1,6 @@
 import LogoutButton from './LogoutButton';
 import ThemeSwitcher from './ThemeSwitcher';
 import { auth } from '@/auth';
-import type { JSX } from 'react';
 
 /**
  * The top-level header component, which displays the app title and selectors
@@ -12,9 +11,8 @@ import type { JSX } from 'react';
  * that allows the user to select between different views: "Tasks & Notes"
  * (the default), "Tasks Only", and "Notes Only".
  *
- * @returns {JSX.Element} The JSX element representing the header.
  */
-async function Header(): Promise<JSX.Element> {
+async function Header() {
   const session = await auth();
   return (
     <header className="sticky top-0 bg-primary p-4 px-6 shadow-md flex justify-between items-center z-10">

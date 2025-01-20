@@ -23,9 +23,11 @@ const ThemeSwitcher = (): JSX.Element => {
 
   return (
     <select
+      name="theme selector"
+      id="theme-selector"
       value={theme}
       onChange={handleThemeChange}
-      className="text-gray-900 p-2 rounded"
+      className="text-gray-900 p-2 rounded focus:outline focus:outline-highlight"
     >
       {AVAILABLE_THEMES.map((theme) => (
         <option key={theme} value={theme}>

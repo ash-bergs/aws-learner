@@ -15,7 +15,7 @@ import React, { useEffect, useState, type JSX } from 'react';
  *
  * @returns {JSX.Element} A JSX element containing the greeting message.
  */
-const DashboardGreeting = (): JSX.Element => {
+const DashboardGreeting = ({ username }: { username: string }): JSX.Element => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const DashboardGreeting = (): JSX.Element => {
   return (
     <div>
       <p className="text-2xl">
-        {message} <span className="font-bold">Ash</span>
+        {message} <span className="font-bold">{username}</span>
       </p>
     </div>
   );

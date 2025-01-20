@@ -79,8 +79,11 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
         <div className="flex items-center space-x-4">
           <input
             type="checkbox"
+            id={`task-${task.id}`}
+            name={`task-${task.id}`}
+            aria-label="Mark task as complete"
             checked={checked}
-            className="form-checkbox h-5 w-5 rounded focus:outline focus:outline-primary"
+            className="form-checkbox h-5 w-5 rounded focus:outline focus:outline-highlight"
             onChange={handleCheckboxChange}
           />
           <span
