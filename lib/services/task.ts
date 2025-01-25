@@ -1,4 +1,5 @@
 import { db, Task, USER_ID } from '../db';
+// import { prisma } from '../prisma';
 
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
@@ -9,6 +10,10 @@ export class TaskService {
   async getAllTasks() {
     // return all tasks from the database
     return await db.tasks.orderBy('position').toArray();
+    //FIXME: Error: PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `unknown`).
+    // return (await prisma.task.findMany()).sort(
+    //   (a, b) => a.position - b.position
+    // );
   }
   async getTasksByIds(taskIds: string[]) {
     const tasks = await db.tasks.bulkGet(taskIds);

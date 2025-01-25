@@ -12,22 +12,27 @@ const TagSelector = ({
   const { tags } = useTagStore();
 
   return (
-    <select
-      name="tag"
-      id="tag"
-      className="bg-gray-100 focus:outline focus:outline-highlight text-text rounded-full"
-      value={selectedTag}
-      onChange={(e) => onTagSelect(e.target.value)}
-    >
-      <option value="" disabled>
-        Tag
-      </option>
-      {tags.map((tag) => (
-        <option key={tag.id} value={tag.name}>
-          {tag.name}
+    <>
+      <label htmlFor="tag" className="sr-only">
+        Select a tag for the task
+      </label>
+      <select
+        name="select task tag"
+        id="tag"
+        className="bg-gray-100 focus:outline focus:outline-highlight text-text rounded-full"
+        value={selectedTag}
+        onChange={(e) => onTagSelect(e.target.value)}
+      >
+        <option value="" disabled>
+          Tag
         </option>
-      ))}
-    </select>
+        {tags.map((tag) => (
+          <option key={tag.id} value={tag.name}>
+            {tag.name}
+          </option>
+        ))}
+      </select>
+    </>
   );
 };
 

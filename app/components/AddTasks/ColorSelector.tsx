@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { COLORS } from '@/utils/constants';
 // we'll need to get the current theme from the app store
 //import { useStore } from '@/lib/store/app';
