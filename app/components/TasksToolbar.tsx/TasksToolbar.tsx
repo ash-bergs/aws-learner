@@ -22,10 +22,6 @@ const TasksToolbar = () => {
     setCurrentTagId(tagId);
   };
 
-  // make container a grid with two columns
-  // the input grows to fill as much space as it can
-  // the buttons fill the remaining space
-  // is a grid with one columns and 2 rows at small screen sizes
   return (
     <div className="p-2 rounded shadow bg-utility flex flex-col gap-2">
       <div>
