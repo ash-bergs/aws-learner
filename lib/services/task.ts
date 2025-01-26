@@ -90,4 +90,7 @@ export class TaskService {
   updateTaskPosition = async (id: string, newPosition: number) => {
     await db.tasks.update(id, { position: newPosition });
   };
+  deleteByIds = async (taskIds: string[]) => {
+    await db.tasks.bulkDelete(taskIds);
+  };
 }

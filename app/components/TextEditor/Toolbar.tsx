@@ -1,6 +1,6 @@
 import { Editor } from '@tiptap/react';
 
-import type { JSX } from "react";
+import type { JSX } from 'react';
 
 /**
  * A toolbar component for the TextEditor.
@@ -16,11 +16,11 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
   if (!editor) return null;
 
   return (
-    <div className="flex space-x-2 bg-gray-100 p-2 rounded-t shadow">
+    <div className="flex space-x-2 bg-utility p-2 rounded-t shadow">
       {/* Bold Button */}
       <button
-        className={`px-2 py-1 border rounded ${
-          editor.isActive('bold') ? 'bg-primary text-text' : ''
+        className={`px-2 py-1 bg-primary rounded text-white ${
+          editor.isActive('bold') ? 'bg-secondary' : ''
         }`}
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -30,8 +30,8 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Italic Button */}
       <button
-        className={`px-2 py-1 border rounded ${
-          editor.isActive('italic') ? 'bg-primary text-text' : ''
+        className={`px-2 py-1 border rounded bg-primary text-white ${
+          editor.isActive('italic') ? 'bg-secondary' : ''
         }`}
         onClick={() => editor.chain().focus().toggleItalic().run()}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
@@ -41,7 +41,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Undo */}
       <button
-        className="px-2 py-1 border rounded"
+        className="px-2 py-1 border rounded bg-primary text-white"
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
       >
@@ -50,7 +50,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Redo */}
       <button
-        className="px-2 py-1 border rounded"
+        className="px-2 py-1 border rounded bg-primary text-white"
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
       >

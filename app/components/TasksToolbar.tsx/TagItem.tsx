@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tag } from '@/lib/db';
+import { COLORS } from '@/utils/constants';
 
 type TagSortingProps = {
   currentTagId: string | null;
@@ -17,15 +18,18 @@ type TagSortingProps = {
  * @param {TagSortingProps} props - The props for the component.
  */
 const TagItem = ({ tag, currentTagId, handleTagChange }: TagSortingProps) => {
+  const bgColor = tag.color
+    ? COLORS.find((color) => color.name === tag.color)?.class
+    : 'bg-note';
   return (
     <button
       key={tag.id}
       className={`
-                px-2 py-2 text-sm font-bold rounded rounded-full bg-primary hover:bg-secondary text-white ${
-                  currentTagId === tag.id
-                    ? 'border-2 border-highlight bg-secondary'
-                    : 'border-2 border-transparent'
-                }`}
+                px-2 py-2 text-sm font-bold rounded rounded-full ${bgColor} text-secondary ${
+        currentTagId === tag.id
+          ? 'border-2 border-highlight bg-secondary text-white'
+          : 'border-2 border-transparent'
+      }`}
       onClick={() => handleTagChange(tag.id)}
     >
       {tag.name}

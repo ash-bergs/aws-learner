@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Note } from '@/lib/db';
 import { noteService } from '@/lib/services';
+import { useSelectedTaskStore } from './selected.task';
 
 interface NoteStore {
   notes: Note[];
   linkingNoteId: string | null;
-  selectedTaskIds: string[];
   isLinking: boolean;
   // CRUD
   fetchNotes: () => Promise<void>;
@@ -17,7 +17,6 @@ interface NoteStore {
   cancelLinking: () => void;
   startLinking: (noteId: string) => void;
   confirmLinking: () => void;
-  setSelectedTaskIds: (taskId: string) => void;
 }
 
 export const useNoteStore = create<NoteStore>()(
@@ -25,7 +24,6 @@ export const useNoteStore = create<NoteStore>()(
     (set, get) => ({
       notes: [],
       linkingNoteId: null, // the id of a note being currently linked to Tasks
-      selectedTaskIds: [],
       isLinking: false, // whether the user is currently linking a note to tasks
 
       fetchNotes: async () => {
@@ -100,14 +98,10 @@ export const useNoteStore = create<NoteStore>()(
       },
       /* ------------------------------ LINKING LOGIC ----------------------------- */
       startLinking: (noteId: string) => {
-        set({ linkingNoteId: noteId, selectedTaskIds: [], isLinking: true });
-      },
-      setSelectedTaskIds: (taskId: string) => {
-        set((state) => ({
-          selectedTaskIds: state.selectedTaskIds.includes(taskId)
-            ? state.selectedTaskIds.filter((id) => id !== taskId)
-            : [...state.selectedTaskIds, taskId],
-        }));
+        const { clearSelectedTaskIds } = useSelectedTaskStore.getState();
+        // clear selected tasks and set linkingNoteId
+        clearSelectedTaskIds();
+        set({ linkingNoteId: noteId, isLinking: true });
       },
       /**
        * Confirms the linking process.
@@ -118,14 +112,18 @@ export const useNoteStore = create<NoteStore>()(
        * cancel the linking process.
        */
       confirmLinking: async () => {
-        const { linkingNoteId, selectedTaskIds, cancelLinking } = get();
+        const { selectedTaskIds } = useSelectedTaskStore.getState();
+        const { linkingNoteId, cancelLinking } = get();
         if (linkingNoteId && selectedTaskIds.length) {
           await noteService.addNoteToTask(linkingNoteId, selectedTaskIds);
           cancelLinking();
         }
       },
       cancelLinking: () => {
-        set({ linkingNoteId: null, selectedTaskIds: [], isLinking: false });
+        const { clearSelectedTaskIds } = useSelectedTaskStore.getState();
+        // clear selected tasks and set linkingNoteId
+        clearSelectedTaskIds();
+        set({ linkingNoteId: null, isLinking: false });
       },
     }),
     {

@@ -5,14 +5,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #0d1b2a;
-  --foreground: #1b263b;
-  --color-primary: #3c51cb;
-  --color-secondary: #7b42dd;
-  --color-text: #c5cbe3;
-  --color-note: #ccb6f1;
-  --color-highlight: #9c27b0;
-  --color-modal: #3c51cb;
+  --background: #f4f7f5;
+  --foreground: #f4f7f5;
+  --color-primary: #21a0a0;
+  --color-secondary: #046865;
+  --color-text: #074846;
+  --color-note: #e9f7ee;
+  --color-highlight: #41d070;
+  --color-modal: #e9f7ee;
+  --color-utility: #d1f0dc;
 }
 
 .Tidepool {
@@ -24,6 +25,7 @@
   --color-note: #e9f7ee;
   --color-highlight: #41d070;
   --color-modal: #e9f7ee;
+  --color-utility: #d1f0dc;
 }
 
 .Orchid {
@@ -35,6 +37,7 @@
   --color-note: #ecd5ec;
   --color-highlight: #e766cd;
   --color-modal: #61195c;
+  --color-utility: #f5ccf2;
 }
 
 .Jewel {
@@ -46,6 +49,7 @@
   --color-note: #e0f7fa;
   --color-highlight: #ff376c;
   --color-modal: #f8f4ff;
+  --color-utility: #ede5fa;
 }
 
 .DeepSpace {
@@ -57,6 +61,7 @@
   --color-note: #ccb6f1;
   --color-highlight: #9c27b0;
   --color-modal: #3c51cb;
+  --color-utility: #c3ccef;
 }
 
 @media (prefers-color-scheme: dark) {
