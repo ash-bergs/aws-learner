@@ -39,23 +39,12 @@ const AddTasks = () => {
     inputRef.current?.focus();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
-    // Stop "Enter" key event from bubbling to unintended elements
-    if (e.key === 'Enter') {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'BUTTON' || target.closest('.color-selector')) {
-        e.preventDefault();
-      }
-    }
-  };
-
   return (
     <div>
       <form
         aria-label="Add Task Form"
         className="flex flex-col gap-2"
         onSubmit={handleFormSubmit}
-        onKeyDown={handleKeyDown}
       >
         <div className="flex items-center border rounded-full px-4 py-2 bg-gray-100 gap-1">
           <label htmlFor="task-input" className="sr-only">
