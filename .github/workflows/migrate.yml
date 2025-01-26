@@ -1,4 +1,4 @@
-name: Deploy and Migrate Database
+name: Deploy, Test, and Migrate Database
 
 on:
   push:
@@ -7,9 +7,33 @@ on:
   workflow_dispatch: # Allow manual execution
 
 jobs:
+  build-and-test:
+    name: Build and Test Application
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Step 3: Install Dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run Tests
+      - name: Run Jest Tests
+        run: npm test
+
   migrate-database:
     name: Migrate Database on RDS
     runs-on: ubuntu-latest
+    needs: build-and-test # This ensures the database migration only runs if the tests pass
 
     steps:
       # Step 1: Checkout repository
@@ -30,4 +54,4 @@ jobs:
       - name: Apply Prisma Migrations
         run: npx prisma migrate deploy
         env:
-          MY_APP_DATABASE_URL: ${{ secrets.MY_APP_DATABASE_URL }} # Use the RDS connection string from GitHub Secrets
+          MY_APP_DATABASE_URL: ${{ secrets.MY_APP_DATABASE_URL }}

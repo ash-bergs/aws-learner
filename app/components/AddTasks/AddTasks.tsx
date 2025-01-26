@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTaskStore } from '@/lib/store/task';
-
-import ColorSelector from './ColorSelector';
 import TagSelector from './TagSelector';
 
 /**
@@ -19,11 +17,18 @@ const AddTasks = () => {
   const [taskText, setTaskText] = useState('');
   const [taskColor, setTaskColor] = useState('green');
   const [taskTag, setTaskTag] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTask = async () => {
+    if (!taskText.trim()) return;
     await addTask(taskText, taskColor, taskTag);
     setTaskText('');
-    document.getElementById('task')?.focus();
+    inputRef.current?.focus();
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleAddTask();
   };
 
   // TODO: why doesn't this reset task color?
@@ -31,45 +36,71 @@ const AddTasks = () => {
     setTaskText('');
     setTaskColor('green');
     setTaskTag('');
-    document.getElementById('task')?.focus();
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    // Stop "Enter" key event from bubbling to unintended elements
+    if (e.key === 'Enter') {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'BUTTON' || target.closest('.color-selector')) {
+        e.preventDefault();
+      }
+    }
   };
 
   return (
-    <>
-      <div className="flex items-center border rounded-full px-4 py-2 bg-gray-100 gap-1">
-        <input
-          id="task"
-          type="text"
-          value={taskText}
-          onChange={(e) => setTaskText(e.target.value)}
-          className="flex-grow bg-transparent outline-none placeholder-gray-500"
-          placeholder="Describe your task..."
-        />
+    <div>
+      <form
+        aria-label="Add Task Form"
+        className="flex flex-col gap-2"
+        onSubmit={handleFormSubmit}
+        onKeyDown={handleKeyDown}
+      >
+        <div className="flex items-center border rounded-full px-4 py-2 bg-gray-100 gap-1">
+          <label htmlFor="task-input" className="sr-only">
+            Task Description
+          </label>
+          <input
+            ref={inputRef}
+            id="task-input"
+            type="text"
+            value={taskText}
+            onChange={(e) => setTaskText(e.target.value)}
+            className="flex-grow rounded bg-transparent focus:outline focus:outline-highlight placeholder-gray-500"
+            placeholder="Describe your task..."
+          />
 
-        <ColorSelector onColorSelect={(color: string) => setTaskColor(color)} />
-        <TagSelector
-          selectedTag={taskTag}
-          onTagSelect={(tag: string) => setTaskTag(tag)}
-        />
-      </div>
-      <div className="flex gap-2">
-        <button
-          className="w-full text-center font-bold py-2 px-4 rounded-md
+          {/* 
+          TODO: I want to move away from assigning colors to tasks this way
+          Instead we'll give tags a color and color the task based on the tag
+          <ColorSelector
+            onColorSelect={(color: string) => setTaskColor(color)}
+          /> */}
+          <TagSelector
+            selectedTag={taskTag}
+            onTagSelect={(tag: string) => setTaskTag(tag)}
+          />
+        </div>
+        <div className="flex gap-2">
+          <button
+            className="w-full text-center font-bold py-2 px-4 rounded-md
         bg-primary hover:bg-secondary text-white"
-          onClick={handleAddTask}
-        >
-          Add Task
-        </button>
-        {/** TODO: create an alternate color for cancel/clear buttons */}
-        <button
-          className="w-full text-center font-bold py-2 px-4 rounded-md
+            type="submit"
+          >
+            Add Task
+          </button>
+          {/** TODO: create an alternate color for cancel/clear buttons */}
+          <button
+            className="w-full text-center font-bold py-2 px-4 rounded-md
         bg-highlight hover:bg-secondary text-white"
-          onClick={handleClearTaskInput}
-        >
-          Clear
-        </button>
-      </div>
-    </>
+            onClick={handleClearTaskInput}
+          >
+            Clear
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
