@@ -44,7 +44,7 @@ const ColorSelector = ({
   return (
     <div className="relative flex items-center" ref={dropdownRef}>
       <button
-        className={`w-6 h-6 rounded-full border ${selectedColor}`}
+        className={`w-6 h-6 rounded-full border focus:outline focus:outline-highlight ${selectedColor}`}
         ref={dropdownButtonRef}
         aria-haspopup="listbox"
         aria-expanded={dropdownOpen}

@@ -31,7 +31,7 @@ export default async function DashboardPage() {
       px-4 
       "
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           <ClientTaskList />
           <AddTasks />
         </div>
