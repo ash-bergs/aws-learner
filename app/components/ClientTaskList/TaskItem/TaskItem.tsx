@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
+import { useSelectedTaskStore } from '@/lib/store/selected.task';
 import MeatballMenu from '../../MeatballMenu';
 import { COLORS } from '@/utils/constants';
 import DueDateModal from './DueDateModal';
@@ -18,9 +19,10 @@ import DueDateModal from './DueDateModal';
 const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
-  const { deleteTask, toggleComplete } = useTaskStore();
+  const { deleteTask } = useTaskStore();
+  const { selectedTaskIds, setSelectedTaskIds } = useSelectedTaskStore();
 
-  const { setSelectedTaskIds, selectedTaskIds, isLinking } = useNoteStore();
+  const { isLinking } = useNoteStore();
 
   // get the background color for the task from the color col
   const bgColor = task.color
@@ -28,10 +30,9 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
     : 'bg-note';
 
   // TODO - better classes - clsx?
-  const borderColor =
-    isLinking && selectedTaskIds.includes(task.id)
-      ? 'border-2 border-highlight'
-      : '';
+  const borderColor = selectedTaskIds.includes(task.id)
+    ? 'border-2 border-highlight'
+    : '';
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -55,21 +56,12 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
     },
   ];
 
-  //TODO: clean up this logic - extract?
-  // switcher between using the checkbox during linking
-  // if isLinking is true, then the input action should add the taskId to the selectedTaskIds array
-  // if isLinking is false, then it should toggleComplete
   const handleCheckboxChange = () => {
-    if (isLinking) {
-      setSelectedTaskIds(task.id);
-    } else {
-      toggleComplete(task.id);
-    }
+    if (isLinking) return setSelectedTaskIds(task.id);
+    setSelectedTaskIds(task.id);
   };
 
-  const checked = isLinking
-    ? selectedTaskIds.includes(task.id)
-    : task.completed;
+  const checked = selectedTaskIds.includes(task.id);
 
   return (
     <div

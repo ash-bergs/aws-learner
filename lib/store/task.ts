@@ -2,24 +2,24 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Task, USER_ID } from '@/lib/db';
 import { taskService, tagsService } from '@/lib/services';
+import { useSelectedTaskStore } from './selected.task';
 import { db } from '@/lib/db';
-
-// maybe the store is the best place to handle getting the tags associated with a task
-// in our initial fetch we can also get the taskTags and tags, and pre-process the Tasks, adding the tags
-// this still seems like it will be quite expensive to do on every fetch - maybe a tagId foreign key would be better?
 
 interface TaskStore {
   tasks: Task[];
-  currentTagId: string | null;
-  setCurrentTagId: (tagId: string | null) => void;
   fetchTasks: () => Promise<void>;
   addTask: (task: string, color?: string, taskTag?: string) => void;
   deleteTask: (id: string) => void;
+  deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
   reorderTask: (activeId: string, overId: string) => void;
+  selectAllTasks: () => void;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
   //TODO:
   // updateTask: (updatedTask: Task) => void;
+  // Tag management
+  currentTagId: string | null;
+  setCurrentTagId: (tagId: string | null) => void;
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -150,13 +150,40 @@ export const useTaskStore = create<TaskStore>()(
           ),
         });
       },
-
       updateTaskDueDate: async (id, dueDate) => {
         await taskService.updateTaskDueDate(id, dueDate);
         set((state) => ({
           tasks: state.tasks.map((task) =>
             task.id === id ? { ...task, dueDate } : task
           ),
+        }));
+      },
+      selectAllTasks: () => {
+        const { selectedTaskIds, setSelectedTaskIds, clearSelectedTaskIds } =
+          useSelectedTaskStore.getState();
+        const { tasks } = get();
+
+        const allTaskIds = tasks.map((task) => task.id);
+
+        if (selectedTaskIds.length === allTaskIds.length) {
+          clearSelectedTaskIds();
+        } else {
+          allTaskIds.forEach((id) => {
+            if (!selectedTaskIds.includes(id)) {
+              setSelectedTaskIds(id);
+            }
+          });
+        }
+      },
+      deleteSelectedTasks: async () => {
+        const { selectedTaskIds } = useSelectedTaskStore.getState();
+        await taskService.deleteByIds(selectedTaskIds);
+        set(() => ({
+          // remove the selected tasks from the store
+          tasks: get().tasks.filter(
+            (task) => !selectedTaskIds.includes(task.id)
+          ),
+          selectedTaskIds: [],
         }));
       },
     }),

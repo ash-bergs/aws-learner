@@ -15,6 +15,7 @@ export default {
         // custom set up
         primary: 'var(--color-primary)',
         secondary: 'var(--color-secondary)',
+        utility: 'var(--color-utility)',
         highlight: 'var(--color-highlight)',
         text: 'var(--color-text)',
         note: 'var(--color-note)', // for the default note bg color
