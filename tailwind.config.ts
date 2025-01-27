@@ -18,6 +18,7 @@ export default {
         utility: 'var(--color-utility)',
         highlight: 'var(--color-highlight)',
         text: 'var(--color-text)',
+        textSecondary: 'var(--color-text-secondary)',
         note: 'var(--color-note)', // for the default note bg color
         modal: 'var(--color-modal)',
       },

@@ -59,6 +59,7 @@ jest.mock('@/lib/store/task', () => ({
 jest.mock('@/lib/store/selected.task', () => ({
   useSelectedTaskStore: jest.fn(() => ({
     clearSelectedTaskIds: jest.fn(),
+    selectedTaskIds: [],
   })),
 }));
 

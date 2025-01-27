@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { Task } from '@/lib/db';
+import { COLORS } from '@/utils/constants';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
 import { useSelectedTaskStore } from '@/lib/store/selected.task';
-import MeatballMenu from '../../MeatballMenu';
-import { COLORS } from '@/utils/constants';
 import DueDateModal from './DueDateModal';
+import MeatballMenu from '../../MeatballMenu';
+import ToggleCompletionButton from './ToggleCompletionButton';
 
 /**
  * A component to render a single task.
@@ -19,7 +20,7 @@ import DueDateModal from './DueDateModal';
 const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
-  const { deleteTask } = useTaskStore();
+  const { deleteTask, toggleComplete } = useTaskStore();
   const { selectedTaskIds, setSelectedTaskIds } = useSelectedTaskStore();
 
   const { isLinking } = useNoteStore();
@@ -65,7 +66,7 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
 
   return (
     <div
-      className={`flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-sm hover:shadow-md transition-shadow`}
+      className={`relative flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-sm hover:shadow-md transition-shadow`}
     >
       <div>
         <div className="flex items-center space-x-4">
@@ -79,7 +80,9 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
             onChange={handleCheckboxChange}
           />
           <span
-            className={`text-gray-800 ${task.completed ? 'line-through' : ''}`}
+            className={`text-gray-800 ${
+              task.completed ? 'line-through italic' : ''
+            }`}
           >
             {task.text}
           </span>
@@ -90,14 +93,20 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
           </span>
         )}
       </div>
-      <MeatballMenu
-        menuOpen={menuOpen}
-        toggleMenu={(e: React.MouseEvent) => {
-          e.stopPropagation();
-          toggleMenu();
-        }}
-        items={menuItems}
-      />
+      <div className="flex items-center">
+        <ToggleCompletionButton
+          isCompleted={task.completed}
+          onToggle={() => toggleComplete(task.id)}
+        />
+        <MeatballMenu
+          menuOpen={menuOpen}
+          toggleMenu={(e: React.MouseEvent) => {
+            e.stopPropagation();
+            toggleMenu();
+          }}
+          items={menuItems}
+        />
+      </div>
       <DueDateModal
         task={task}
         isDueDateModalOpen={isDueDateModalOpen}

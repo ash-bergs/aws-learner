@@ -30,7 +30,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Italic Button */}
       <button
-        className={`px-2 py-1 border rounded bg-primary text-white ${
+        className={`px-2 py-1 rounded bg-primary text-white ${
           editor.isActive('italic') ? 'bg-secondary' : ''
         }`}
         onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -41,7 +41,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Undo */}
       <button
-        className="px-2 py-1 border rounded bg-primary text-white"
+        className="px-2 py-1 rounded bg-primary text-white"
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
       >
@@ -50,7 +50,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Redo */}
       <button
-        className="px-2 py-1 border rounded bg-primary text-white"
+        className="px-2 py-1 rounded bg-primary text-white"
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
       >
