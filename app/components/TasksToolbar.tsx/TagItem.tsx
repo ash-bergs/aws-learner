@@ -25,9 +25,9 @@ const TagItem = ({ tag, currentTagId, handleTagChange }: TagSortingProps) => {
     <button
       key={tag.id}
       className={`
-                px-2 py-2 text-sm font-bold rounded rounded-full ${bgColor} text-secondary ${
+                px-2 py-2 text-sm rounded rounded-full ${bgColor} text-textSecondary ${
         currentTagId === tag.id
-          ? 'border-2 border-highlight bg-secondary text-white'
+          ? 'border-2 border-highlight font-bold'
           : 'border-2 border-transparent'
       }`}
       onClick={() => handleTagChange(tag.id)}

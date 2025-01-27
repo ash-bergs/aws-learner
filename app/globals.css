@@ -14,6 +14,7 @@
   --color-highlight: #41d070;
   --color-modal: #e9f7ee;
   --color-utility: #d1f0dc;
+  --color-text-secondary: #055c59;
 }
 
 .Tidepool {
@@ -26,6 +27,7 @@
   --color-highlight: #41d070;
   --color-modal: #e9f7ee;
   --color-utility: #d1f0dc;
+  --color-text-secondary: #055c59;
 }
 
 .Orchid {
@@ -37,7 +39,8 @@
   --color-note: #ecd5ec;
   --color-highlight: #e766cd;
   --color-modal: #61195c;
-  --color-utility: #f5ccf2;
+  --color-utility: #422740;
+  --color-text-secondary: #42113e;
 }
 
 .Jewel {
@@ -50,6 +53,7 @@
   --color-highlight: #ff376c;
   --color-modal: #f8f4ff;
   --color-utility: #ede5fa;
+  --color-text-secondary: #300813;
 }
 
 .DeepSpace {
@@ -61,7 +65,8 @@
   --color-note: #ccb6f1;
   --color-highlight: #9c27b0;
   --color-modal: #3c51cb;
-  --color-utility: #c3ccef;
+  --color-utility: #53328e;
+  --color-text-secondary: #440c4e;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -8,7 +8,7 @@ import TagItem from './TagItem';
 const TasksToolbar = () => {
   const { selectAllTasks, deleteSelectedTasks, setCurrentTagId, currentTagId } =
     useTaskStore();
-  const { clearSelectedTaskIds } = useSelectedTaskStore();
+  const { selectedTaskIds, clearSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
   const { tags } = useTagStore();
 
@@ -25,7 +25,7 @@ const TasksToolbar = () => {
   return (
     <div className="p-2 rounded shadow bg-utility flex flex-col gap-2">
       <div>
-        <p className="text-sm italic text-secondary pb-2">Filter by Tag</p>
+        <p className="text-sm italic text-text pb-2">Filter by Tag</p>
         <div className="flex gap-1">
           {tags.map((tag) => (
             <TagItem
@@ -39,7 +39,7 @@ const TasksToolbar = () => {
       </div>
 
       <div>
-        <p className="text-sm italic text-secondary pb-2">Actions</p>
+        <p className="text-text text-sm italic text-secondary pb-2">Actions</p>
         <div>
           {/** Rounded search input - standin for now */}
           {/* <input
@@ -64,10 +64,19 @@ const TasksToolbar = () => {
         text-white p-2 text-sm
         "
               onClick={deleteSelectedTasks}
-              disabled={isLinking}
+              disabled={isLinking || !selectedTaskIds.length}
             >
               Delete Selected
             </button>
+            {/* <button
+              className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
+        text-white p-2 text-sm
+        "
+              onClick={deleteSelectedTasks}
+              disabled={isLinking || !selectedTaskIds.length}
+            >
+              Toggle Completed
+            </button> */}
           </div>
         </div>
       </div>
