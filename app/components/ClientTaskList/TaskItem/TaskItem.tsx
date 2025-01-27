@@ -80,7 +80,9 @@ const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
             onChange={handleCheckboxChange}
           />
           <span
-            className={`text-gray-800 ${task.completed ? 'line-through' : ''}`}
+            className={`text-gray-800 ${
+              task.completed ? 'line-through italic' : ''
+            }`}
           >
             {task.text}
           </span>
