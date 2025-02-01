@@ -1,0 +1,14 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:3000/dashboard", "http://localhost:3000/login"],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "preset": "lighthouse:recommended"
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
