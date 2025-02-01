@@ -46,5 +46,5 @@ jobs:
 
       - name: Save Lighthouse scores to database
         env:
-          DATABASE_URL: ${{ secrets.MY_APP_DATABASE_URL }}
+          MY_APP_DATABASE_URL: ${{ secrets.MY_APP_DATABASE_URL }}
         run: node scripts/save-lighthouse-scores.js
