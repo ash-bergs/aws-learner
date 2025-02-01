@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
@@ -39,4 +39,15 @@ model Task {
   position    Int
   userId      String
   dueDate     DateTime
+}
+
+// Lighthouse CI scores 
+model LighthouseScore {
+  id            String   @id @default(uuid())
+  url           String
+  performance   Float
+  accessibility Float
+  bestPractices Float
+  seo           Float
+  timestamp     DateTime @default(now())
 }

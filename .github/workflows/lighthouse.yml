@@ -1,0 +1,49 @@
+name: Lighthouse Tests
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Start Next.js server
+        run: npm start &
+        env:
+          PORT: 3000
+
+      - name: Wait for server to start
+        run: curl -s http://localhost:3000/login || exit 1
+        timeout-minutes: 1
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
+
+      - name: Run Lighthouse CI
+        run: lhci autorun --collect.settings.output='json'
+
+      - name: Install Prisma CLI
+        run: npm install @prisma/client
+
+      - name: Save Lighthouse scores to database
+        env:
+          DATABASE_URL: ${{ secrets.MY_APP_DATABASE_URL }}
+        run: node scripts/save-lighthouse-scores.js
