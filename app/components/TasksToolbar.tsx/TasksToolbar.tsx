@@ -39,7 +39,7 @@ const TasksToolbar = () => {
       </div>
 
       <div>
-        <p className="text-text text-sm italic text-secondary pb-2">Actions</p>
+        <p className="text-sm italic text-secondary pb-2">Actions</p>
         <div>
           {/** Rounded search input - standin for now */}
           {/* <input

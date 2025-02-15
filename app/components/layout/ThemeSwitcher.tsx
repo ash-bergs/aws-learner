@@ -23,7 +23,8 @@ const ThemeSwitcher = (): JSX.Element => {
 
   return (
     <select
-      name="theme selector"
+      name="theme"
+      aria-label="Theme Selector"
       id="theme-selector"
       value={theme}
       onChange={handleThemeChange}

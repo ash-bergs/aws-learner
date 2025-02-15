@@ -24,24 +24,45 @@ model User {
   settings  Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+   tasks     Task[]
+  tags      Tag[]
 }
-
-//TODO: Add Task, Notes, other tables 
 
 model Task {
   id          String   @id @default(uuid())
   text        String
   completed   Boolean  @default(false)
   completedBy String
-  color       String
+  color       String?
   dateAdded   DateTime @default(now())
   dateUpdated DateTime @updatedAt
-  position    Int
-  userId      String
+  position    Float?
+  userId      String?
   dueDate     DateTime
+  user        User?    @relation(fields: [userId], references: [id])
+  tags        Tag[]    @relation("TaskTags")
+  taskTags TaskTag[]
 }
 
-// Lighthouse CI scores 
+model Tag {
+  id       String   @id @default(uuid())
+  name     String
+  color    String?
+  userId   String?
+  user   User?   @relation(fields: [userId], references: [id])
+  tasks    Task[]   @relation("TaskTags")
+  taskTags TaskTag[]
+}
+
+model TaskTag {
+  taskId String
+  tagId  String
+  task   Task @relation(fields: [taskId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([taskId, tagId]) 
+}
+
 model LighthouseScore {
   id            String   @id @default(uuid())
   url           String
