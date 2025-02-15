@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x"]
@@ -24,24 +18,45 @@ model User {
   settings  Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tasks     Task[]
+  tags      Tag[]
 }
-
-//TODO: Add Task, Notes, other tables 
 
 model Task {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   text        String
-  completed   Boolean  @default(false)
+  completed   Boolean   @default(false)
   completedBy String
-  color       String
-  dateAdded   DateTime @default(now())
-  dateUpdated DateTime @updatedAt
-  position    Int
-  userId      String
+  color       String?
+  dateAdded   DateTime  @default(now())
+  dateUpdated DateTime  @updatedAt
+  position    Float?
+  userId      String?
   dueDate     DateTime
+  user        User?     @relation(fields: [userId], references: [id])
+  tags        Tag[]     @relation("TaskTags")
+  taskTags    TaskTag[]
 }
 
-// Lighthouse CI scores 
+model Tag {
+  id       String    @id @default(uuid())
+  name     String
+  color    String?
+  userId   String?
+  user     User?     @relation(fields: [userId], references: [id])
+  tasks    Task[]    @relation("TaskTags")
+  taskTags TaskTag[]
+}
+
+model TaskTag {
+  taskId String
+  tagId  String
+  task   Task   @relation(fields: [taskId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([taskId, tagId])
+}
+
 model LighthouseScore {
   id            String   @id @default(uuid())
   url           String

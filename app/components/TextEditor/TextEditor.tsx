@@ -1,11 +1,38 @@
 'use client';
 
 import { useEditor, EditorContent } from '@tiptap/react';
+import { Extension } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Toolbar from './Toolbar';
 import { useNoteStore } from '@/lib/store/note';
 
-const extensions = [StarterKit];
+const AccessibleEditor = Extension.create({
+  name: 'accessibleEditor',
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: ['editor'], // Trying to apply attributes to the root ProseMirror editor div
+        attributes: {
+          role: {
+            default: 'textbox',
+          },
+          'aria-label': {
+            default: 'Write your note here...',
+          },
+          'aria-multiline': {
+            default: 'true',
+          },
+          'aria-labelledby': {
+            default: 'editor-label',
+          },
+        },
+      },
+    ];
+  },
+});
+
+const extensions = [StarterKit, AccessibleEditor];
 /**
  * A basic text editor component using tiptap.
  *
@@ -32,10 +59,12 @@ const TextEditor = () => {
   return (
     <div className="rounded-md p4 mt-6">
       <Toolbar editor={editor} />
-      <EditorContent
-        className="bg-white border rounded-b p-2"
-        editor={editor}
-      />
+      <div className="border rounded-md p-2">
+        <label id="editor-label" className="sr-only">
+          Write your note here...
+        </label>
+        <EditorContent editor={editor} />
+      </div>
       <button
         className="w-full text-center font-bold py-2 px-4 mt-4 rounded-md
         bg-primary hover:bg-secondary text-white"

@@ -56,7 +56,7 @@ const AddTasks = () => {
             type="text"
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            className="flex-grow rounded bg-transparent focus:outline focus:outline-highlight placeholder-gray-500"
+            className="flex-grow rounded bg-transparent focus:outline focus:outline-highlight text-text-secondary"
             placeholder="Describe your task..."
           />
 
