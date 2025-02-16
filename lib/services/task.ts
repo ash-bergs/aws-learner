@@ -9,7 +9,6 @@ export class TaskService {
   async getAllTasks(userId: string) {
     try {
       const response = await fetch(`/api/tasks?userId=${userId}`);
-      console.log('🚀 response: ', response);
       if (!response.ok) throw new Error('Failed to fetch tasks');
       return await response.json();
     } catch (error) {

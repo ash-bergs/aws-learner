@@ -21,18 +21,17 @@ export async function GET(req: NextRequest) {
   const userId = searchParams.get('userId');
   const tagId = searchParams.get('tagId');
 
-  console.log('🚀 Incoming request to fetch tasks!');
-  console.log('🔍 Received userId:', userId);
-  console.log('🔍 Received tagId:', tagId);
+  // TODO: Since we're deploying in Amplify, build a small logger for nicely formatted logs
+  // And set up a custom error handler and configure Amplify to use it
+  // console.log('🚀 Incoming request to fetch tasks!');
+  // console.log('🔍 Received userId:', userId);
+  // console.log('🔍 Received tagId:', tagId);
 
   if (!userId) {
     console.error('❌ ERROR: Missing userId in request');
     return NextResponse.json({ error: 'UserId is required' }, { status: 400 });
   }
-
-  // get the user from the database
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  console.log('🔍 Found user:', user);
   if (!user) {
     console.error('❌ ERROR: User not found');
     return NextResponse.json({ error: 'User not found' }, { status: 404 });

@@ -45,8 +45,6 @@ export const useTaskStore = create<TaskStore>()(
             // fetch all user's tasks
             fetchedTasks = await taskService.getAllTasks(userId);
           }
-          console.log('~~~ IN THE STORE, FETCHED TASKS: ', fetchedTasks);
-          console.log('~~~ IN THE STORE, USER ID: ', userId);
 
           set({ tasks: fetchedTasks });
         } catch (error) {
