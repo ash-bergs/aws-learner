@@ -15,13 +15,12 @@ import TagSelector from './TagSelector';
 const AddTasks = () => {
   const { addTask } = useTaskStore();
   const [taskText, setTaskText] = useState('');
-  const [taskColor, setTaskColor] = useState('green');
   const [taskTag, setTaskTag] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTask = async () => {
     if (!taskText.trim()) return;
-    await addTask(taskText, taskColor, taskTag);
+    await addTask(taskText);
     setTaskText('');
     inputRef.current?.focus();
   };
@@ -30,11 +29,8 @@ const AddTasks = () => {
     e.preventDefault();
     handleAddTask();
   };
-
-  // TODO: why doesn't this reset task color?
   const handleClearTaskInput = () => {
     setTaskText('');
-    setTaskColor('green');
     setTaskTag('');
     inputRef.current?.focus();
   };
@@ -59,13 +55,6 @@ const AddTasks = () => {
             className="flex-grow rounded bg-transparent focus:outline focus:outline-highlight text-text-secondary"
             placeholder="Describe your task..."
           />
-
-          {/* 
-          TODO: I want to move away from assigning colors to tasks this way
-          Instead we'll give tags a color and color the task based on the tag
-          <ColorSelector
-            onColorSelect={(color: string) => setTaskColor(color)}
-          /> */}
           <TagSelector
             selectedTag={taskTag}
             onTagSelect={(tag: string) => setTaskTag(tag)}

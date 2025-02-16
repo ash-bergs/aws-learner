@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Task, USER_ID } from '@/lib/db';
-import { taskService, tagsService } from '@/lib/services';
+import { Task } from '@/lib/db';
+import { taskService } from '@/lib/services';
 import { useSelectedTaskStore } from './selected.task';
-import { db } from '@/lib/db';
+import { useStore } from './app';
 
 interface TaskStore {
   tasks: Task[];
   fetchTasks: () => Promise<void>;
-  addTask: (task: string, color?: string, taskTag?: string) => void;
+  addTask: (text: string) => void;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
@@ -28,136 +28,48 @@ export const useTaskStore = create<TaskStore>()(
       tasks: [],
       currentTagId: null,
       fetchTasks: async () => {
+        const userId = useStore.getState().userId;
+        if (!userId) return;
+
         try {
           const { currentTagId } = get();
-
-          let tasksToFetch: Task[];
+          let fetchedTasks: Task[];
 
           if (currentTagId) {
-            // TODO: Query the TaskTag join table to find task IDs associated with the currentTagId
-            // this is where we'll be using SQL queries when we have Prisma set up
-            // this is a band-aid for now
-            const taskTags = await db.taskTags
-              .where('tagId')
-              .equals(currentTagId)
-              .toArray();
-            const taskIds = taskTags.map((taskTag) => taskTag.taskId);
-            // Fetch tasks that match the task IDs
-            const tasks = await taskService.getTasksByIds(taskIds);
-            tasksToFetch = tasks.filter((task) => task !== undefined);
+            // fetch tasks by tag
+            fetchedTasks = await taskService.getAllTasksById(
+              userId,
+              currentTagId
+            );
           } else {
-            // If no tag is selected, fetch all tasks
-            tasksToFetch = await taskService.getAllTasks();
+            // fetch all user's tasks
+            fetchedTasks = await taskService.getAllTasks(userId);
           }
 
-          set({ tasks: tasksToFetch });
+          set({ tasks: fetchedTasks });
         } catch (error) {
           console.error('Failed to fetch tasks:', error);
         }
       },
+      addTask: async (text) => {
+        // TODO: add back in taskTag to args...
+        const userId = useStore.getState().userId;
+        if (!userId) return;
 
-      setCurrentTagId: (tagId) => {
-        set({ currentTagId: tagId });
-        // trigger a re-fetch of tasks when the currentTagId changes
-        // TODO: Zustand research, there's probably a better way to trigger this refresh, without explicitly calling it
-        useTaskStore.getState().fetchTasks();
-      },
-      addTask: async (text, color, taskTag) => {
-        const newTask = await taskService.addTask(text, color);
+        const newTask = await taskService.addTask(text, userId);
         if (!newTask) throw new Error('There was a problem adding the task');
-        //TODO: move this to the TagStore when the flow is complete
+
+        //TODO: restore this flow
         // if a tag has been selected, use the tagsService to add the tag
         // and update the taskTags table
-        if (taskTag && taskTag !== '') {
-          const newTag = await tagsService.createTag(USER_ID, taskTag);
-          await tagsService.linkTagToTask(newTag.id, newTask.id);
-        }
+        // if (taskTag && taskTag !== '') {
+        //   const newTag = await tagsService.createTag(USER_ID, taskTag);
+        //   await tagsService.linkTagToTask(newTag.id, newTask.id);
+        // }
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));
       },
-      toggleComplete: async (id) => {
-        await taskService.toggleComplete(id);
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === id ? { ...task, completed: !task.completed } : task
-          ),
-        }));
-      },
-      deleteTask: async (id) => {
-        await taskService.deleteTask(id);
-        // TODO: when deleting a task, delete it's entry in the taskTags table
-        // Refine this .... can Tasks have multiple tags?
-        const taskTags = await db.taskTags.where('taskId').equals(id).toArray();
-        if (taskTags.length > 0) {
-          for (const taskTag of taskTags) {
-            await tagsService.unlinkTagFromTask(taskTag.tagId, taskTag.taskId);
-          }
-        }
-        set((state) => ({
-          tasks: state.tasks.filter((task) => task.id !== id),
-        }));
-      },
-      // TODO: there's some bugginess with task ordering if we order while the list is filtered by tag
-      /**
-       * Reorder a task to the position of another task. This function will update
-       * the position of the task in the Dexie database and then update the store
-       * with the moved task.
-       *
-       * @param {string} activeId The id of the task being dragged.
-       * @param {string} overId The id of the task being hovered over.
-       * @returns {void}
-       */
-      reorderTask: async (activeId, overId) => {
-        const { tasks } = useTaskStore.getState(); // Get current state
-
-        // find index of task being dragged and task being hovered over
-        const activeIndex = tasks.findIndex((task) => task.id === activeId);
-        const overIndex = tasks.findIndex((task) => task.id === overId);
-
-        if (
-          activeIndex === -1 ||
-          overIndex === -1 ||
-          activeIndex === overIndex
-        ) {
-          return; // no op drag event
-        }
-
-        // reorder the array
-        const [movedTask] = tasks.splice(activeIndex, 1);
-        tasks.splice(overIndex, 0, movedTask);
-
-        // calculate the new position for moved task
-        const prevTask = tasks[overIndex - 1];
-        const nextTask = tasks[overIndex + 1];
-
-        let newPosition;
-
-        if (prevTask && nextTask) {
-          newPosition = (prevTask.position + nextTask.position) / 2;
-        } else if (prevTask) {
-          newPosition = prevTask.position + 1; // Place at the end
-        } else if (nextTask) {
-          newPosition = nextTask.position / 2; // place at the start
-        } else {
-          newPosition = 1; // fallback to place at start
-        }
-
-        await taskService.updateTaskPosition(activeId, newPosition);
-
-        set({
-          tasks: tasks.map((task) =>
-            task.id === activeId ? { ...task, position: newPosition } : task
-          ),
-        });
-      },
-      updateTaskDueDate: async (id, dueDate) => {
-        await taskService.updateTaskDueDate(id, dueDate);
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === id ? { ...task, dueDate } : task
-          ),
-        }));
-      },
+      // selectAllTasks shouldn't need to be updated with the migration to Prisma
       selectAllTasks: () => {
         const { selectedTaskIds, setSelectedTaskIds, clearSelectedTaskIds } =
           useSelectedTaskStore.getState();
@@ -175,9 +87,45 @@ export const useTaskStore = create<TaskStore>()(
           });
         }
       },
+      setCurrentTagId: (tagId) => {
+        set({ currentTagId: tagId });
+        // trigger a re-fetch of tasks when the currentTagId changes
+        // TODO: Zustand research, there's probably a better way to trigger this refresh, without explicitly calling it
+        useTaskStore.getState().fetchTasks();
+      },
+      toggleComplete: async (id) => {
+        // get the current completion status from the store
+        const { tasks } = get();
+        const task = tasks.find((task) => task.id === id);
+        if (!task) return;
+        const taskCompleted = task.completed || false;
+        await taskService.toggleComplete(id, !taskCompleted);
+
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === id ? { ...task, completed: !task.completed } : task
+          ),
+        }));
+      },
+      updateTaskDueDate: async (id, dueDate) => {
+        await taskService.updateTaskDueDate(id, dueDate);
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === id ? { ...task, dueDate } : task
+          ),
+        }));
+      },
+      deleteTask: async (id) => {
+        await taskService.deleteTask(id);
+        // TODO: when deleting a task, delete it's entry in the taskTags table
+        // Refine this .... can Tasks have multiple tags?
+        set((state) => ({
+          tasks: state.tasks.filter((task) => task.id !== id),
+        }));
+      },
       deleteSelectedTasks: async () => {
         const { selectedTaskIds } = useSelectedTaskStore.getState();
-        await taskService.deleteByIds(selectedTaskIds);
+        await taskService.deleteTasksByIds(selectedTaskIds);
         set(() => ({
           // remove the selected tasks from the store
           tasks: get().tasks.filter(
@@ -185,6 +133,63 @@ export const useTaskStore = create<TaskStore>()(
           ),
           selectedTaskIds: [],
         }));
+      },
+      // TODO: Migrate reordering to Prisma
+      // TODO: there's some bugginess with task ordering if we order while the list is filtered by tag
+      /**
+       * Reorder a task to the position of another task. This function will update
+       * the position of the task in the Dexie database and then update the store
+       * with the moved task.
+       *
+       * @param {string} activeId The id of the task being dragged.
+       * @param {string} overId The id of the task being hovered over.
+       * @returns {void}
+       */
+      reorderTask: async (activeId, overId) => {
+        const { tasks } = useTaskStore.getState(); // Get current state
+
+        // Find index of task being dragged
+        const activeIndex = tasks.findIndex((task) => task.id === activeId);
+        // And task being hovered over
+        const overIndex = tasks.findIndex((task) => task.id === overId);
+
+        if (
+          // If either task is not found, do nothing
+          activeIndex === -1 ||
+          overIndex === -1 ||
+          activeIndex === overIndex
+        ) {
+          return;
+        }
+
+        // Reorder the array in memory
+        const [movedTask] = tasks.splice(activeIndex, 1);
+        tasks.splice(overIndex, 0, movedTask);
+
+        // Calculate the new position for moved task
+        const prevTask = tasks[overIndex - 1];
+        const nextTask = tasks[overIndex + 1];
+
+        let newPosition;
+
+        if (prevTask && nextTask) {
+          // Average of adjacent task positions
+          newPosition = (prevTask.position + nextTask.position) / 2;
+        } else if (prevTask) {
+          newPosition = prevTask.position + 1; // Place at the end
+        } else if (nextTask) {
+          newPosition = nextTask.position / 2; // Place at the start
+        } else {
+          newPosition = 1; // Fallback - place at start
+        }
+
+        await taskService.updateTaskPosition(activeId, newPosition);
+
+        set({
+          tasks: tasks.map((task) =>
+            task.id === activeId ? { ...task, position: newPosition } : task
+          ),
+        });
       },
     }),
     {

@@ -48,4 +48,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     signOut: '/login',
   },
   trustHost: true,
+  callbacks: {
+    async jwt({ user, token }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.id) {
+        // add id to the session object
+        session.user.id = token.id;
+      }
+      return session;
+    },
+  },
 });
