@@ -21,13 +21,27 @@ export async function GET(req: NextRequest) {
   const userId = searchParams.get('userId');
   const tagId = searchParams.get('tagId');
 
-  if (!userId)
+  console.log('🚀 Incoming request to fetch tasks!');
+  console.log('🔍 Received userId:', userId);
+  console.log('🔍 Received tagId:', tagId);
+
+  if (!userId) {
+    console.error('❌ ERROR: Missing userId in request');
     return NextResponse.json({ error: 'UserId is required' }, { status: 400 });
+  }
+
+  // get the user from the database
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  console.log('🔍 Found user:', user);
+  if (!user) {
+    console.error('❌ ERROR: User not found');
+    return NextResponse.json({ error: 'User not found' }, { status: 404 });
+  }
 
   try {
     let tasks;
     if (tagId) {
-      // Fetch tasks by tag
+      console.log('🔍 Fetching tasks by tagId:', tagId);
       tasks = await prisma.task.findMany({
         where: {
           userId,
@@ -37,26 +51,24 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        include: {
-          tags: true,
-        },
+        include: { tags: true },
         orderBy: { position: 'asc' },
       });
     } else {
-      // Fetch all tasks by user
+      console.log('🔍 Fetching all tasks for userId:', userId);
       tasks = await prisma.task.findMany({
         where: { userId },
-        include: {
-          tags: true,
-        },
+        include: { tags: true },
         orderBy: { position: 'asc' },
       });
     }
-    console.log('~~~ IN THE ROUTE, USER ID ~~~', userId);
-    console.log('~~~ IN THE ROUTE, TASKS ~~~', tasks);
+
+    console.log('✅ Retrieved tasks:', tasks.length, 'tasks found');
+    console.log('📋 Tasks Data:', JSON.stringify(tasks, null, 2));
+
     return NextResponse.json(tasks);
   } catch (error) {
-    console.error('Failed to fetch tasks:', error);
+    console.error('❌ Prisma Query Failed:', error);
     return NextResponse.json(
       { error: 'Failed to fetch tasks' },
       { status: 500 }
