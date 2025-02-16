@@ -45,6 +45,8 @@ export const useTaskStore = create<TaskStore>()(
             // fetch all user's tasks
             fetchedTasks = await taskService.getAllTasks(userId);
           }
+          console.log('~~~ IN THE STORE, FETCHED TASKS: ', fetchedTasks);
+          console.log('~~~ IN THE STORE, USER ID: ', userId);
 
           set({ tasks: fetchedTasks });
         } catch (error) {
@@ -134,7 +136,6 @@ export const useTaskStore = create<TaskStore>()(
           selectedTaskIds: [],
         }));
       },
-      // TODO: Migrate reordering to Prisma
       // TODO: there's some bugginess with task ordering if we order while the list is filtered by tag
       /**
        * Reorder a task to the position of another task. This function will update

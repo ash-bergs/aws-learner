@@ -52,6 +52,8 @@ export async function GET(req: NextRequest) {
         orderBy: { position: 'asc' },
       });
     }
+    console.log('~~~ IN THE ROUTE, USER ID ~~~', userId);
+    console.log('~~~ IN THE ROUTE, TASKS ~~~', tasks);
     return NextResponse.json(tasks);
   } catch (error) {
     console.error('Failed to fetch tasks:', error);
