@@ -134,6 +134,7 @@ export const useTaskStore = create<TaskStore>()(
           selectedTaskIds: [],
         }));
       },
+      // TODO: Migrate reordering to Prisma
       // TODO: there's some bugginess with task ordering if we order while the list is filtered by tag
       /**
        * Reorder a task to the position of another task. This function will update
@@ -147,36 +148,39 @@ export const useTaskStore = create<TaskStore>()(
       reorderTask: async (activeId, overId) => {
         const { tasks } = useTaskStore.getState(); // Get current state
 
-        // find index of task being dragged and task being hovered over
+        // Find index of task being dragged
         const activeIndex = tasks.findIndex((task) => task.id === activeId);
+        // And task being hovered over
         const overIndex = tasks.findIndex((task) => task.id === overId);
 
         if (
+          // If either task is not found, do nothing
           activeIndex === -1 ||
           overIndex === -1 ||
           activeIndex === overIndex
         ) {
-          return; // no op drag event
+          return;
         }
 
-        // reorder the array
+        // Reorder the array in memory
         const [movedTask] = tasks.splice(activeIndex, 1);
         tasks.splice(overIndex, 0, movedTask);
 
-        // calculate the new position for moved task
+        // Calculate the new position for moved task
         const prevTask = tasks[overIndex - 1];
         const nextTask = tasks[overIndex + 1];
 
         let newPosition;
 
         if (prevTask && nextTask) {
+          // Average of adjacent task positions
           newPosition = (prevTask.position + nextTask.position) / 2;
         } else if (prevTask) {
           newPosition = prevTask.position + 1; // Place at the end
         } else if (nextTask) {
-          newPosition = nextTask.position / 2; // place at the start
+          newPosition = nextTask.position / 2; // Place at the start
         } else {
-          newPosition = 1; // fallback to place at start
+          newPosition = 1; // Fallback - place at start
         }
 
         await taskService.updateTaskPosition(activeId, newPosition);

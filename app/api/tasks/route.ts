@@ -16,7 +16,6 @@ import { NextRequest, NextResponse } from 'next/server';
  * @throws Will log an error and respond with a 500 status if task retrieval fails.
  * Responds with a 400 status if `userId` is not provided in the query parameters.
  */
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
@@ -50,6 +49,7 @@ export async function GET(req: NextRequest) {
         include: {
           tags: true,
         },
+        orderBy: { position: 'asc' },
       });
     }
     return NextResponse.json(tasks);
@@ -67,17 +67,23 @@ export async function POST(req: NextRequest) {
   //TODO: add other items in here - dueDate, tag, etc
   const { text, userId } = body;
 
-  if (!text)
+  if (!text || !userId)
     return NextResponse.json({ error: 'Text is required' }, { status: 400 });
 
   try {
-    // TODO: fetch tasks by position and get the last one
-    // then determine the new task's position on that
+    // Find the position of the last task in the list
+    const lastTask = await prisma.task.findFirst({
+      where: { userId },
+      orderBy: { position: 'desc' },
+    });
+    // Place the new task after the last task
+    const newTaskPosition =
+      lastTask && lastTask?.position ? lastTask.position + 1 : 1;
     const newTask = await prisma.task.create({
       data: {
         text,
         userId,
-        // position
+        position: newTaskPosition,
       },
     });
     return NextResponse.json(newTask, { status: 201 });
@@ -115,43 +121,6 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
-
-// TODO: this might go better in a separate route - task/route?
-// export async function PATCH(req: NextRequest) {
-//   const body = await req.json();
-//   const { id } = body;
-
-//   if (!id) {
-//     return NextResponse.json(
-//       { error: 'Task ID is required.' },
-//       { status: 400 }
-//     );
-//   }
-
-//   try {
-//     const existingTask = await prisma.task.findUnique({ where: { id } });
-//     if (!existingTask) {
-//       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
-//     }
-
-//     // Toggle completion status
-//     const updatedTask = await prisma.task.update({
-//       where: { id },
-//       data: {
-//         completed: !existingTask.completed,
-//         dateUpdated: new Date(),
-//       },
-//     });
-
-//     return NextResponse.json(updatedTask);
-//   } catch (error) {
-//     console.error('❌ Failed to toggle task completion:', error);
-//     return NextResponse.json(
-//       { error: 'Failed to toggle task completion' },
-//       { status: 500 }
-//     );
-//   }
-// }
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json();
