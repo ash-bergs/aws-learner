@@ -20,13 +20,13 @@ CREATE TABLE `Task` (
     `id` VARCHAR(191) NOT NULL,
     `text` VARCHAR(191) NOT NULL,
     `completed` BOOLEAN NOT NULL DEFAULT false,
-    `completedBy` VARCHAR(191) NOT NULL,
+    `completedBy` VARCHAR(191) NULL,
     `color` VARCHAR(191) NULL,
     `dateAdded` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `dateUpdated` DATETIME(3) NOT NULL,
     `position` DOUBLE NULL,
     `userId` VARCHAR(191) NULL,
-    `dueDate` DATETIME(3) NOT NULL,
+    `dueDate` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

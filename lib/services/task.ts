@@ -1,51 +1,109 @@
-import { db, Task, USER_ID } from '../db';
-// import { prisma } from '../prisma';
+import { db, Task } from '../db';
 
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
  */
 
-export class TaskService {
-  // create a method to get all tasks
-  async getAllTasks() {
-    // return all tasks from the database
-    return await db.tasks.orderBy('position').toArray();
-    //FIXME: Error: PrismaClient is unable to run in this browser environment, or has been bundled for the browser (running in `unknown`).
-    // return (await prisma.task.findMany()).sort(
-    //   (a, b) => a.position - b.position
-    // );
-  }
-  async getTasksByIds(taskIds: string[]) {
-    const tasks = await db.tasks.bulkGet(taskIds);
-    return tasks;
-  }
-  addTask = async (task: string, color?: string) => {
-    const lastTask = await db.tasks.orderBy('position').last();
-    const newTaskPosition = lastTask ? lastTask.position + 1 : 1;
+// TODO:
+// Migrate all the service fns to use the API
+// Once moved, update the types with Prisma types - add Promise<type> returns
 
-    const newTask: Task = {
-      id: crypto.randomUUID(),
-      text: task,
-      completed: false,
-      color: color,
-      dateAdded: new Date(),
-      dateUpdated: new Date(),
-      position: newTaskPosition,
-      userId: USER_ID,
-    };
-    await db.tasks.add(newTask);
-    return newTask;
-  };
+export class TaskService {
+  async getAllTasks(userId: string) {
+    try {
+      const response = await fetch(`/api/tasks?userId=${userId}`);
+      if (!response.ok) throw new Error('Failed to fetch tasks');
+      console.log('Look at that, a response from the API: ', response);
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+      return [];
+    }
+  }
+  async getAllTasksById(userId: string, tagId: string) {
+    try {
+      const response = await fetch(
+        `/api/tasks?userId=${userId}&tagId=${tagId}`
+      );
+      if (!response.ok) throw new Error('Failed to fetch tasks');
+      console.log('Look at that, a response from the API: ', response);
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+      return [];
+    }
+  }
+  async addTask(text: string, userId: string) {
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text, userId }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add task');
+      const newTask = await response.json();
+      console.log('Lookie here, a new task: ', newTask);
+      return newTask;
+    } catch (error) {
+      console.error('Failed to add task:', error);
+      return null; // return false? Is that a better practice?
+    }
+  }
+  async deleteTask(id: string) {
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id }),
+      });
+      console.log('RESPONSE: ', response);
+      if (!response.ok) throw new Error('Failed to delete tasks');
+      const deletedTasks = await response.json();
+      console.log('Lookie here, a deleted task: ', deletedTasks);
+      return deletedTasks;
+    } catch (error) {
+      console.error('Failed to delete tasks:', error);
+      return null;
+    }
+  }
+  async deleteTasksByIds(taskIds: string[]) {
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: taskIds }),
+      });
+      console.log('RESPONSE: ', response);
+      if (!response.ok) throw new Error('Failed to delete tasks');
+      const deletedTasks = await response.json();
+      console.log('Lookie here, a deleted task: ', deletedTasks);
+      return deletedTasks;
+    } catch (error) {
+      console.error('Failed to delete tasks:', error);
+      return null;
+    }
+  }
+
+  // NEED TO BE UPDATED
+  // deprecated?
+  // async getTasksByIds(taskIds: string[]) {
+  //   const tasks = await db.tasks.bulkGet(taskIds);
+  //   return tasks;
+  // }
   updateTask = async (task: Task) => {
     // get the task, and add a time stamp, and add the task to the database
     const updatedTask = { ...task, dateUpdated: new Date() };
     await db.tasks.update(task.id, updatedTask);
     return updatedTask;
   };
-  deleteTask = async (id: string) => {
-    // delete the task from the database
-    await db.tasks.delete(id);
-  };
+
   toggleComplete = async (id: string) => {
     const task = await db.tasks.get(id);
 
@@ -89,8 +147,5 @@ export class TaskService {
   };
   updateTaskPosition = async (id: string, newPosition: number) => {
     await db.tasks.update(id, { position: newPosition });
-  };
-  deleteByIds = async (taskIds: string[]) => {
-    await db.tasks.bulkDelete(taskIds);
   };
 }

@@ -26,13 +26,13 @@ model Task {
   id          String    @id @default(uuid())
   text        String
   completed   Boolean   @default(false)
-  completedBy String
+  completedBy String?
   color       String?
   dateAdded   DateTime  @default(now())
   dateUpdated DateTime  @updatedAt
   position    Float?
   userId      String?
-  dueDate     DateTime
+  dueDate     DateTime?
   user        User?     @relation(fields: [userId], references: [id])
   tags        Tag[]     @relation("TaskTags")
   taskTags    TaskTag[]

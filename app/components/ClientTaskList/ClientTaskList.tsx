@@ -16,8 +16,10 @@ import {
 } from '@dnd-kit/sortable';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
+import { useStore } from '@/lib/store/app';
 import SortableTaskItem from './SortableTaskItem';
 import TasksToolbar from '../TasksToolbar.tsx';
+import { getSession } from 'next-auth/react';
 
 /**
  * A component that renders a draggable and sortable list of tasks.
@@ -35,11 +37,28 @@ import TasksToolbar from '../TasksToolbar.tsx';
  */
 const ClientTaskList = (): React.ReactElement => {
   const { tasks, reorderTask } = useTaskStore();
+  const { userId, setUserId } = useStore();
   const { isLinking } = useNoteStore();
+  const [loading, setLoading] = React.useState(true);
 
   //TODO: better classes - clsx?
   const listPadding = isLinking ? 'py-2 px-4' : '';
   const listBorder = isLinking ? 'border-2 border-highlight rounded-lg' : '';
+
+  // TODO: do this a better way?
+  // set the userId in the params on the dashboard page...?
+  React.useEffect(() => {
+    const loadSession = async () => {
+      // TODO: useSession instead? How does this work in AppRouter?
+      const session = await getSession();
+      if (session?.user?.id && session.user.id !== userId) {
+        setUserId(session.user.id);
+      }
+      setLoading(false);
+    };
+
+    loadSession();
+  }, [userId, setUserId]);
 
   // https://docs.dndkit.com/api-documentation/sensors
   const sensors = useSensors(
@@ -66,6 +85,8 @@ const ClientTaskList = (): React.ReactElement => {
       reorderTask(String(active.id), String(over.id));
     }
   };
+
+  if (loading) return <p>Loading tasks...</p>;
 
   return (
     <>
