@@ -117,37 +117,60 @@ export async function DELETE(req: NextRequest) {
 }
 
 // TODO: this might go better in a separate route - task/route?
+// export async function PATCH(req: NextRequest) {
+//   const body = await req.json();
+//   const { id } = body;
+
+//   if (!id) {
+//     return NextResponse.json(
+//       { error: 'Task ID is required.' },
+//       { status: 400 }
+//     );
+//   }
+
+//   try {
+//     const existingTask = await prisma.task.findUnique({ where: { id } });
+//     if (!existingTask) {
+//       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+//     }
+
+//     // Toggle completion status
+//     const updatedTask = await prisma.task.update({
+//       where: { id },
+//       data: {
+//         completed: !existingTask.completed,
+//         dateUpdated: new Date(),
+//       },
+//     });
+
+//     return NextResponse.json(updatedTask);
+//   } catch (error) {
+//     console.error('❌ Failed to toggle task completion:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to toggle task completion' },
+//       { status: 500 }
+//     );
+//   }
+// }
+
 export async function PATCH(req: NextRequest) {
   const body = await req.json();
-  const { id } = body;
+  const { id, ...updates } = body;
 
-  if (!id) {
-    return NextResponse.json(
-      { error: 'Task ID is required.' },
-      { status: 400 }
-    );
-  }
+  if (!id)
+    return NextResponse.json({ error: 'Id is required' }, { status: 400 });
 
   try {
-    const existingTask = await prisma.task.findUnique({ where: { id } });
-    if (!existingTask) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
-    }
-
-    // Toggle completion status
     const updatedTask = await prisma.task.update({
       where: { id },
-      data: {
-        completed: !existingTask.completed,
-        dateUpdated: new Date(),
-      },
+      data: { ...updates },
     });
 
     return NextResponse.json(updatedTask);
   } catch (error) {
-    console.error('❌ Failed to toggle task completion:', error);
+    console.error('❌ Failed to update task:', error);
     return NextResponse.json(
-      { error: 'Failed to toggle task completion' },
+      { error: 'Failed to update task' },
       { status: 500 }
     );
   }

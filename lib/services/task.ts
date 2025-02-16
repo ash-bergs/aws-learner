@@ -1,4 +1,4 @@
-import { db, Task } from '../db';
+import { db } from '../db';
 
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
@@ -83,14 +83,32 @@ export class TaskService {
       return null;
     }
   }
-  async toggleComplete(id: string) {
+  async toggleComplete(id: string, completed: boolean) {
     try {
       const response = await fetch('/api/tasks', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: id }),
+        body: JSON.stringify({ id: id, completed }),
+      });
+
+      if (!response.ok) throw new Error('Failed to toggle task completion');
+      const updatedTask = await response.json();
+      return updatedTask;
+    } catch (error) {
+      console.error('Failed to toggle task completion:', error);
+      return null;
+    }
+  }
+  async updateTaskDueDate(id: string, dueDate: Date) {
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id, dueDate }),
       });
 
       if (!response.ok) throw new Error('Failed to toggle task completion');
@@ -102,23 +120,6 @@ export class TaskService {
     }
   }
   // NEED TO BE UPDATED
-  // deprecated?
-  // async getTasksByIds(taskIds: string[]) {
-  //   const tasks = await db.tasks.bulkGet(taskIds);
-  //   return tasks;
-  // }
-  updateTask = async (task: Task) => {
-    // get the task, and add a time stamp, and add the task to the database
-    const updatedTask = { ...task, dateUpdated: new Date() };
-    await db.tasks.update(task.id, updatedTask);
-    return updatedTask;
-  };
-  updateTaskDueDate = async (id: string, dueDate: Date) => {
-    const task = await db.tasks.get(id);
-    if (!task) return console.warn(`No task with ${id} to update :(`);
-
-    await db.tasks.update(id, { dueDate: dueDate });
-  };
   updateTaskPosition = async (id: string, newPosition: number) => {
     await db.tasks.update(id, { position: newPosition });
   };

@@ -1,10 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Task } from '@/lib/db';
-import { taskService, tagsService } from '@/lib/services';
+import { taskService } from '@/lib/services';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
-import { db } from '@/lib/db';
 
 interface TaskStore {
   tasks: Task[];
@@ -95,10 +94,24 @@ export const useTaskStore = create<TaskStore>()(
         useTaskStore.getState().fetchTasks();
       },
       toggleComplete: async (id) => {
-        await taskService.toggleComplete(id);
+        // get the current completion status from the store
+        const { tasks } = get();
+        const task = tasks.find((task) => task.id === id);
+        if (!task) return;
+        const taskCompleted = task.completed || false;
+        await taskService.toggleComplete(id, !taskCompleted);
+
         set((state) => ({
           tasks: state.tasks.map((task) =>
             task.id === id ? { ...task, completed: !task.completed } : task
+          ),
+        }));
+      },
+      updateTaskDueDate: async (id, dueDate) => {
+        await taskService.updateTaskDueDate(id, dueDate);
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === id ? { ...task, dueDate } : task
           ),
         }));
       },
@@ -106,14 +119,19 @@ export const useTaskStore = create<TaskStore>()(
         await taskService.deleteTask(id);
         // TODO: when deleting a task, delete it's entry in the taskTags table
         // Refine this .... can Tasks have multiple tags?
-        const taskTags = await db.taskTags.where('taskId').equals(id).toArray();
-        if (taskTags.length > 0) {
-          for (const taskTag of taskTags) {
-            await tagsService.unlinkTagFromTask(taskTag.tagId, taskTag.taskId);
-          }
-        }
         set((state) => ({
           tasks: state.tasks.filter((task) => task.id !== id),
+        }));
+      },
+      deleteSelectedTasks: async () => {
+        const { selectedTaskIds } = useSelectedTaskStore.getState();
+        await taskService.deleteTasksByIds(selectedTaskIds);
+        set(() => ({
+          // remove the selected tasks from the store
+          tasks: get().tasks.filter(
+            (task) => !selectedTaskIds.includes(task.id)
+          ),
+          selectedTaskIds: [],
         }));
       },
       // TODO: there's some bugginess with task ordering if we order while the list is filtered by tag
@@ -168,25 +186,6 @@ export const useTaskStore = create<TaskStore>()(
             task.id === activeId ? { ...task, position: newPosition } : task
           ),
         });
-      },
-      updateTaskDueDate: async (id, dueDate) => {
-        await taskService.updateTaskDueDate(id, dueDate);
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === id ? { ...task, dueDate } : task
-          ),
-        }));
-      },
-      deleteSelectedTasks: async () => {
-        const { selectedTaskIds } = useSelectedTaskStore.getState();
-        await taskService.deleteTasksByIds(selectedTaskIds);
-        set(() => ({
-          // remove the selected tasks from the store
-          tasks: get().tasks.filter(
-            (task) => !selectedTaskIds.includes(task.id)
-          ),
-          selectedTaskIds: [],
-        }));
       },
     }),
     {
