@@ -19,7 +19,7 @@ export const useStore = create<AppState>()(
     (set) => ({
       userId: null, // track the authenticated user's ID
       setUserId: (userId: string) => {
-        set(() => ({ userId }));
+        set(() => ({ userId: String(userId) }));
       },
       view: {
         tasks: true,
