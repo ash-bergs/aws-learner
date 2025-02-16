@@ -83,7 +83,24 @@ export class TaskService {
       return null;
     }
   }
+  async toggleComplete(id: string) {
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id }),
+      });
 
+      if (!response.ok) throw new Error('Failed to toggle task completion');
+      const updatedTask = await response.json();
+      return updatedTask;
+    } catch (error) {
+      console.error('Failed to toggle task completion:', error);
+      return null;
+    }
+  }
   // NEED TO BE UPDATED
   // deprecated?
   // async getTasksByIds(taskIds: string[]) {
@@ -96,20 +113,6 @@ export class TaskService {
     await db.tasks.update(task.id, updatedTask);
     return updatedTask;
   };
-
-  toggleComplete = async (id: string) => {
-    const task = await db.tasks.get(id);
-
-    if (task) {
-      const updatedTask = {
-        ...task,
-        completed: !task.completed,
-        dateUpdated: new Date(),
-      };
-      await db.tasks.update(id, updatedTask);
-    }
-  };
-
   updateTaskDueDate = async (id: string, dueDate: Date) => {
     const task = await db.tasks.get(id);
     if (!task) return console.warn(`No task with ${id} to update :(`);

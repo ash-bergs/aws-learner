@@ -116,9 +116,10 @@ export async function DELETE(req: NextRequest) {
   }
 }
 
+// TODO: this might go better in a separate route - task/route?
 export async function PATCH(req: NextRequest) {
   const body = await req.json();
-  const { id, ...updates } = body;
+  const { id } = body;
 
   if (!id) {
     return NextResponse.json(
@@ -128,16 +129,25 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
+    const existingTask = await prisma.task.findUnique({ where: { id } });
+    if (!existingTask) {
+      return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+    }
+
+    // Toggle completion status
     const updatedTask = await prisma.task.update({
       where: { id },
-      data: { ...updates, dateUpdated: new Date() },
+      data: {
+        completed: !existingTask.completed,
+        dateUpdated: new Date(),
+      },
     });
 
     return NextResponse.json(updatedTask);
   } catch (error) {
-    console.error('Failed to update task:', error);
+    console.error('❌ Failed to toggle task completion:', error);
     return NextResponse.json(
-      { error: 'Failed to update task' },
+      { error: 'Failed to toggle task completion' },
       { status: 500 }
     );
   }
