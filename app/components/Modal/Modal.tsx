@@ -7,6 +7,9 @@ type ModalProps = {
   children: React.ReactNode;
 };
 
+//TODO: Consider React Aria Components?
+// Research a library that supports accessible modals, or build a better one
+// Research effective focus management strategies
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -35,11 +38,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
       document.addEventListener('keydown', handleKeyDown);
 
-      if (firstElement) firstElement.focus();
-
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
   }, [isOpen, onClose]);
+
+  // On first render/mount, focus on the first focusable element
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      const firstElement = modalRef.current.querySelector(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      ) as HTMLElement;
+      firstElement.focus();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

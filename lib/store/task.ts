@@ -15,8 +15,6 @@ interface TaskStore {
   reorderTask: (activeId: string, overId: string) => void;
   selectAllTasks: () => void;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
-  //TODO:
-  // updateTask: (updatedTask: Task) => void;
   // Tag management
   currentTagId: string | null;
   setCurrentTagId: (tagId: string | null) => void;

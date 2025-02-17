@@ -7,13 +7,16 @@ import { COLORS } from '@/utils/constants';
 
 const ColorSelector = ({
   onColorSelect,
+  tagText,
 }: {
   onColorSelect: (color: string) => void;
+  tagText: string;
 }) => {
   //TODO: create different sets of colors for tasks/notes depending on the theme
   // const { theme } = useStore();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(COLORS[2].class);
+  const [selectedTextColor, setSelectedTextColor] = useState(COLORS[2].text);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownButtonRef = useRef<HTMLButtonElement>(null);
   // Close dropdown on click outside
@@ -29,6 +32,8 @@ const ColorSelector = ({
 
     // TODO: trap focus in the dropdown
     const handleKeyDown = (event: KeyboardEvent) => {
+      // don't bubble up the keydown event
+      event.stopPropagation();
       if (event.key === 'Escape') {
         setDropdownOpen(false);
       }
@@ -44,13 +49,15 @@ const ColorSelector = ({
   return (
     <div className="relative flex items-center" ref={dropdownRef}>
       <button
-        className={`w-6 h-6 rounded-full border focus:outline focus:outline-highlight ${selectedColor}`}
+        className={`rounded-full p-2 ${selectedTextColor} font-medium focus:outline focus:outline-highlight shadow ${selectedColor}`}
         ref={dropdownButtonRef}
         aria-haspopup="listbox"
         aria-expanded={dropdownOpen}
         aria-label="Select a color"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-      ></button>
+      >
+        {tagText}
+      </button>
       {dropdownOpen && (
         <div
           className="absolute left-0 mt-2 bg-white shadow-md rounded-lg p-2 flex flex-wrap gap-2 z-20"
@@ -71,12 +78,14 @@ const ColorSelector = ({
               }`}
               onClick={() => {
                 setSelectedColor(color.class);
+                setSelectedTextColor(color.text);
                 onColorSelect(color.name);
                 setDropdownOpen(false);
               }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   setSelectedColor(color.class);
+                  setSelectedTextColor(color.text);
                   onColorSelect(color.name);
                   setDropdownOpen(false);
                   // Return focus to the button
