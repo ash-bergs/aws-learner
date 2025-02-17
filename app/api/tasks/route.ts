@@ -77,11 +77,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  //TODO: add other items in here - dueDate, tag, etc
-  const { text, userId } = body;
+  const { text, userId, tagIds } = body;
 
-  if (!text || !userId)
-    return NextResponse.json({ error: 'Text is required' }, { status: 400 });
+  if (!text || !userId) {
+    return NextResponse.json(
+      { error: 'Text and UserId are required' },
+      { status: 400 }
+    );
+  }
 
   try {
     // Find the position of the last task in the list
@@ -90,8 +93,8 @@ export async function POST(req: NextRequest) {
       orderBy: { position: 'desc' },
     });
     // Place the new task after the last task
-    const newTaskPosition =
-      lastTask && lastTask?.position ? lastTask.position + 1 : 1;
+    const newTaskPosition = lastTask?.position ? lastTask.position + 1 : 1;
+
     const newTask = await prisma.task.create({
       data: {
         text,
@@ -99,6 +102,17 @@ export async function POST(req: NextRequest) {
         position: newTaskPosition,
       },
     });
+
+    // If tagIds are provided, create TaskTag associations
+    if (tagIds && tagIds.length > 0) {
+      await prisma.taskTag.createMany({
+        data: tagIds.map((tagId: string) => ({
+          taskId: newTask.id,
+          tagId,
+        })),
+      });
+    }
+
     return NextResponse.json(newTask, { status: 201 });
   } catch (error) {
     console.error('Failed to add task:', error);
@@ -115,15 +129,27 @@ export async function DELETE(req: NextRequest) {
 
   try {
     if (Array.isArray(id)) {
+      // First, delete TaskTag relationships
+      await prisma.taskTag.deleteMany({
+        where: { taskId: { in: id } },
+      });
+
+      // Then, delete the tasks
       await prisma.task.deleteMany({
         where: { id: { in: id } },
       });
     } else {
+      // Delete TaskTag relationships
+      await prisma.taskTag.deleteMany({
+        where: { taskId: id },
+      });
+
+      // Delete the task
       await prisma.task.delete({ where: { id } });
     }
 
     return NextResponse.json(
-      { message: 'Task deleted successfully' },
+      { message: 'Task(s) deleted successfully' },
       { status: 200 }
     );
   } catch (error) {

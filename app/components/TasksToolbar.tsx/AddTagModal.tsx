@@ -3,6 +3,7 @@ import Modal from '../Modal/Modal';
 import ColorSelector from './ColorSelector';
 import { Task } from '@/lib/db';
 import { useTagStore } from '@/lib/store/tag';
+import { COLORS } from '@/utils/constants';
 
 type AddTagModalProps = {
   isModalOpen: boolean;
@@ -11,7 +12,21 @@ type AddTagModalProps = {
 
 const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
   const [tagName, setTagName] = useState('');
-  const [color, setColor] = useState('');
+  const [color, setColor] = useState(COLORS[2].name);
+  const { addTag } = useTagStore();
+
+  const handleAddTag = async () => {
+    if (tagName === '') return;
+    try {
+      await addTag(tagName, color);
+      setIsModalOpen(false);
+      // clear state
+      setTagName('');
+      setColor(COLORS[2].name);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onColorSelect = (color: string) => {
     setColor(color);
@@ -49,8 +64,9 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
           </button>
           <button
             className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white"
-            //onClick={TODO}
+        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+            onClick={handleAddTag}
+            disabled={tagName === ''}
           >
             Confirm
           </button>

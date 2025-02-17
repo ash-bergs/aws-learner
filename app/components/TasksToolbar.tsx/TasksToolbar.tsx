@@ -25,18 +25,20 @@ const TasksToolbar = () => {
   };
 
   return (
-    <div className="p-2 rounded shadow bg-utility flex flex-col gap-2">
+    <div className="p-4 rounded shadow bg-utility flex flex-col gap-2">
       <div className="flex gap-2 flex-col">
         <div>
-          <p className="text-sm italic text-text pb-2">Filter by Tag</p>
-          <button
-            className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
-        text-white p-2 text-sm
+          <div className="flex items-center justify-between">
+            <p className="font-bold text-text text-lg pb-2">Filter by Tag</p>
+            <button
+              className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
+        text-white p-2 font-semibold
         "
-            onClick={() => setIsModalOpen(true)}
-          >
-            + Add a Tag
-          </button>
+              onClick={() => setIsModalOpen(true)}
+            >
+              + Add a Tag
+            </button>
+          </div>
         </div>
         <div className="flex gap-1">
           {tags.map((tag) => (
@@ -51,7 +53,7 @@ const TasksToolbar = () => {
       </div>
 
       <div>
-        <p className="text-sm italic text-secondary pb-2">Actions</p>
+        <p className="font-bold text-text pb-2">Actions</p>
         <div>
           {/** Rounded search input - standin for now */}
           {/* <input
@@ -65,7 +67,7 @@ const TasksToolbar = () => {
           <div className="flex gap-2">
             <button
               className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
-        text-white p-2 text-sm
+        text-white p-2 font-semibold
         "
               onClick={selectAllTasks}
             >
@@ -73,7 +75,7 @@ const TasksToolbar = () => {
             </button>
             <button
               className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
-        text-white p-2 text-sm
+        text-white p-2 font-semibold
         "
               onClick={deleteSelectedTasks}
               disabled={isLinking || !selectedTaskIds.length}

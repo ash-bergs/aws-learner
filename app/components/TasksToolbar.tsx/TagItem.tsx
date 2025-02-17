@@ -21,11 +21,14 @@ const TagItem = ({ tag, currentTagId, handleTagChange }: TagSortingProps) => {
   const bgColor = tag.color
     ? COLORS.find((color) => color.name === tag.color)?.class
     : 'bg-note';
+  const textColor = tag.color
+    ? COLORS.find((color) => color.name === tag.color)?.text
+    : 'text-text';
   return (
     <button
       key={tag.id}
       className={`
-                px-2 py-2 text-sm rounded rounded-full ${bgColor} text-textSecondary ${
+                p-2 rounded-full font-medium shadow ${bgColor} ${textColor} ${
         currentTagId === tag.id
           ? 'border-2 border-highlight font-bold'
           : 'border-2 border-transparent'
