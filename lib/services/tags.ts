@@ -8,31 +8,22 @@ import { db, Tag } from '../db';
  * tasks to tags
  */
 export class TagsService {
-  // create tag
   async createTag(userId: string, name: string, color?: string): Promise<Tag> {
-    // check if tag already exists
-    const existingTag = await db.tags.where('name').equals(name).first();
-    if (existingTag) {
-      return existingTag;
-    }
-
-    const id = crypto.randomUUID();
-    const tag = {
-      id,
-      name,
-      color,
-      userId,
-    };
-
-    const newTag = await db.tags.add(tag);
-    const newTagWithId = await db.tags.get(newTag);
-    if (!newTagWithId) throw new Error('Tag not found');
-    return newTagWithId;
+    const response = await fetch('/api/tags', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, name, color }),
+    });
+    if (!response.ok) throw new Error('Failed to create tag');
+    return response.json();
   }
   async getTagsByUser(userId: string) {
-    const tags = await db.tags.where('userId').equals(userId).toArray();
+    const tags = await fetch(`/api/tags?userId=${userId}`);
+    if (!tags.ok) throw new Error('Failed to fetch tags');
     return tags;
   }
+
+  // NEEDS UPDATING
   async deleteTag(tagId: string) {
     await db.tags.delete(tagId);
     await db.taskTags.where('tagId').equals(tagId).delete();

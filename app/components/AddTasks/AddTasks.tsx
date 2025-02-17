@@ -15,12 +15,13 @@ import TagSelector from './TagSelector';
 const AddTasks = () => {
   const { addTask } = useTaskStore();
   const [taskText, setTaskText] = useState('');
-  const [taskTag, setTaskTag] = useState('');
+  const [taskTag, setTaskTag] = useState<string>('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTask = async () => {
     if (!taskText.trim()) return;
-    await addTask(taskText);
+    const taskTags = taskTag === '' ? [] : [taskTag];
+    await addTask(taskText, taskTags);
     setTaskText('');
     inputRef.current?.focus();
   };

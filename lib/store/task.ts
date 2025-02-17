@@ -8,15 +8,13 @@ import { useStore } from './app';
 interface TaskStore {
   tasks: Task[];
   fetchTasks: () => Promise<void>;
-  addTask: (text: string) => void;
+  addTask: (text: string, tagIds?: string[]) => void;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
   reorderTask: (activeId: string, overId: string) => void;
   selectAllTasks: () => void;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
-  //TODO:
-  // updateTask: (updatedTask: Task) => void;
   // Tag management
   currentTagId: string | null;
   setCurrentTagId: (tagId: string | null) => void;
@@ -51,12 +49,12 @@ export const useTaskStore = create<TaskStore>()(
           console.error('Failed to fetch tasks:', error);
         }
       },
-      addTask: async (text) => {
+      addTask: async (text, tagIds) => {
         // TODO: add back in taskTag to args...
         const userId = useStore.getState().userId;
         if (!userId) return;
 
-        const newTask = await taskService.addTask(text, userId);
+        const newTask = await taskService.addTask(text, userId, tagIds);
         if (!newTask) throw new Error('There was a problem adding the task');
 
         //TODO: restore this flow
@@ -117,8 +115,6 @@ export const useTaskStore = create<TaskStore>()(
       },
       deleteTask: async (id) => {
         await taskService.deleteTask(id);
-        // TODO: when deleting a task, delete it's entry in the taskTags table
-        // Refine this .... can Tasks have multiple tags?
         set((state) => ({
           tasks: state.tasks.filter((task) => task.id !== id),
         }));
@@ -127,7 +123,6 @@ export const useTaskStore = create<TaskStore>()(
         const { selectedTaskIds } = useSelectedTaskStore.getState();
         await taskService.deleteTasksByIds(selectedTaskIds);
         set(() => ({
-          // remove the selected tasks from the store
           tasks: get().tasks.filter(
             (task) => !selectedTaskIds.includes(task.id)
           ),

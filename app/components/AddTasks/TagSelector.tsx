@@ -23,11 +23,9 @@ const TagSelector = ({
         value={selectedTag}
         onChange={(e) => onTagSelect(e.target.value)}
       >
-        <option value="" disabled>
-          Tag
-        </option>
+        <option value="">Select a Tag</option>
         {tags.map((tag) => (
-          <option key={tag.id} value={tag.name}>
+          <option key={tag.id} value={tag.id}>
             {tag.name}
           </option>
         ))}
