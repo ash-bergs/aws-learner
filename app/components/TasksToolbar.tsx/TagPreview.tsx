@@ -5,7 +5,7 @@ import { COLORS } from '@/utils/constants';
 // we'll need to get the current theme from the app store
 //import { useStore } from '@/lib/store/app';
 
-const ColorSelector = ({
+const TagPreview = ({
   onColorSelect,
   tagText,
 }: {
@@ -100,4 +100,4 @@ const ColorSelector = ({
   );
 };
 
-export default ColorSelector;
+export default TagPreview;

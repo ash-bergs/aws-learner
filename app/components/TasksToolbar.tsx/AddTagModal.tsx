@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Modal from '../Modal/Modal';
-import ColorSelector from './ColorSelector';
-import { Task } from '@/lib/db';
+import TagPreview from './TagPreview';
 import { useTagStore } from '@/lib/store/tag';
 import { COLORS } from '@/utils/constants';
 
@@ -48,7 +47,7 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
         <div className="border rounded-md p-2">
           <p className="font-semibold text-sm text-secondary">Tag Preview</p>
           <div className="flex justify-center p-6">
-            <ColorSelector
+            <TagPreview
               tagText={tagName || 'Tag Name'}
               onColorSelect={onColorSelect}
             />

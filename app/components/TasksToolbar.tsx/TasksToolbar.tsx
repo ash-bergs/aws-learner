@@ -29,7 +29,7 @@ const TasksToolbar = () => {
       <div className="flex gap-2 flex-col">
         <div>
           <div className="flex items-center justify-between">
-            <p className="font-bold text-text text-lg pb-2">Filter by Tag</p>
+            <p className="font-bold text-text text-lg">Filter by Tag</p>
             <button
               className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
         text-white p-2 font-semibold
@@ -53,7 +53,7 @@ const TasksToolbar = () => {
       </div>
 
       <div>
-        <p className="font-bold text-text pb-2">Actions</p>
+        <p className="font-bold text-text text-lg pb-2">Actions</p>
         <div>
           {/** Rounded search input - standin for now */}
           {/* <input
