@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import Modal from '../../Modal/Modal';
-import { Task } from '@/lib/db';
 import { useTaskStore } from '@/lib/store/task';
+import type { TaskWithTags } from '@/lib/store/task';
 
 type DueDateModalProps = {
   isDueDateModalOpen: boolean;
   setIsDueDateModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  task: Task;
+  task: TaskWithTags;
 };
 
 const DueDateModal = ({

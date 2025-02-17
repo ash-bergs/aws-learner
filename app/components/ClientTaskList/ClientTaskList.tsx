@@ -36,10 +36,20 @@ import { getSession } from 'next-auth/react';
  * @returns {React.ReactElement} A JSX element representing the task list.
  */
 const ClientTaskList = (): React.ReactElement => {
-  const { tasks, reorderTask } = useTaskStore();
+  const { tasks, reorderTask, currentTagId } = useTaskStore();
   const { userId, setUserId } = useStore();
   const { isLinking } = useNoteStore();
   const [loading, setLoading] = React.useState(true);
+
+  // Filter tasks in memory based on the current tag
+  const filteredTasks = React.useMemo(() => {
+    if (currentTagId) {
+      return tasks.filter((task) =>
+        task.taskTags.some((tag) => tag.tagId === currentTagId)
+      );
+    }
+    return tasks;
+  }, [tasks, currentTagId]);
 
   //TODO: better classes - clsx?
   const listPadding = isLinking ? 'py-2 px-4' : '';
@@ -103,7 +113,7 @@ const ClientTaskList = (): React.ReactElement => {
             strategy={verticalListSortingStrategy}
           >
             <ul className={`${listPadding} ${listBorder}`}>
-              {tasks.map((task) => (
+              {filteredTasks.map((task) => (
                 <SortableTaskItem key={task.id} task={task} />
               ))}
             </ul>

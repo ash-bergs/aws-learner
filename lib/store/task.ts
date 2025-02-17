@@ -1,12 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Task } from '@/lib/db';
 import { taskService } from '@/lib/services';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
+import { Task, Tag } from '@prisma/client';
 
+// Define TaskWithTags to include the `taskTags` relation
+export interface TaskWithTags extends Task {
+  taskTags: Array<{
+    taskId: string;
+    tagId: string;
+    tag: Tag;
+  }>;
+}
 interface TaskStore {
-  tasks: Task[];
+  tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
   addTask: (text: string, tagIds?: string[]) => void;
   deleteTask: (id: string) => void;
@@ -30,44 +38,23 @@ export const useTaskStore = create<TaskStore>()(
         if (!userId) return;
 
         try {
-          const { currentTagId } = get();
-          let fetchedTasks: Task[];
-
-          if (currentTagId) {
-            // fetch tasks by tag
-            fetchedTasks = await taskService.getAllTasksById(
-              userId,
-              currentTagId
-            );
-          } else {
-            // fetch all user's tasks
-            fetchedTasks = await taskService.getAllTasks(userId);
-          }
-
+          // fetch all user's tasks
+          const fetchedTasks = await taskService.getAllTasks(userId);
+          // Set the tasks in the store
           set({ tasks: fetchedTasks });
         } catch (error) {
           console.error('Failed to fetch tasks:', error);
         }
       },
       addTask: async (text, tagIds) => {
-        // TODO: add back in taskTag to args...
         const userId = useStore.getState().userId;
         if (!userId) return;
 
         const newTask = await taskService.addTask(text, userId, tagIds);
         if (!newTask) throw new Error('There was a problem adding the task');
 
-        //TODO: restore this flow
-        // if a tag has been selected, use the tagsService to add the tag
-        // and update the taskTags table
-        // if (taskTag && taskTag !== '') {
-        //   const newTag = await tagsService.createTag(USER_ID, taskTag);
-        //   await tagsService.linkTagToTask(newTag.id, newTask.id);
-        // }
-
         set((state) => ({ tasks: [...state.tasks, newTask] }));
       },
-      // selectAllTasks shouldn't need to be updated with the migration to Prisma
       selectAllTasks: () => {
         const { selectedTaskIds, setSelectedTaskIds, clearSelectedTaskIds } =
           useSelectedTaskStore.getState();
@@ -87,9 +74,10 @@ export const useTaskStore = create<TaskStore>()(
       },
       setCurrentTagId: (tagId) => {
         set({ currentTagId: tagId });
+        // We won't trigger a refetch, we'll just sort in place
         // trigger a re-fetch of tasks when the currentTagId changes
         // TODO: Zustand research, there's probably a better way to trigger this refresh, without explicitly calling it
-        useTaskStore.getState().fetchTasks();
+        //useTaskStore.getState().fetchTasks();
       },
       toggleComplete: async (id) => {
         // get the current completion status from the store
@@ -166,12 +154,12 @@ export const useTaskStore = create<TaskStore>()(
 
         let newPosition;
 
-        if (prevTask && nextTask) {
+        if (prevTask.position && nextTask.position) {
           // Average of adjacent task positions
           newPosition = (prevTask.position + nextTask.position) / 2;
-        } else if (prevTask) {
+        } else if (prevTask.position) {
           newPosition = prevTask.position + 1; // Place at the end
-        } else if (nextTask) {
+        } else if (nextTask.position) {
           newPosition = nextTask.position / 2; // Place at the start
         } else {
           newPosition = 1; // Fallback - place at start
