@@ -22,13 +22,14 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
   const { deleteTask, toggleComplete } = useTaskStore();
   const { selectedTaskIds, setSelectedTaskIds } = useSelectedTaskStore();
-
   const { isLinking } = useNoteStore();
 
-  // get the background color for the task from the color col
-  const bgColor = task.color
-    ? COLORS.find((color) => color.name === task.color)?.class
-    : 'bg-note';
+  const taskTagColor =
+    task.taskTags.length > 0 ? task.taskTags[0].tag.color : 'green';
+
+  const bgColor = COLORS.find(
+    (color) => color.name === taskTagColor
+  )?.background;
 
   // TODO - better classes - clsx?
   const borderColor = selectedTaskIds.includes(task.id)
@@ -39,7 +40,6 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
     setMenuOpen(!menuOpen);
   };
 
-  //TODO: add 'Change color' menu item - figure out how this will work
   const menuItems = [
     {
       label: 'Due Date',
