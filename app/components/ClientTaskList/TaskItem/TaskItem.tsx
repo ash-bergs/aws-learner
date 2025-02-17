@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Task } from '@/lib/db';
 import { COLORS } from '@/utils/constants';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
@@ -9,6 +8,7 @@ import { useSelectedTaskStore } from '@/lib/store/selected.task';
 import DueDateModal from './DueDateModal';
 import MeatballMenu from '../../MeatballMenu';
 import ToggleCompletionButton from './ToggleCompletionButton';
+import type { TaskWithTags } from '@/lib/store/task';
 
 /**
  * A component to render a single task.
@@ -17,7 +17,7 @@ import ToggleCompletionButton from './ToggleCompletionButton';
  * @param {Task} props.task The task to render.
  * @returns {React.ReactElement} A JSX element representing the task list item.
  */
-const TaskItem = ({ task }: { task: Task }): React.ReactElement => {
+const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
   const { deleteTask, toggleComplete } = useTaskStore();

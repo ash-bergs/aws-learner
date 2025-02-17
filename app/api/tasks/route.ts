@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import type { TaskWithTags } from '@/lib/store/task';
 
 /**
  * Handles a GET request to fetch tasks for a given user.
@@ -16,10 +17,9 @@ import { NextRequest, NextResponse } from 'next/server';
  * @throws Will log an error and respond with a 500 status if task retrieval fails.
  * Responds with a 400 status if `userId` is not provided in the query parameters.
  */
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
-  const tagId = searchParams.get('tagId');
 
   // TODO: Since we're deploying in Amplify, build a small logger for nicely formatted logs
   // And set up a custom error handler and configure Amplify to use it
@@ -38,29 +38,18 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    let tasks;
-    if (tagId) {
-      console.log('🔍 Fetching tasks by tagId:', tagId);
-      tasks = await prisma.task.findMany({
-        where: {
-          userId,
-          taskTags: {
-            some: {
-              tagId: tagId,
-            },
+    console.log('🔍 Fetching all tasks for userId:', userId);
+    const tasks: TaskWithTags[] = await prisma.task.findMany({
+      where: { userId },
+      include: {
+        taskTags: {
+          include: {
+            tag: true,
           },
         },
-        include: { tags: true },
-        orderBy: { position: 'asc' },
-      });
-    } else {
-      console.log('🔍 Fetching all tasks for userId:', userId);
-      tasks = await prisma.task.findMany({
-        where: { userId },
-        include: { tags: true },
-        orderBy: { position: 'asc' },
-      });
-    }
+      },
+      orderBy: { position: 'asc' },
+    });
 
     console.log('✅ Retrieved tasks:', tasks.length, 'tasks found');
     console.log('📋 Tasks Data:', JSON.stringify(tasks, null, 2));
@@ -113,7 +102,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json(newTask, { status: 201 });
+    // get the task and include the tags
+    const taskWithTags = await prisma.task.findUnique({
+      where: { id: newTask.id },
+      include: {
+        taskTags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(taskWithTags, { status: 201 });
   } catch (error) {
     console.error('Failed to add task:', error);
     return NextResponse.json({ error: 'Failed to add task' }, { status: 500 });

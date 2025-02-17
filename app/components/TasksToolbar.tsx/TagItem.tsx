@@ -3,7 +3,7 @@ import { Tag } from '@/lib/db';
 import { COLORS } from '@/utils/constants';
 
 type TagSortingProps = {
-  currentTagId: string | null;
+  selectedTagIds: string[];
   handleTagChange: (tagId: string) => void;
   tag: Tag;
 };
@@ -17,7 +17,8 @@ type TagSortingProps = {
  *
  * @param {TagSortingProps} props - The props for the component.
  */
-const TagItem = ({ tag, currentTagId, handleTagChange }: TagSortingProps) => {
+const TagItem = ({ tag, selectedTagIds, handleTagChange }: TagSortingProps) => {
+  const isSelected = selectedTagIds.includes(tag.id);
   const bgColor = tag.color
     ? COLORS.find((color) => color.name === tag.color)?.class
     : 'bg-note';
@@ -29,7 +30,7 @@ const TagItem = ({ tag, currentTagId, handleTagChange }: TagSortingProps) => {
       key={tag.id}
       className={`
                 p-2 rounded-full font-medium shadow ${bgColor} ${textColor} ${
-        currentTagId === tag.id
+        isSelected
           ? 'border-2 border-highlight font-bold'
           : 'border-2 border-transparent'
       }`}

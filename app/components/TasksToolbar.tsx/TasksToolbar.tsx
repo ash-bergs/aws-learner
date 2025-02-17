@@ -8,20 +8,21 @@ import AddTagModal from './AddTagModal';
 
 const TasksToolbar = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const { selectAllTasks, deleteSelectedTasks, setCurrentTagId, currentTagId } =
-    useTaskStore();
+  const {
+    selectAllTasks,
+    deleteSelectedTasks,
+    setSelectedTagId,
+    selectedTagIds,
+    clearSelectedTags,
+  } = useTaskStore();
   const { selectedTaskIds, clearSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
   const { tags } = useTagStore();
 
   const handleTagChange = (tagId: string) => {
+    // now we can have more than 1
     clearSelectedTaskIds();
-    // if the tagId is the same as the currentTagId, reset the currentTagId
-    if (tagId === currentTagId) {
-      setCurrentTagId(null);
-      return;
-    }
-    setCurrentTagId(tagId);
+    setSelectedTagId(tagId);
   };
 
   return (
@@ -30,14 +31,25 @@ const TasksToolbar = () => {
         <div>
           <div className="flex items-center justify-between">
             <p className="font-bold text-text text-lg">Filter by Tag</p>
-            <button
-              className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
+            <div className="flex gap-2">
+              <button
+                className="bg-highlight rounded disabled:bg-gray-400 hover:bg-secondary
         text-white p-2 font-semibold
         "
-              onClick={() => setIsModalOpen(true)}
-            >
-              + Add a Tag
-            </button>
+                onClick={() => clearSelectedTags()}
+                disabled={selectedTagIds.length === 0}
+              >
+                Clear Filters
+              </button>
+              <button
+                className="bg-primary rounded disabled:bg-gray-400 hover:bg-secondary
+        text-white p-2 font-semibold
+        "
+                onClick={() => setIsModalOpen(true)}
+              >
+                + Add a Tag
+              </button>
+            </div>
           </div>
         </div>
         <div className="flex gap-1">
@@ -45,7 +57,7 @@ const TasksToolbar = () => {
             <TagItem
               key={tag.id}
               tag={tag}
-              currentTagId={currentTagId}
+              selectedTagIds={selectedTagIds}
               handleTagChange={handleTagChange}
             />
           ))}
@@ -93,7 +105,6 @@ const TasksToolbar = () => {
             </button> */}
             {isModalOpen && (
               <AddTagModal
-                //task={task}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />
