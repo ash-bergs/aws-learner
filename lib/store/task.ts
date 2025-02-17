@@ -16,6 +16,7 @@ export interface TaskWithTags extends Task {
 interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
+  loadingTasks: boolean;
   addTask: (text: string, tagIds?: string[]) => void;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
@@ -32,8 +33,10 @@ export const useTaskStore = create<TaskStore>()(
   persist(
     (set, get) => ({
       tasks: [],
+      loadingTasks: false,
       currentTagId: null,
       fetchTasks: async () => {
+        set({ loadingTasks: true });
         const userId = useStore.getState().userId;
         if (!userId) return;
 
@@ -42,6 +45,7 @@ export const useTaskStore = create<TaskStore>()(
           const fetchedTasks = await taskService.getAllTasks(userId);
           // Set the tasks in the store
           set({ tasks: fetchedTasks });
+          set({ loadingTasks: false });
         } catch (error) {
           console.error('Failed to fetch tasks:', error);
         }
@@ -51,6 +55,7 @@ export const useTaskStore = create<TaskStore>()(
         if (!userId) return;
 
         const newTask = await taskService.addTask(text, userId, tagIds);
+
         if (!newTask) throw new Error('There was a problem adding the task');
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));

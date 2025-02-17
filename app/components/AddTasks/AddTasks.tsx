@@ -16,13 +16,16 @@ const AddTasks = () => {
   const { addTask } = useTaskStore();
   const [taskText, setTaskText] = useState('');
   const [taskTag, setTaskTag] = useState<string>('');
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTask = async () => {
+    setLoading(true);
     if (!taskText.trim()) return;
     const taskTags = taskTag === '' ? [] : [taskTag];
     await addTask(taskText, taskTags);
     setTaskText('');
+    setLoading(false);
     inputRef.current?.focus();
   };
 
@@ -64,8 +67,9 @@ const AddTasks = () => {
         <div className="flex gap-2">
           <button
             className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white"
+        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
             type="submit"
+            disabled={taskText === '' || loading}
           >
             Add Task
           </button>

@@ -102,7 +102,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    return NextResponse.json(newTask, { status: 201 });
+    // get the task and include the tags
+    const taskWithTags = await prisma.task.findUnique({
+      where: { id: newTask.id },
+      include: {
+        taskTags: {
+          include: {
+            tag: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(taskWithTags, { status: 201 });
   } catch (error) {
     console.error('Failed to add task:', error);
     return NextResponse.json({ error: 'Failed to add task' }, { status: 500 });

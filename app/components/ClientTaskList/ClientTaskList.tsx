@@ -17,6 +17,7 @@ import {
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
 import { useStore } from '@/lib/store/app';
+import LoadingSpinner from '../LoadingSpinner';
 import SortableTaskItem from './SortableTaskItem';
 import TasksToolbar from '../TasksToolbar.tsx';
 import { getSession } from 'next-auth/react';
@@ -36,10 +37,9 @@ import { getSession } from 'next-auth/react';
  * @returns {React.ReactElement} A JSX element representing the task list.
  */
 const ClientTaskList = (): React.ReactElement => {
-  const { tasks, reorderTask, currentTagId } = useTaskStore();
+  const { tasks, reorderTask, currentTagId, loadingTasks } = useTaskStore();
   const { userId, setUserId } = useStore();
   const { isLinking } = useNoteStore();
-  const [loading, setLoading] = React.useState(true);
 
   // Filter tasks in memory based on the current tag
   const filteredTasks = React.useMemo(() => {
@@ -64,7 +64,6 @@ const ClientTaskList = (): React.ReactElement => {
       if (session?.user?.id && session.user.id !== userId) {
         setUserId(session.user.id);
       }
-      setLoading(false);
     };
 
     loadSession();
@@ -96,8 +95,6 @@ const ClientTaskList = (): React.ReactElement => {
     }
   };
 
-  if (loading) return <p>Loading tasks...</p>;
-
   return (
     <>
       <h2 className="text-text text-2xl font-bold mb-4">Your Tasks</h2>
@@ -108,16 +105,19 @@ const ClientTaskList = (): React.ReactElement => {
           onDragEnd={handleDragEnd}
           sensors={sensors}
         >
-          <SortableContext
-            items={tasks.map((task) => task.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <ul className={`${listPadding} ${listBorder}`}>
-              {filteredTasks.map((task) => (
-                <SortableTaskItem key={task.id} task={task} />
-              ))}
-            </ul>
-          </SortableContext>
+          {loadingTasks && <LoadingSpinner />}
+          {!loadingTasks && (
+            <SortableContext
+              items={tasks.map((task) => task.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className={`${listPadding} ${listBorder}`}>
+                {filteredTasks.map((task) => (
+                  <SortableTaskItem key={task.id} task={task} />
+                ))}
+              </ul>
+            </SortableContext>
+          )}
         </DndContext>
       </div>
     </>
