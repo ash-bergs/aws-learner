@@ -25,8 +25,12 @@ interface TaskStore {
   selectAllTasks: () => void;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
   // Tag management
-  currentTagId: string | null;
-  setCurrentTagId: (tagId: string | null) => void;
+  //currentTagId: string | null;
+  // TODO: this could all be it's own store
+  selectedTagIds: string[];
+  // setSelectedTagId - before
+  setSelectedTagId: (tagId: string) => void;
+  clearSelectedTags: () => void;
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -34,7 +38,20 @@ export const useTaskStore = create<TaskStore>()(
     (set, get) => ({
       tasks: [],
       loadingTasks: false,
-      currentTagId: null,
+      selectedTagIds: [],
+      clearSelectedTags: () => {
+        set({ selectedTagIds: [] });
+      },
+      setSelectedTagId: (tagId) => {
+        set((state) => {
+          const isTagSelected = state.selectedTagIds.includes(tagId);
+          return {
+            selectedTagIds: isTagSelected
+              ? state.selectedTagIds.filter((id) => id !== tagId) // Remove if the tag is already in currentTagIds
+              : [...state.selectedTagIds, tagId], // Or add the new tagId
+          };
+        });
+      },
       fetchTasks: async () => {
         set({ loadingTasks: true });
         const userId = useStore.getState().userId;
@@ -77,13 +94,7 @@ export const useTaskStore = create<TaskStore>()(
           });
         }
       },
-      setCurrentTagId: (tagId) => {
-        set({ currentTagId: tagId });
-        // We won't trigger a refetch, we'll just sort in place
-        // trigger a re-fetch of tasks when the currentTagId changes
-        // TODO: Zustand research, there's probably a better way to trigger this refresh, without explicitly calling it
-        //useTaskStore.getState().fetchTasks();
-      },
+
       toggleComplete: async (id) => {
         // get the current completion status from the store
         const { tasks } = get();

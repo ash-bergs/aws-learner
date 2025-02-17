@@ -37,19 +37,17 @@ import { getSession } from 'next-auth/react';
  * @returns {React.ReactElement} A JSX element representing the task list.
  */
 const ClientTaskList = (): React.ReactElement => {
-  const { tasks, reorderTask, currentTagId, loadingTasks } = useTaskStore();
+  const { tasks, reorderTask, selectedTagIds, loadingTasks } = useTaskStore();
   const { userId, setUserId } = useStore();
   const { isLinking } = useNoteStore();
 
   // Filter tasks in memory based on the current tag
   const filteredTasks = React.useMemo(() => {
-    if (currentTagId) {
-      return tasks.filter((task) =>
-        task.taskTags.some((tag) => tag.tagId === currentTagId)
-      );
-    }
-    return tasks;
-  }, [tasks, currentTagId]);
+    if (selectedTagIds.length === 0) return tasks; // no filtering
+    return tasks.filter((task) =>
+      task.taskTags.some((taskTag) => selectedTagIds.includes(taskTag.tagId))
+    );
+  }, [tasks, selectedTagIds]);
 
   //TODO: better classes - clsx?
   const listPadding = isLinking ? 'py-2 px-4' : '';
