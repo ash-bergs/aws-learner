@@ -59,7 +59,7 @@ const TextEditor = () => {
   return (
     <div className="rounded-md p4 mt-6">
       <Toolbar editor={editor} />
-      <div className="border rounded-md p-2">
+      <div className="border rounded-md p-2 bg-background text-text">
         <label id="editor-label" className="sr-only">
           Write your note here...
         </label>

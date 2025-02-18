@@ -15,7 +15,7 @@ import { auth } from '@/auth';
 async function Header() {
   const session = await auth();
   return (
-    <header className="sticky top-0 bg-primary p-4 px-6 shadow-md flex justify-between items-center z-10">
+    <header className="sticky top-0 bg-primary p-4 px-6 shadow-md flex justify-between items-center flex-wrap z-10">
       <h1 className="text-lg font-bold text-text">HabitNest</h1>
       <div className="flex items-center space-x-4">
         <ThemeSwitcher />

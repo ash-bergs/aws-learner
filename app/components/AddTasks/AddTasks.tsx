@@ -46,7 +46,7 @@ const AddTasks = () => {
         className="flex flex-col gap-2"
         onSubmit={handleFormSubmit}
       >
-        <div className="flex items-center border rounded-full px-4 py-2 bg-gray-100 gap-1">
+        <div className="flex items-center border rounded-full text-text px-4 py-2 bg-background gap-1 flex-wrap">
           <label htmlFor="task-input" className="sr-only">
             Task Description
           </label>
@@ -56,7 +56,7 @@ const AddTasks = () => {
             type="text"
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            className="flex-grow rounded bg-transparent focus:outline focus:outline-highlight text-text-secondary"
+            className="rounded flex-grow bg-transparent focus:outline focus:outline-highlight text-text-secondary"
             placeholder="Describe your task..."
           />
           <TagSelector
@@ -64,6 +64,7 @@ const AddTasks = () => {
             onTagSelect={(tag: string) => setTaskTag(tag)}
           />
         </div>
+
         <div className="flex gap-2">
           <button
             className="w-full text-center font-bold py-2 px-4 rounded-md

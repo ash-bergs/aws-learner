@@ -26,14 +26,12 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const { isLinking } = useNoteStore();
   const { disableColorCodeTasks } = useStore();
 
-  const taskTagColor =
-    task.taskTags.length > 0 && !disableColorCodeTasks
-      ? task.taskTags[0].tag.color
-      : 'green';
+  const taskTagColor = task.taskTags.length > 0 && task.taskTags[0].tag.color;
 
-  const bgColor = COLORS.find(
-    (color) => color.name === taskTagColor
-  )?.background;
+  const bgColor =
+    task.taskTags.length > 0 && !disableColorCodeTasks
+      ? COLORS.find((color) => color.name === taskTagColor)?.background
+      : 'bg-note';
 
   // TODO - better classes - clsx?
   const borderColor = selectedTaskIds.includes(task.id)
