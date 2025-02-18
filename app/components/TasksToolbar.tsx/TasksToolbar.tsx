@@ -45,7 +45,7 @@ const TasksToolbar = () => {
             <p className="font-bold text-text text-lg">Filter by Tag</p>
           </div>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           {tags.map((tag) => (
             <TagItem
               key={tag.id}
@@ -84,7 +84,7 @@ const TasksToolbar = () => {
                 Disable Color Coding
               </label>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 className={buttonClass}
                 onClick={() => setIsModalOpen(true)}

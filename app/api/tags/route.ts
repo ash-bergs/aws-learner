@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
     const tags = await prisma.tag.findMany({
       where: { userId },
       // include: { tasks: true }, // do we want this?
+      // order alphabetically
+      orderBy: { name: 'asc' },
     });
     return NextResponse.json(tags);
   } catch (error) {
