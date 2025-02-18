@@ -49,7 +49,7 @@ const TagPreview = ({
   return (
     <div className="relative flex items-center" ref={dropdownRef}>
       <button
-        className={`rounded-full p-2 ${selectedTextColor} font-medium focus:outline focus:outline-highlight shadow ${selectedColor}`}
+        className={`rounded-full p-2 px-2 ${selectedTextColor} font-semibold text-sm focus:outline focus:outline-highlight shadow ${selectedColor}`}
         ref={dropdownButtonRef}
         aria-haspopup="listbox"
         aria-expanded={dropdownOpen}

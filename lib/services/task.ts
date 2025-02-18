@@ -80,14 +80,20 @@ export class TaskService {
       return null;
     }
   }
-  async toggleComplete(id: string, completed: boolean) {
+  async toggleComplete(id: string, userId: string, completed: boolean) {
+    const dateUpdated = new Date();
     try {
       const response = await fetch('/api/tasks', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: id, completed }),
+        body: JSON.stringify({
+          id: id,
+          completed,
+          dateUpdated,
+          completedBy: completed ? userId : null, // if removing completion, set completedBy to null
+        }),
       });
 
       if (!response.ok) throw new Error('Failed to toggle task completion');
