@@ -77,12 +77,34 @@ export const useTaskStore = create<TaskStore>()(
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));
       },
+      /**
+       * Selects all tasks based on current filters and updates the selectedTaskIds.
+       *
+       * This function retrieves tasks from the store, applying any active filters such as
+       * hiding completed tasks and filtering by selected tags. If all tasks are already selected,
+       * it clears the selection. Otherwise, it adds any unselected task IDs to the selection.
+       */
       selectAllTasks: () => {
         const { selectedTaskIds, setSelectedTaskIds, clearSelectedTaskIds } =
           useSelectedTaskStore.getState();
+        const { hideCompletedTasks } = useStore.getState();
+        const { selectedTagIds } = get();
         const { tasks } = get();
 
-        const allTaskIds = tasks.map((task) => task.id);
+        const allTaskIds = tasks
+          // Filter out completed tasks if hideCompletedTasks is true
+          .filter((task) => (hideCompletedTasks ? !task.completed : true))
+          // Filter tasks by selected tags
+          .filter(
+            (task) =>
+              selectedTagIds.length > 0
+                ? task.taskTags.some((taskTag) =>
+                    selectedTagIds.includes(taskTag.tagId)
+                  )
+                : true // return true will include all tasks
+          )
+          // Extract task IDs
+          .map((task) => task.id);
 
         if (selectedTaskIds.length === allTaskIds.length) {
           clearSelectedTaskIds();
@@ -96,12 +118,13 @@ export const useTaskStore = create<TaskStore>()(
       },
 
       toggleComplete: async (id) => {
-        // get the current completion status from the store
+        const userId = useStore.getState().userId;
+        if (!userId) return;
         const { tasks } = get();
         const task = tasks.find((task) => task.id === id);
         if (!task) return;
         const taskCompleted = task.completed || false;
-        await taskService.toggleComplete(id, !taskCompleted);
+        await taskService.toggleComplete(id, userId, !taskCompleted);
 
         set((state) => ({
           tasks: state.tasks.map((task) =>

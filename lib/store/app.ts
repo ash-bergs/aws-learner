@@ -4,6 +4,10 @@ import { DEFAULT_THEME, Theme, THEMES } from '../core/theme.config';
 
 interface AppState {
   userId: string | null;
+  hideCompletedTasks: boolean;
+  toggleHideCompletedTasks: () => void;
+  disableColorCodeTasks: boolean;
+  toggleColorCodeTasks: () => void;
   setUserId: (userId: string) => void;
   view: {
     tasks: boolean;
@@ -18,6 +22,16 @@ export const useStore = create<AppState>()(
   persist(
     (set) => ({
       userId: null, // track the authenticated user's ID
+      hideCompletedTasks: false,
+      toggleHideCompletedTasks: () => {
+        set((state) => ({ hideCompletedTasks: !state.hideCompletedTasks }));
+      },
+      disableColorCodeTasks: false,
+      toggleColorCodeTasks: () => {
+        set((state) => ({
+          disableColorCodeTasks: !state.disableColorCodeTasks,
+        }));
+      },
       setUserId: (userId: string) => {
         set(() => ({ userId: String(userId) }));
       },

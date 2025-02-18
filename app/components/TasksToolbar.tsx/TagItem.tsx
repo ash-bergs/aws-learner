@@ -29,7 +29,7 @@ const TagItem = ({ tag, selectedTagIds, handleTagChange }: TagSortingProps) => {
     <button
       key={tag.id}
       className={`
-                p-2 rounded-full font-medium shadow ${bgColor} ${textColor} ${
+                p-1 px-2 rounded-full text-sm font-semibold shadow ${bgColor} ${textColor} ${
         isSelected
           ? 'border-2 border-highlight font-bold'
           : 'border-2 border-transparent'

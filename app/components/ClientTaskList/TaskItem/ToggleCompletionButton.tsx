@@ -16,11 +16,14 @@ const ToggleCompletionButton = ({
   const handleClick = () => {
     if (!isCompleted) {
       setShowConfetti(true);
+
       setTimeout(() => {
         setShowConfetti(false);
-      }, 3000);
+        onToggle();
+      }, 1500);
+    } else {
+      onToggle();
     }
-    onToggle();
   };
 
   return (
@@ -50,7 +53,7 @@ const ToggleCompletionButton = ({
       </button>
       {showConfetti && (
         <Confetti
-          numberOfPieces={100} // Adjust the number of confetti pieces
+          numberOfPieces={70} // Adjust the number of confetti pieces
           recycle={false} // Confetti should not recycle
           gravity={0.5} // Adjust the fall speed
           initialVelocityX={3} // Simulates confetti coming from the button

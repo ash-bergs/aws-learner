@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { COLORS } from '@/utils/constants';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
+import { useStore } from '@/lib/store/app';
 import { useSelectedTaskStore } from '@/lib/store/selected.task';
 import DueDateModal from './DueDateModal';
 import MeatballMenu from '../../MeatballMenu';
@@ -23,9 +24,12 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const { deleteTask, toggleComplete } = useTaskStore();
   const { selectedTaskIds, setSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
+  const { disableColorCodeTasks } = useStore();
 
   const taskTagColor =
-    task.taskTags.length > 0 ? task.taskTags[0].tag.color : 'green';
+    task.taskTags.length > 0 && !disableColorCodeTasks
+      ? task.taskTags[0].tag.color
+      : 'green';
 
   const bgColor = COLORS.find(
     (color) => color.name === taskTagColor
