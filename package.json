@@ -23,6 +23,7 @@
     "bcryptjs": "^2.4.3",
     "classnames": "^2.5.1",
     "dexie": "^4.0.10",
+    "moment": "^2.30.1",
     "next": "15.1.5",
     "next-auth": "^5.0.0-beta.25",
     "prisma": "^6.2.1",

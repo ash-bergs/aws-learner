@@ -51,8 +51,8 @@ jest.mock('@/lib/store/task', () => ({
     ],
     selectAllTasks: jest.fn(),
     deleteSelectedTasks: jest.fn(),
-    setCurrentTagId: jest.fn(),
-    currentTagId: null,
+    setSelectedTagId: jest.fn(),
+    selectedTagIds: [],
   })),
 }));
 
