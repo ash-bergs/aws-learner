@@ -25,7 +25,6 @@ interface TaskStore {
   selectAllTasks: () => void;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
   // Tag management
-  //currentTagId: string | null;
   // TODO: this could all be it's own store
   selectedTagIds: string[];
   setSelectedTagId: (tagId: string) => void;
@@ -115,51 +114,21 @@ export const useTaskStore = create<TaskStore>()(
           });
         }
       },
-      /**
-       * Toggles the completion of a task.
-       *
-       * @param {string} id The ID of the task to toggle completion on.
-       *
-       * This function will first update the state of the task in the store to reflect the new completion status.
-       * It will then call the `toggleComplete` function from the `taskService` to update the task in the database.
-       *
-       * If the call to the database fails, it will revert the state of the task in the store to what it was before the toggle.
-       */
+
       toggleComplete: async (id) => {
         const userId = useStore.getState().userId;
         if (!userId) return;
-
         const { tasks } = get();
-        set({ loadingTasks: true });
         const task = tasks.find((task) => task.id === id);
-
-        if (!task) {
-          set({ loadingTasks: false });
-          return;
-        }
-
+        if (!task) return;
         const taskCompleted = task.completed || false;
-        // Update state before the DB call for a snappier UI feel
+        await taskService.toggleComplete(id, userId, !taskCompleted);
+
         set((state) => ({
           tasks: state.tasks.map((task) =>
             task.id === id ? { ...task, completed: !task.completed } : task
           ),
         }));
-        const res = await taskService.toggleComplete(
-          id,
-          userId,
-          !taskCompleted
-        );
-        if (!res.ok) {
-          console.warn(`Error toggling completion for task: ${task.id}`);
-          // If toggling complete fails in the database - revert store state
-          set((state) => ({
-            tasks: state.tasks.map((task) =>
-              task.id === id ? { ...task, completed: task.completed } : task
-            ),
-          }));
-        }
-        set({ loadingTasks: false });
       },
       updateTaskDueDate: async (id, dueDate) => {
         await taskService.updateTaskDueDate(id, dueDate);

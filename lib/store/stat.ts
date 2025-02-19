@@ -17,8 +17,6 @@ export const useStatStore = create<StatStore>((set) => ({
   completedThisWeek: 0,
   updateStats: () => {
     const { tasks } = useTaskStore.getState();
-    // Define the start of today to use for date comparisons
-    const today = moment().startOf('day');
     // Get the current ISO week number for tracking weekly tasks
     // this will help us introduce monthly tracking
     const currentWeek = moment().isoWeek();
@@ -28,7 +26,8 @@ export const useStatStore = create<StatStore>((set) => ({
         // Check if dateUpdated matches today's date - task was completed today
         task.completed &&
         task.dateUpdated &&
-        moment(task.dateUpdated).isSame(today, 'day')
+        // Can't use an outside variable here - value will become stale
+        moment(task.dateUpdated).isSame(moment(), 'day')
     ).length;
 
     const completedThisWeek = tasks.filter(
