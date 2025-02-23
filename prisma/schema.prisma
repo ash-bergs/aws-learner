@@ -36,6 +36,7 @@ model Task {
   user        User?     @relation(fields: [userId], references: [id])
   tags        Tag[]     @relation("TaskTags")
   taskTags    TaskTag[]
+  priority    Int       @default(0)
 }
 
 model Tag {

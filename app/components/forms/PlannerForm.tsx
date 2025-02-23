@@ -8,6 +8,7 @@ export interface PlannerTask {
   text: string;
   date?: string;
   tag?: string;
+  priority?: number; // Int in the table - using as a boolean for now, but we might want levels to priority so an Int made more sense
 }
 
 type SectionKeys = 'contact' | 'schedule' | 'followUp' | 'research' | 'create';
@@ -19,37 +20,53 @@ const PlannerForm = () => {
   const [bigGoal, setBigGoal] = useState('');
   const [priorities, setPriorities] = useState<PlannerTask[]>([]);
   const [sections, setSections] = useState<Sections>({
-    contact: [{ text: '', date: '', tag: '' }],
-    schedule: [{ text: '', date: '', tag: '' }],
-    followUp: [{ text: '', date: '', tag: '' }],
-    research: [{ text: '', date: '', tag: '' }],
-    create: [{ text: '', date: '', tag: '' }],
+    contact: [{ text: '', date: '', tag: '', priority: 0 }],
+    schedule: [{ text: '', date: '', tag: '', priority: 0 }],
+    followUp: [{ text: '', date: '', tag: '', priority: 0 }],
+    research: [{ text: '', date: '', tag: '', priority: 0 }],
+    create: [{ text: '', date: '', tag: '', priority: 0 }],
   });
-
-  const handleChange = (
+  // Type Casting solution: Tell TS that `value` should match type of PlannerTask[field] dynamically
+  const handleChange = <K extends keyof PlannerTask>(
     section: SectionKeys,
     index: number,
-    field: keyof PlannerTask,
-    value: string
+    field: K, // Key(K) of PlannerTask
+    value: PlannerTask[K] // Value matches expected type of PlannerTask[field]
   ) => {
     setSections((prev) => {
       const updated = { ...prev };
-      updated[section][index][field] = value;
-      return { ...updated };
+      // Shallow copy of the array for the specific section (e.g. 'contact')
+      updated[section] = [...updated[section]];
+      // Create a new obj for the update and dynamically update the corresponding field
+      updated[section][index] = { ...updated[section][index], [field]: value };
+      return updated;
     });
   };
 
   const addField = (section: SectionKeys) => {
     setSections((prev) => ({
       ...prev,
-      [section]: [...prev[section], { text: '', date: '', tag: '' }],
+      [section]: [
+        ...prev[section],
+        { text: '', date: '', tag: '', priority: 0 },
+      ],
     }));
   };
 
   const togglePriority = (section: SectionKeys, index: number) => {
     const item = sections[section][index];
-    // if there's no text, don't toggle
+    // if there's no text, don't proceed
     if (!item.text) return;
+    setSections((prev) => {
+      const updated = { ...prev };
+      const task = updated[section][index];
+
+      // Toggle priority in Sections state
+      task.priority = task.priority === 0 ? 1 : 0;
+
+      return { ...updated };
+    });
+    // Toggle priority in Priorities state
     setPriorities((prev) => {
       if (prev.includes(item)) {
         return prev.filter((p) => p !== item);
@@ -64,7 +81,12 @@ const PlannerForm = () => {
       items.forEach(async (item) => {
         console.log(item);
         if (item.text.trim()) {
-          await addTask(item.text, item.tag ? [item.tag] : [], item.date);
+          await addTask(
+            item.text,
+            item.tag ? [item.tag] : [],
+            item.date,
+            item.priority
+          );
         }
       });
     });

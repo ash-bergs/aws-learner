@@ -32,7 +32,8 @@ export class TaskService {
     text: string,
     userId: string,
     tagIds?: string[],
-    date?: string
+    date?: string,
+    priority?: number
   ) {
     const taskDueDate = date ? new Date(date) : null;
     try {
@@ -41,7 +42,7 @@ export class TaskService {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, userId, tagIds, taskDueDate }),
+        body: JSON.stringify({ text, userId, tagIds, taskDueDate, priority }),
       });
 
       if (!response.ok) throw new Error('Failed to add task');

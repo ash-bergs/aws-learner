@@ -17,7 +17,13 @@ interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
   loadingTasks: boolean;
-  addTask: (text: string, tagIds?: string[], date?: string) => void;
+  // Better pattern then a bunch of optional params??
+  addTask: (
+    text: string,
+    tagIds?: string[],
+    date?: string,
+    priority?: number
+  ) => void;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
@@ -65,12 +71,18 @@ export const useTaskStore = create<TaskStore>()(
           console.error('Failed to fetch tasks:', error);
         }
       },
-      addTask: async (text, tagIds, date) => {
+      addTask: async (text, tagIds, date, priority) => {
         console.table({ text, tagIds, date });
         const userId = useStore.getState().userId;
         if (!userId) return;
 
-        const newTask = await taskService.addTask(text, userId, tagIds, date);
+        const newTask = await taskService.addTask(
+          text,
+          userId,
+          tagIds,
+          date,
+          priority
+        );
         if (!newTask) throw new Error('There was a problem adding the task');
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));
