@@ -66,7 +66,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { text, userId, tagIds } = body;
+  const { text, userId, tagIds, taskDueDate } = body;
 
   if (!text || !userId) {
     return NextResponse.json(
@@ -89,6 +89,7 @@ export async function POST(req: NextRequest) {
         text,
         userId,
         position: newTaskPosition,
+        dueDate: taskDueDate,
       },
     });
 

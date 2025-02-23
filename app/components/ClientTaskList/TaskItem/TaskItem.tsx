@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { COLORS } from '@/utils/constants';
 import { useTaskStore } from '@/lib/store/task';
 import { useNoteStore } from '@/lib/store/note';
+import { useStatStore } from '@/lib/store/stat';
 import { useStore } from '@/lib/store/app';
 import { useSelectedTaskStore } from '@/lib/store/selected.task';
 import DueDateModal from './DueDateModal';
@@ -22,6 +23,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
   const { deleteTask, toggleComplete } = useTaskStore();
+  const { updateStats } = useStatStore();
   const { selectedTaskIds, setSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
   const { disableColorCodeTasks } = useStore();
@@ -40,6 +42,11 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  const toggleCompleteTask = (id: string) => {
+    toggleComplete(id);
+    updateStats();
   };
 
   const menuItems = [
@@ -98,7 +105,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
       <div className="flex items-center">
         <ToggleCompletionButton
           isCompleted={task.completed}
-          onToggle={() => toggleComplete(task.id)}
+          onToggle={() => toggleCompleteTask(task.id)}
         />
         <MeatballMenu
           menuOpen={menuOpen}

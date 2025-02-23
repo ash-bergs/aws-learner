@@ -21,7 +21,7 @@ import LoadingSpinner from '../LoadingSpinner';
 import SortableTaskItem from './SortableTaskItem';
 import TasksToolbar from '../TasksToolbar.tsx';
 import { getSession } from 'next-auth/react';
-
+// import PomodoroTimer from '../Timer';
 /**
  * A component that renders a draggable and sortable list of tasks.
  *
@@ -107,6 +107,9 @@ const ClientTaskList = (): React.ReactElement => {
       <h2 className="text-text text-2xl font-bold mb-4">Your Tasks</h2>
       <div className="flex flex-col gap-4">
         <TasksToolbar />
+        {/* <PomodoroTimer
+          expiryTimestamp={new Date(Date.now() + 25 * 60 * 1000)}
+        /> */}
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}

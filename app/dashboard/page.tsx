@@ -5,6 +5,7 @@ import ClientTaskList from '../components/ClientTaskList';
 import NoteDisplay from '../components/NoteBoard';
 import TextEditor from '../components/TextEditor';
 import DashboardGreeting from '../components/DashboardGreeting';
+import DashboardStats from '../components/DashboardStats';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
       <div>
         <div className="text-text px-4 py-6 flex justify-between">
           <DashboardGreeting username={username} />
+          <DashboardStats />
           {/** TODO: Make these into links, create a page for each */}
           {/* <div className="flex gap-4">
           <div>Monthly Calendar</div>
