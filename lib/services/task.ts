@@ -5,6 +5,17 @@
 // TODO:
 // Update the types with Prisma types - add Promise<type> returns
 
+export interface AddTaskInput {
+  text: string;
+  tagIds?: string[];
+  dueDate?: string;
+  priority?: number;
+}
+
+type ServiceAddTaskInput = {
+  userId: string;
+} & AddTaskInput;
+
 export class TaskService {
   async getAllTasks(userId: string) {
     try {
@@ -28,14 +39,14 @@ export class TaskService {
       return [];
     }
   }
-  async addTask(
-    text: string,
-    userId: string,
-    tagIds?: string[],
-    date?: string,
-    priority?: number
-  ) {
-    const taskDueDate = date ? new Date(date) : null;
+  async addTask({
+    userId,
+    text,
+    tagIds,
+    dueDate,
+    priority,
+  }: ServiceAddTaskInput) {
+    const taskDueDate = dueDate ? new Date(dueDate) : null;
     try {
       const response = await fetch('/api/tasks', {
         method: 'POST',

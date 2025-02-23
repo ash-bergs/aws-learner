@@ -81,12 +81,12 @@ const PlannerForm = () => {
       items.forEach(async (item) => {
         console.log(item);
         if (item.text.trim()) {
-          await addTask(
-            item.text,
-            item.tag ? [item.tag] : [],
-            item.date,
-            item.priority
-          );
+          await addTask({
+            text: item.text,
+            tagIds: item.tag ? [item.tag] : [],
+            dueDate: item.date,
+            priority: item.priority,
+          });
         }
       });
     });

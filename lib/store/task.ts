@@ -5,6 +5,13 @@ import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
 import { Task, Tag } from '@prisma/client';
 
+interface AddTaskInput {
+  text: string;
+  tagIds?: string[];
+  dueDate?: string;
+  priority?: number;
+}
+
 // Define TaskWithTags to include the `taskTags` relation
 export interface TaskWithTags extends Task {
   taskTags: Array<{
@@ -18,12 +25,7 @@ interface TaskStore {
   fetchTasks: () => Promise<void>;
   loadingTasks: boolean;
   // Better pattern then a bunch of optional params??
-  addTask: (
-    text: string,
-    tagIds?: string[],
-    date?: string,
-    priority?: number
-  ) => void;
+  addTask: (task: AddTaskInput) => Promise<void>;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
@@ -71,18 +73,17 @@ export const useTaskStore = create<TaskStore>()(
           console.error('Failed to fetch tasks:', error);
         }
       },
-      addTask: async (text, tagIds, date, priority) => {
-        console.table({ text, tagIds, date });
+      addTask: async ({ text, tagIds, dueDate, priority }) => {
         const userId = useStore.getState().userId;
         if (!userId) return;
 
-        const newTask = await taskService.addTask(
-          text,
+        const newTask = await taskService.addTask({
           userId,
+          text,
           tagIds,
-          date,
-          priority
-        );
+          dueDate,
+          priority,
+        });
         if (!newTask) throw new Error('There was a problem adding the task');
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));
