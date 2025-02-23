@@ -35,7 +35,6 @@ export class TaskService {
     date?: string
   ) {
     const taskDueDate = date ? new Date(date) : null;
-    console.log('TASK SERVICE: ', taskDueDate);
     try {
       const response = await fetch('/api/tasks', {
         method: 'POST',
