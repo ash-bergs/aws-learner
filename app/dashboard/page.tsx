@@ -8,6 +8,7 @@ import DashboardGreeting from '../components/DashboardGreeting';
 import DashboardStats from '../components/DashboardStats';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -19,30 +20,27 @@ export default async function DashboardPage() {
   return (
     <main>
       <div>
-        <div className="text-text px-4 py-6 flex justify-between">
-          <DashboardGreeting username={username} />
-          <DashboardStats />
-          {/** TODO: Make these into links, create a page for each */}
-          {/* <div className="flex gap-4">
-          <div>Monthly Calendar</div>
-          <div>Weekly Calendar</div>
-        </div> */}
+        <div className="text-text p-4 flex justify-between">
+          <div className="flex flex-col w-[100%]">
+            <div className="flex justify-between p-2">
+              <DashboardGreeting username={username} />
+              <Link
+                className="text-center font-bold py-2 px-4 rounded-md
+        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+                href={'/plan/week'}
+              >
+                <button>Weekly Planner</button>
+              </Link>
+            </div>
+            <DashboardStats />
+          </div>
         </div>
-        {/** TODO: add dateCompleted and a way to assign tasks to a day */}
-        {/* <div className="text-text px-4 py-2">
-        <div>Tasks for the day (count)</div>
-      </div> */}
-        <div
-          className="h-screen text-black
-      grid gap-8 grid-cols-1 md:grid-cols-2
-      px-4 
-      "
-        >
-          <div className="flex flex-col">
+        <div className="h-screen text-black grid gap-2 grid-cols-1 md:grid-cols-2 px-4">
+          <div className="flex flex-col p-2">
             <ClientTaskList />
             <AddTasks />
           </div>
-          <div>
+          <div className="p-2">
             <NoteDisplay />
             <TextEditor />
           </div>

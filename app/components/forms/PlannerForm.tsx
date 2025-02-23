@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useTaskStore } from '@/lib/store/task';
 import TagSelector from '../AddTasks/TagSelector';
 
-interface PlannerTask {
+export interface PlannerTask {
   text: string;
   date?: string;
   tag?: string;
@@ -180,7 +180,11 @@ const PlannerForm = () => {
           </div>
         )}
 
-        <button type="submit" className="bg-primary text-white p-2 rounded">
+        <button
+          type="submit"
+          className="text-center font-bold py-2 px-4 rounded-md
+        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+        >
           Save Tasks
         </button>
       </form>

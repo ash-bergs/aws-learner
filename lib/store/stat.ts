@@ -58,7 +58,7 @@ export const useStatStore = create<StatStore>((set) => ({
       }
 
       // If the task is complete and the UPDATED date is in the current week
-      if (task.completed && dueDate?.isoWeek() === currentWeek) {
+      if (task.completed && dateUpdated?.isoWeek() === currentWeek) {
         completedThisWeek++;
       }
 
