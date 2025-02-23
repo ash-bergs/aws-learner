@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useTaskStore } from '@/lib/store/task';
 import TagSelector from '../AddTasks/TagSelector';
 
-export interface PlannerTask {
+interface PlannerTask {
   text: string;
   date?: string;
   tag?: string;
@@ -83,7 +83,7 @@ const PlannerForm = () => {
         if (item.text.trim()) {
           await addTask({
             text: item.text,
-            tagIds: item.tag ? [item.tag] : [],
+            tagIds: item.tag ? [item.tag] : [], // eventually we want to support adding more than 1 tag
             dueDate: item.date,
             priority: item.priority,
           });
@@ -105,8 +105,9 @@ const PlannerForm = () => {
     <main className="p-6 bg-note text-textSecondary rounded shadow">
       <h1 className="text-2xl font-bold">Weekly Planner</h1>
       <p>
-        This is a place to plan your week from a high-level. Add tasks, organize
-        them with tags, by date, and priority.
+        This is a place to plan your week from a high-level, a &quot;brain
+        dump&quot; if you will. Add tasks, organize them with tags, by date, and
+        priority.
       </p>
       <form onSubmit={handleSubmit} className="space-y-2 mt-4">
         <label className="block text-lg font-medium">My Big Goal</label>

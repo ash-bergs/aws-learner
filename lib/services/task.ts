@@ -1,20 +1,11 @@
+import { type ServiceAddTaskInput } from '@/types/service';
+
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
  */
 
 // TODO:
 // Update the types with Prisma types - add Promise<type> returns
-
-export interface AddTaskInput {
-  text: string;
-  tagIds?: string[];
-  dueDate?: string;
-  priority?: number;
-}
-
-type ServiceAddTaskInput = {
-  userId: string;
-} & AddTaskInput;
 
 export class TaskService {
   async getAllTasks(userId: string) {
@@ -53,7 +44,7 @@ export class TaskService {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, userId, tagIds, taskDueDate, priority }),
+        body: JSON.stringify({ userId, text, tagIds, taskDueDate, priority }),
       });
 
       if (!response.ok) throw new Error('Failed to add task');
