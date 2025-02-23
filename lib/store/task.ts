@@ -4,14 +4,7 @@ import { taskService } from '@/lib/services';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
 import { Task, Tag } from '@prisma/client';
-
-interface AddTaskInput {
-  text: string;
-  tagIds?: string[];
-  dueDate?: string;
-  priority?: number;
-}
-
+import { type AddTaskInput } from '@/types/service';
 // Define TaskWithTags to include the `taskTags` relation
 export interface TaskWithTags extends Task {
   taskTags: Array<{
@@ -24,7 +17,6 @@ interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
   loadingTasks: boolean;
-  // Better pattern then a bunch of optional params??
   addTask: (task: AddTaskInput) => Promise<void>;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
