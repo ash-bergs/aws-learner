@@ -23,7 +23,7 @@ const AddTasks = () => {
     setLoading(true);
     if (!taskText.trim()) return;
     const taskTags = taskTag === '' ? [] : [taskTag];
-    await addTask(taskText, taskTags);
+    await addTask({ text: taskText, tagIds: taskTags });
     setTaskText('');
     setLoading(false);
     inputRef.current?.focus();

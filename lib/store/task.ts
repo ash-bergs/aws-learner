@@ -4,7 +4,7 @@ import { taskService } from '@/lib/services';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
 import { Task, Tag } from '@prisma/client';
-
+import { type AddTaskInput } from '@/types/service';
 // Define TaskWithTags to include the `taskTags` relation
 export interface TaskWithTags extends Task {
   taskTags: Array<{
@@ -17,7 +17,7 @@ interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
   loadingTasks: boolean;
-  addTask: (text: string, tagIds?: string[], date?: string) => void;
+  addTask: (task: AddTaskInput) => Promise<void>;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
@@ -65,12 +65,17 @@ export const useTaskStore = create<TaskStore>()(
           console.error('Failed to fetch tasks:', error);
         }
       },
-      addTask: async (text, tagIds, date) => {
-        console.table({ text, tagIds, date });
+      addTask: async ({ text, tagIds, dueDate, priority }) => {
         const userId = useStore.getState().userId;
         if (!userId) return;
 
-        const newTask = await taskService.addTask(text, userId, tagIds, date);
+        const newTask = await taskService.addTask({
+          userId,
+          text,
+          tagIds,
+          dueDate,
+          priority,
+        });
         if (!newTask) throw new Error('There was a problem adding the task');
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));

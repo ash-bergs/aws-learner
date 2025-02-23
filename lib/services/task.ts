@@ -1,3 +1,5 @@
+import { type ServiceAddTaskInput } from '@/types/service';
+
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
  */
@@ -28,20 +30,21 @@ export class TaskService {
       return [];
     }
   }
-  async addTask(
-    text: string,
-    userId: string,
-    tagIds?: string[],
-    date?: string
-  ) {
-    const taskDueDate = date ? new Date(date) : null;
+  async addTask({
+    userId,
+    text,
+    tagIds,
+    dueDate,
+    priority,
+  }: ServiceAddTaskInput) {
+    const taskDueDate = dueDate ? new Date(dueDate) : null;
     try {
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, userId, tagIds, taskDueDate }),
+        body: JSON.stringify({ userId, text, tagIds, taskDueDate, priority }),
       });
 
       if (!response.ok) throw new Error('Failed to add task');
