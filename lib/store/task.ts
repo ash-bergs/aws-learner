@@ -17,7 +17,7 @@ interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
   loadingTasks: boolean;
-  addTask: (text: string, tagIds?: string[]) => void;
+  addTask: (text: string, tagIds?: string[], date?: string) => void;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
   toggleComplete: (id: string) => void;
@@ -65,12 +65,12 @@ export const useTaskStore = create<TaskStore>()(
           console.error('Failed to fetch tasks:', error);
         }
       },
-      addTask: async (text, tagIds) => {
+      addTask: async (text, tagIds, date) => {
+        console.table({ text, tagIds, date });
         const userId = useStore.getState().userId;
         if (!userId) return;
 
-        const newTask = await taskService.addTask(text, userId, tagIds);
-
+        const newTask = await taskService.addTask(text, userId, tagIds, date);
         if (!newTask) throw new Error('There was a problem adding the task');
 
         set((state) => ({ tasks: [...state.tasks, newTask] }));

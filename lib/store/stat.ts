@@ -6,7 +6,12 @@ interface StatStore {
   currentDay: Date;
   currentWeek: number;
   completedToday: number;
+  // count for due today that are done
+  completedDueToday: number;
+  dueToday: number;
   completedThisWeek: number;
+  completedDueThisWeek: number;
+  dueThisWeek: number;
   updateStats: () => void;
 }
 
@@ -15,34 +20,68 @@ export const useStatStore = create<StatStore>((set) => ({
   currentWeek: moment().isoWeek(), // ISO week number
   completedToday: 0,
   completedThisWeek: 0,
+  dueToday: 0,
+  dueThisWeek: 0,
+  completedDueToday: 0,
+  completedDueThisWeek: 0,
   updateStats: () => {
     const { tasks } = useTaskStore.getState();
-    // Get the current ISO week number for tracking weekly tasks
-    // this will help us introduce monthly tracking
     const currentWeek = moment().isoWeek();
+    const today = moment();
 
-    const completedToday = tasks.filter(
-      (task) =>
-        // Check if dateUpdated matches today's date - task was completed today
-        task.completed &&
-        task.dateUpdated &&
-        // Can't use an outside variable here - value will become stale
-        moment(task.dateUpdated).isSame(moment(), 'day')
-    ).length;
+    // Init counters
+    let completedToday = 0;
+    let completedDueToday = 0;
+    let dueToday = 0;
+    let completedThisWeek = 0;
+    let completedDueThisWeek = 0;
+    let dueThisWeek = 0;
 
-    const completedThisWeek = tasks.filter(
-      // Check if dateUpdated falls into the current ISO week number - task was completed this week
-      (task) =>
-        task.completed &&
-        task.dateUpdated &&
-        moment(task.dateUpdated).isoWeek() === currentWeek
-    ).length;
+    tasks.forEach((task) => {
+      const dateUpdated = task.dateUpdated ? moment(task.dateUpdated) : null;
+      const dueDate = task.dueDate ? moment(task.dueDate) : null;
+
+      // Iterate the tasks once instead of in a series of filters
+      // If the task is complete and the UPDATED date is today
+      if (task.completed && dateUpdated?.isSame(today, 'day')) {
+        completedToday++;
+      }
+
+      // If the task is complete and the DUE date is today
+      if (task.completed && dueDate?.isSame(today, 'day')) {
+        completedDueToday++;
+      }
+
+      // If the DUE date is in the current day
+      if (dueDate?.isSame(today, 'day')) {
+        dueToday++;
+      }
+
+      // If the task is complete and the UPDATED date is in the current week
+      if (task.completed && dateUpdated?.isoWeek() === currentWeek) {
+        completedThisWeek++;
+      }
+
+      // If the task is complete and the DUE date is in the current week
+      if (task.completed && dueDate?.isoWeek() === currentWeek) {
+        completedDueThisWeek++;
+      }
+
+      // If the DUE date is in the current week
+      if (dueDate?.isoWeek() === currentWeek) {
+        dueThisWeek++;
+      }
+    });
 
     set({
       currentDay: new Date(),
       currentWeek,
       completedToday,
       completedThisWeek,
+      dueToday,
+      dueThisWeek,
+      completedDueToday,
+      completedDueThisWeek,
     });
   },
 }));

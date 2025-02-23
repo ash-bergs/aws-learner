@@ -15,7 +15,6 @@ import { Theme, THEMES, AVAILABLE_THEMES } from '@/lib/core/theme.config';
  */
 const ThemeSwitcher = (): JSX.Element => {
   const { theme, setTheme } = useStore();
-
   const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const theme = e.target.value as Theme;
     setTheme(theme);

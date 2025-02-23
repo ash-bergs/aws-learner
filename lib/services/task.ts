@@ -28,14 +28,20 @@ export class TaskService {
       return [];
     }
   }
-  async addTask(text: string, userId: string, tagIds?: string[]) {
+  async addTask(
+    text: string,
+    userId: string,
+    tagIds?: string[],
+    date?: string
+  ) {
+    const taskDueDate = date ? new Date(date) : null;
     try {
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, userId, tagIds }),
+        body: JSON.stringify({ text, userId, tagIds, taskDueDate }),
       });
 
       if (!response.ok) throw new Error('Failed to add task');
