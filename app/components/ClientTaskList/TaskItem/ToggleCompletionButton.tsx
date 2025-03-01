@@ -5,11 +5,13 @@ import Confetti from 'react-confetti';
 type ToggleCompletionButtonProps = {
   isCompleted: boolean;
   onToggle: () => void;
+  ariaLabel: string;
 };
 
 const ToggleCompletionButton = ({
   isCompleted,
   onToggle,
+  ariaLabel,
 }: ToggleCompletionButtonProps) => {
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -36,7 +38,7 @@ const ToggleCompletionButton = ({
             ? 'bg-highlight border-highlight text-white'
             : 'bg-gray-200 border-gray-400 text-gray-600'
         )}
-        aria-label={isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
+        aria-label={ariaLabel}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
