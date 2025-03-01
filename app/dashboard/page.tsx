@@ -26,21 +26,23 @@ export default async function DashboardPage() {
               <DashboardGreeting username={username} />
               <Link
                 className="text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+  bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
                 href={'/plan/week'}
+                role="button"
+                aria-label="Go to weekly planner"
               >
-                <button>Weekly Planner</button>
+                Weekly Planner
               </Link>
             </div>
             <DashboardStats />
           </div>
         </div>
         <div className="h-screen text-black grid gap-2 grid-cols-1 md:grid-cols-2 px-4">
-          <div className="flex flex-col p-2">
+          <div role="region" aria-label="tasks" className="flex flex-col p-2">
             <ClientTaskList />
             <AddTasks />
           </div>
-          <div className="p-2">
+          <div role="region" aria-label="notes" className="p-2">
             <NoteDisplay />
             <TextEditor />
           </div>

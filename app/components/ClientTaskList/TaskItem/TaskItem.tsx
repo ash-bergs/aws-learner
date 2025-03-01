@@ -76,6 +76,9 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   return (
     <div
       className={`relative flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-sm hover:shadow-md transition-shadow`}
+      role="group"
+      aria-labelledby={`task-label-${task.id}`}
+      aria-describedby={task.dueDate ? `task-due-${task.id}` : undefined}
     >
       <div>
         <div className="flex items-center space-x-4">
@@ -83,12 +86,13 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
             type="checkbox"
             id={`task-${task.id}`}
             name={`task-${task.id}`}
-            aria-label="Mark task as complete"
+            aria-label={`${checked ? 'Unselect' : 'Select'} task ${task.text}`}
             checked={checked}
             className="form-checkbox h-5 w-5 rounded focus:outline focus:outline-highlight"
             onChange={handleCheckboxChange}
           />
           <span
+            id={`task-label-${task.id}`}
             className={`text-gray-800 ${
               task.completed ? 'line-through italic' : ''
             }`}
@@ -97,7 +101,10 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
           </span>
         </div>
         {task.dueDate && (
-          <span className="text-gray-500 text-xs ml-2">
+          <span
+            id={`task-due-${task.id}`}
+            className="text-gray-500 text-xs ml-2"
+          >
             Due: {new Date(task.dueDate).toDateString()}
           </span>
         )}
@@ -106,6 +113,9 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
         <ToggleCompletionButton
           isCompleted={task.completed}
           onToggle={() => toggleCompleteTask(task.id)}
+          ariaLabel={`Mark task ${task.text} as ${
+            task.completed ? 'incomplete' : 'complete'
+          }`}
         />
         <MeatballMenu
           menuOpen={menuOpen}
