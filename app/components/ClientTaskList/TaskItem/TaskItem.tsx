@@ -7,6 +7,7 @@ import { useNoteStore } from '@/lib/store/note';
 import { useStatStore } from '@/lib/store/stat';
 import { useStore } from '@/lib/store/app';
 import { useSelectedTaskStore } from '@/lib/store/selected.task';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import DueDateModal from './DueDateModal';
 import MeatballMenu from '../../MeatballMenu';
 import ToggleCompletionButton from './ToggleCompletionButton';
@@ -21,8 +22,9 @@ import type { TaskWithTags } from '@/lib/store/task';
  */
 const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDueDateModalOpen, setIsDueDateModalOpen] = useState(false);
-  const { deleteTask, toggleComplete } = useTaskStore();
+  const { toggleComplete } = useTaskStore();
   const { updateStats } = useStatStore();
   const { selectedTaskIds, setSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
@@ -60,7 +62,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
     {
       label: 'Delete',
       onClick: () => {
-        deleteTask(task.id);
+        setIsDeleteModalOpen(!isDeleteModalOpen);
         setMenuOpen(false);
       },
     },
@@ -122,7 +124,13 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
               checked:bg-highlight checked:border-highlight 
             "
           />
-          <span className="text-gray-900">{task.text}</span>
+          <span
+            className={`text-gray-900 ${
+              task.completed && 'line-through italic'
+            }`}
+          >
+            {task.text}
+          </span>
 
           {/* Checkmark inside the checkbox */}
           {checked && (
@@ -171,6 +179,11 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
         task={task}
         isDueDateModalOpen={isDueDateModalOpen}
         setIsDueDateModalOpen={setIsDueDateModalOpen}
+      />
+      <DeleteConfirmationModal
+        task={task}
+        isDeleteModalOpen={isDeleteModalOpen}
+        setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
     </div>
   );
