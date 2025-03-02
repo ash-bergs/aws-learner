@@ -5,14 +5,13 @@
  */
 
 export const THEMES = {
-  Tidepool: 'Tidepool',
-  Orchid: 'Orchid',
-  Jewel: 'Jewel',
-  DeepSpace: 'DeepSpace',
+  Lavender: 'Lavender',
+  Forest: 'Forest',
+  Nightshade: 'Nightshade',
 };
 
 export type Theme = keyof typeof THEMES;
 
-export const DEFAULT_THEME: Theme = 'Tidepool';
+export const DEFAULT_THEME: Theme = 'Lavender';
 
 export const AVAILABLE_THEMES: Theme[] = Object.keys(THEMES) as Theme[];

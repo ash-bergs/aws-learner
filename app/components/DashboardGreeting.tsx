@@ -26,7 +26,7 @@ const DashboardGreeting = ({ username }: { username: string }): JSX.Element => {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-2xl">
+      <p className="text-2xl text-textSecondary">
         {message} <span className="font-bold">{username}</span>
       </p>
     </div>
