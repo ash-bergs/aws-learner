@@ -5,68 +5,55 @@
 @tailwind utilities;
 
 :root {
-  --background: #f4f7f5;
-  --foreground: #f4f7f5;
-  --color-primary: #21a0a0;
-  --color-secondary: #869f9f;
-  --color-text: #074846;
-  --color-note: #e9f7ee;
-  --color-highlight: #41d070;
-  --color-modal: #e9f7ee;
-  --color-utility: #d1f0dc;
-  --color-text-secondary: #055c59;
+  --background: #f6f3f8; /* Light lilac */
+  --foreground: #ffffff; /* White for contrast */
+  --color-primary: #8d6cab; /* Soft muted purple */
+  --color-secondary: #5f4b8b; /* Deeper purple */
+  --color-note: #c2a6e3; /* Light pastel purple for notes */
+  --color-utility: #d8b3f0; /* Soft lavender */
+  --color-highlight: #b473e6; /* Softer bright purple */
+  --color-modal: #f6f3f8; /* Consistent light lilac */
+  --color-text: #222222; /* Dark for accessibility */
+  --color-text-secondary: #4a3b73; /* Muted deep purple */
 }
 
-.Tidepool {
-  --background: #f4f7f5;
-  --foreground: #f4f7f5;
-  --color-primary: #21a0a0;
-  --color-secondary: #046865;
-  --color-text: #074846;
-  --color-note: #e9f7ee;
-  --color-highlight: #41d070;
-  --color-modal: #e9f7ee;
-  --color-utility: #d1f0dc;
-  --color-text-secondary: #055c59;
+.Lavender {
+  --background: #f6f3f8; /* Light lilac */
+  --foreground: #ffffff; /* White for contrast */
+  --color-primary: #8d6cab; /* Soft muted purple */
+  --color-secondary: #5f4b8b; /* Deeper purple */
+  --color-note: #c2a6e3; /* Light pastel purple for notes */
+  --color-utility: #d8b3f0; /* Soft lavender */
+  --color-highlight: #b08acd; /* Softer bright purple */
+  --color-modal: #f6f3f8; /* Consistent light lilac */
+  --color-text: #222222; /* Dark for accessibility */
+  --color-text-secondary: #4a3b73; /* Muted deep purple */
 }
 
-.Orchid {
-  --background: #1a171b;
-  --foreground: #f4f7f5;
-  --color-primary: #61195c;
-  --color-secondary: #90798e;
-  --color-text: #efe9e7;
-  --color-note: #ecd5ec;
-  --color-highlight: #e766cd;
-  --color-modal: #61195c;
-  --color-utility: #422740;
-  --color-text-secondary: #42113e;
+.Forest {
+  --background: #f2f7f3; /* Light mint green */
+  --foreground: #ffffff; /* White for contrast */
+  --color-primary: #5a8a69; /* Muted green */
+  --color-secondary: #3f6b4a; /* Deeper forest green */
+  --color-note: #a7d3b8; /* Light pastel green for notes */
+  --color-utility: #c5e1c5; /* Soft sage green */
+  --color-highlight: #7cbf8c; /* Softer bright green */
+  --color-modal: #f2f7f3; /* Consistent soft mint green */
+  --color-text: #222222; /* Dark for accessibility */
+  --color-text-secondary: #2d5b3d; /* Muted deep green */
 }
 
-.Jewel {
-  --background: #faf8f7;
-  --foreground: #ffffff;
-  --color-primary: #7e57c2;
-  --color-secondary: #26c6da;
-  --color-text: #37474f;
-  --color-note: #e0f7fa;
-  --color-highlight: #ff376c;
-  --color-modal: #f8f4ff;
-  --color-utility: #ede5fa;
-  --color-text-secondary: #300813;
-}
-
-.DeepSpace {
-  --background: #0d1b2a;
-  --foreground: #1b263b;
-  --color-primary: #3c51cb;
-  --color-secondary: #8c7ea6;
-  --color-text: #c5cbe3;
-  --color-note: #ccb6f1;
-  --color-highlight: #9c27b0;
-  --color-modal: #3c51cb;
-  --color-utility: #53328e;
-  --color-text-secondary: #440c4e;
+.Nightshade {
+  --background: #1e1a26; /* Dark muted purple */
+  --foreground: #2a2233; /* Slightly lighter dark purple */
+  --color-primary: #b39ddb; /* Soft lavender for primary elements */
+  --color-secondary: #3e2454; /* Muted deep purple */
+  --color-note: #c2a6e3; /* Light pastel purple for notes */
+  --color-utility: #5c417c; /* Soft medium purple */
+  --color-highlight: #a788d5; /* Softer bright lavender */
+  --color-modal: #292235; /* Dark modal background */
+  --color-text: #f3eefe; /* Light for accessibility */
+  --color-text-secondary: #bba0d2; /* Soft muted text contrast */
 }
 
 @media (prefers-color-scheme: dark) {

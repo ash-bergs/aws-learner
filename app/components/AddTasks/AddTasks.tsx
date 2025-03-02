@@ -56,7 +56,7 @@ const AddTasks = () => {
             type="text"
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            className="rounded flex-grow bg-transparent focus:outline focus:outline-highlight text-text-secondary"
+            className="rounded flex-grow bg-transparent focus:outline focus:outline-utility text-text-secondary"
             placeholder="Describe your task..."
           />
           <TagSelector
@@ -77,7 +77,7 @@ const AddTasks = () => {
           {/** TODO: create an alternate color for cancel/clear buttons */}
           <button
             className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-highlight hover:bg-secondary text-white"
+        bg-utility hover:bg-secondary text-white"
             onClick={handleClearTaskInput}
           >
             Clear

@@ -16,8 +16,8 @@ import { auth } from '@/auth';
 async function Header() {
   const session = await auth();
   return (
-    <header className="sticky top-0 bg-primary p-4 px-6 shadow-md flex justify-between items-center flex-wrap z-10">
-      <h1 className="text-lg font-bold text-text">
+    <header className="sticky top-0 bg-secondary p-4 px-6 shadow-md flex justify-between items-center flex-wrap z-10">
+      <h1 className="text-xl font-bold text-white">
         <Link href="/dashboard">HabitNest</Link>
       </h1>
       <div className="flex items-center space-x-4">
