@@ -6,6 +6,7 @@ import { useTagStore } from '@/lib/store/tag';
 import { useStore } from '@/lib/store/app';
 import TagItem from './TagItem';
 import AddTagModal from './AddTagModal';
+import MassDeleteConfirmationModal from './MassDeleteConfirmationModal';
 
 //TODO: break this component up
 
@@ -14,9 +15,10 @@ const buttonClass =
 const checkboxLabelClass = 'flex items-center text-sm font-semibold text-text';
 const TasksToolbar = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isMassDeleteModalOpen, setIsMassDeleteModalOpen] =
+    React.useState(false);
   const {
     selectAllTasks,
-    deleteSelectedTasks,
     setSelectedTagId,
     selectedTagIds,
     clearSelectedTags,
@@ -96,7 +98,7 @@ const TasksToolbar = () => {
               </button>
               <button
                 className={buttonClass}
-                onClick={deleteSelectedTasks}
+                onClick={() => setIsMassDeleteModalOpen(true)}
                 disabled={isLinking || !selectedTaskIds.length}
               >
                 Delete Selected
@@ -114,6 +116,12 @@ const TasksToolbar = () => {
               <AddTagModal
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
+              />
+            )}
+            {isMassDeleteModalOpen && (
+              <MassDeleteConfirmationModal
+                isMassDeleteModalOpen={isMassDeleteModalOpen}
+                setIsMassDeleteModalOpen={setIsMassDeleteModalOpen}
               />
             )}
           </div>
