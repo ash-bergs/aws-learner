@@ -11,12 +11,12 @@ const TaskItemSkeleton = ({ task }: { task: TaskWithTags }) => {
   const borderColor = 'border-2 border-transparent';
   return (
     <div
-      className={`relative flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-sm hover:shadow-md transition-shadow gap-2`}
+      className={`relative flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-xs hover:shadow-md transition-shadow gap-2`}
     >
       <div>
-        <p>{task.text}</p>
+        <p className="text-tertiary">{task.text}</p>
         {task.dueDate && (
-          <span id={`task-due-${task.id}`} className="text-gray-500 text-xs">
+          <span id={`task-due-${task.id}`} className="text-tertiary text-xs">
             Due: {new Date(task.dueDate).toDateString()}
           </span>
         )}

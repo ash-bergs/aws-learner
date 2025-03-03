@@ -16,7 +16,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
   if (!editor) return null;
 
   return (
-    <div className="flex space-x-2 bg-primary p-2 rounded-t shadow">
+    <div className="flex space-x-2 bg-primary p-2 rounded-t shadow-sm">
       {/* Bold Button */}
       <button
         className={`px-2 py-1 rounded bg-secondary  ${
@@ -45,7 +45,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Undo */}
       <button
-        className="px-2 py-1 rounded bg-secondary font-bold text-white cursor-pointer"
+        className="px-2 py-1 rounded-sm bg-secondary font-bold text-white cursor-pointer"
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
       >
@@ -54,7 +54,7 @@ const Toolbar = ({ editor }: { editor: Editor | null }): JSX.Element | null => {
 
       {/* Redo */}
       <button
-        className="px-2 py-1 rounded bg-secondary font-bold text-white cursor-pointer"
+        className="px-2 py-1 rounded-sm bg-secondary font-bold text-white cursor-pointer"
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
       >

@@ -66,7 +66,7 @@ const NoteBoardDisplay = (): React.ReactElement => {
       {isLinking && <LinkingControls />}
 
       <div
-        className="flex flex-col h-[50vh] md:h-[50vh] sm:h-auto sm:flex-grow 
+        className="flex flex-col h-[50vh] md:h-[50vh] sm:h-auto sm:grow 
                  overflow-y-auto bg-secondary
                  p-4 rounded shadow-md"
       >
@@ -88,7 +88,7 @@ const NoteBoardDisplay = (): React.ReactElement => {
         </DndContext>
 
         {notes.length === 0 && (
-          <p className="text-text text-center bg-note w-[60%] mx-auto my-auto rounded-sm py-4 px-4">
+          <p className="text-text text-center bg-note w-[60%] mx-auto my-auto rounded-xs py-4 px-4">
             No current notes to display{' '}
           </p>
         )}

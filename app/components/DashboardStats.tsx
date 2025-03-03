@@ -52,7 +52,7 @@ interface StatItemProps {
 
 const StatItem = ({ label, ariaLabel, value, total }: StatItemProps) => {
   return (
-    <li className="bg-utility rounded p-2 text-xs font-semibold text-text shadow-sm">
+    <li className="bg-utility rounded-sm p-2 text-xs font-semibold text-text shadow-xs">
       <p>{label}</p>
       <div className="flex justify-center items-center p-1">
         <p className="text-lg" role="status" aria-label={ariaLabel}>

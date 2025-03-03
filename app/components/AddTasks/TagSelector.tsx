@@ -19,7 +19,7 @@ const TagSelector = ({
         name="select task tag"
         aria-label="Select a tag for the task"
         id="tag"
-        className="bg-background border focus:outline text-text font-semibold text-sm focus:outline-highlight rounded-full appearance-none px-2 py-1 pr-6"
+        className="bg-background focus:outline text-text font-semibold text-sm focus:outline-highlight rounded-full appearance-none px-2 py-1 pr-6"
         value={selectedTag}
         onChange={(e) => onTagSelect(e.target.value)}
       >

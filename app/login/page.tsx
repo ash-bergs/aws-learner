@@ -48,7 +48,7 @@ export default function LoginPage() {
             id="username"
             autoComplete="username"
             placeholder="username"
-            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight"
+            className="shadow-sm border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight"
           />
         </div>
 
@@ -63,7 +63,7 @@ export default function LoginPage() {
             type="password"
             id="password"
             name="password"
-            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight"
+            className="shadow-sm border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight"
           />
         </div>
         <div>
@@ -84,7 +84,7 @@ export default function LoginPage() {
         >
           <button
             type="submit"
-            className="bg-primary hover:bg-secondary text-white font-bold py-2 px-10 rounded focus:outline-none focus:shadow-outline w-auto"
+            className="bg-primary hover:bg-secondary text-white font-bold py-2 px-10 rounded-sm focus:outline-hidden focus:shadow-outline w-auto"
           >
             Login
           </button>

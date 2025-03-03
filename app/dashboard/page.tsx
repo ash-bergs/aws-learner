@@ -9,6 +9,7 @@ import DashboardStats from '../components/DashboardStats';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { primaryButtonStyles } from '@/lib/style';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -25,8 +26,7 @@ export default async function DashboardPage() {
             <div className="flex justify-between p-2">
               <DashboardGreeting username={username} />
               <Link
-                className="text-center font-bold py-2 px-4 rounded-md
-  bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+                className={primaryButtonStyles}
                 href={'/plan/week'}
                 role="button"
                 aria-label="Go to weekly planner"

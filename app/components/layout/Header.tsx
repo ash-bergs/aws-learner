@@ -27,7 +27,7 @@ async function Header() {
         {/* <select
           value={view}
           onChange={(e) => setView(e.target.value)}
-          className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded"
+          className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded-sm"
         >
           <option value="both">Tasks & Notes</option>
           <option value="tasks">Tasks Only</option>

@@ -1,8 +1,41 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-tertiary: var(--color-tertiary);
+  --color-utility: var(--color-utility);
+  --color-highlight: var(--color-highlight);
+  --color-text: var(--color-text);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-note: var(--color-note);
+  --color-modal: var(--color-modal);
+
+  --font-sans: Poppins, sans-serif;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 :root {
   --background: #f6f3f8; /* Light lilac */
@@ -22,6 +55,7 @@
   --foreground: #ffffff; /* White for contrast */
   --color-primary: #8d6cab; /* Soft muted purple */
   --color-secondary: #5f4b8b; /* Deeper purple */
+  --color-tertiary: #241232;
   --color-note: #c2a6e3; /* Light pastel purple for notes */
   --color-utility: #d8b3f0; /* Soft lavender */
   --color-highlight: #b08acd; /* Softer bright purple */
@@ -35,6 +69,7 @@
   --foreground: #ffffff; /* White for contrast */
   --color-primary: #5a8a69; /* Muted green */
   --color-secondary: #3f6b4a; /* Deeper forest green */
+  --color-tertiary: #24442c;
   --color-note: #a7d3b8; /* Light pastel green for notes */
   --color-utility: #c5e1c5; /* Soft sage green */
   --color-highlight: #7cbf8c; /* Softer bright green */
@@ -48,9 +83,10 @@
   --foreground: #25342d; /* Slightly lighter dark green */
   --color-primary: #6ea282; /* Soft muted green for primary elements */
   --color-secondary: #4a6f5a; /* Deeper forest green */
+  --color-tertiary: #22332c;
   --color-note: #8cbf9b; /* Light pastel green for notes */
-  --color-utility: #78a47c; /* Soft sage green */
-  --color-highlight: #92c29b; /* Softer bright green */
+  --color-utility: #3f5e42; /* Soft sage green */
+  --color-highlight: #6a8b70; /* Softer bright green */
   --color-modal: #22332c; /* Dark modal background */
   --color-text: #dbe8e1; /* Light for accessibility */
   --color-text-secondary: #a3c2a6; /* Soft muted text contrast */
@@ -61,6 +97,7 @@
   --foreground: #2a2233; /* Slightly lighter dark purple */
   --color-primary: #b39ddb; /* Soft lavender for primary elements */
   --color-secondary: #3e2454; /* Muted deep purple */
+  --color-tertiary: #241232;
   --color-note: #c2a6e3; /* Light pastel purple for notes */
   --color-utility: #5c417c; /* Soft medium purple */
   --color-highlight: #a788d5; /* Softer bright lavender */
