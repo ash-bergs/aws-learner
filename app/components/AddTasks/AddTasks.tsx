@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { useTaskStore } from '@/lib/store/task';
 import TagSelector from './TagSelector';
+import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 
 /**
  * A component that renders a text input and an "Add" button.
@@ -56,7 +57,7 @@ const AddTasks = () => {
             type="text"
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
-            className="rounded flex-grow bg-transparent focus:outline focus:outline-utility text-text-secondary"
+            className="rounded-sm grow bg-transparent focus:outline focus:outline-utility text-text-secondary"
             placeholder="Describe your task..."
           />
           <TagSelector
@@ -67,8 +68,7 @@ const AddTasks = () => {
 
         <div className="flex gap-2">
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+            className={`${primaryButtonStyles} w-full`}
             type="submit"
             disabled={taskText === '' || loading}
           >
@@ -76,8 +76,7 @@ const AddTasks = () => {
           </button>
           {/** TODO: create an alternate color for cancel/clear buttons */}
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-utility hover:bg-secondary text-white"
+            className={`${secondaryButtonStyles} w-full`}
             onClick={handleClearTaskInput}
           >
             Clear

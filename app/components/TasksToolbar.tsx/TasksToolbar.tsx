@@ -11,7 +11,7 @@ import MassDeleteConfirmationModal from './MassDeleteConfirmationModal';
 //TODO: break this component up
 
 const buttonClass =
-  'bg-primary rounded disabled:bg-gray-400 hover:bg-secondary text-white p-2 font-semibold text-sm';
+  'bg-primary rounded-sm disabled:bg-gray-400 hover:bg-secondary text-white p-2 font-semibold text-sm';
 const checkboxLabelClass = 'flex items-center text-sm font-semibold text-text';
 const TasksToolbar = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -40,7 +40,7 @@ const TasksToolbar = () => {
   };
 
   return (
-    <div className="p-4 rounded shadow bg-utility flex flex-col gap-2">
+    <div className="p-4 rounded-sm shadow-sm bg-utility flex flex-col gap-2">
       <div className="flex gap-2 flex-col">
         <div>
           <div className="flex items-center justify-between">

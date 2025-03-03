@@ -102,7 +102,7 @@ const PlannerForm = () => {
   };
 
   return (
-    <main className="p-6 bg-note text-textSecondary rounded shadow">
+    <main className="p-6 bg-note text-tertiary rounded-sm shadow-sm">
       <h1 className="text-2xl font-bold">Weekly Planner</h1>
       <p>
         This is a place to plan your week from a high-level, a &quot;brain
@@ -118,7 +118,7 @@ const PlannerForm = () => {
           type="text"
           value={bigGoal}
           onChange={(e) => setBigGoal(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 rounded-sm bg-background placeholder-text"
           placeholder="Describe your most important goal for this week..."
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
@@ -131,7 +131,7 @@ const PlannerForm = () => {
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="flex gap-2 items-center bg-primary p-2 rounded shadow-sm"
+                  className="flex gap-2 items-center bg-primary p-2 rounded-sm shadow-xs"
                 >
                   <input
                     type="text"
@@ -144,7 +144,7 @@ const PlannerForm = () => {
                         e.target.value
                       )
                     }
-                    className="p-2 border rounded w-full"
+                    className="p-2 rounded-sm w-full bg-background text-white placeholder-text"
                     placeholder="Task"
                   />
                   <input
@@ -158,7 +158,7 @@ const PlannerForm = () => {
                         e.target.value
                       )
                     }
-                    className="p-2 border rounded w-1/4"
+                    className="p-2 rounded-sm w-1/4 bg-background text-text"
                   />
                   <TagSelector
                     selectedTag={item.tag || ''}
@@ -184,7 +184,7 @@ const PlannerForm = () => {
               <button
                 type="button"
                 onClick={() => addField(section as SectionKeys)}
-                className="text-blue-500 mt-1"
+                className="text-tertiary font-semibold mt-1 cursor-pointer hover:underline"
               >
                 + Add More
               </button>
@@ -193,7 +193,7 @@ const PlannerForm = () => {
         </div>
 
         {priorities.length > 0 && (
-          <div className="mt-6 p-4 border rounded bg-gray-100">
+          <div className="mt-6 p-4 border rounded-sm bg-gray-100">
             <h2 className="font-bold text-lg">Top Priorities</h2>
             <ul className="list-disc list-inside">
               {priorities.map((p, idx) => (

@@ -5,6 +5,7 @@ import { Extension } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Toolbar from './Toolbar';
 import { useNoteStore } from '@/lib/store/note';
+import { primaryButtonStyles } from '@/lib/style';
 
 const AccessibleEditor = Extension.create({
   name: 'accessibleEditor',
@@ -66,8 +67,7 @@ const TextEditor = () => {
         <EditorContent editor={editor} />
       </div>
       <button
-        className="w-full text-center font-bold py-2 px-4 mt-4 rounded-md
-        bg-primary hover:bg-secondary text-white"
+        className={`${primaryButtonStyles} w-full text-center`}
         onClick={saveNote}
       >
         Save Note

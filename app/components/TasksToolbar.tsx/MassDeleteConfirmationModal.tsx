@@ -3,6 +3,7 @@ import Modal from '../Modal/Modal';
 import { useTaskStore } from '@/lib/store/task';
 import { useSelectedTaskStore } from '@/lib/store/selected.task';
 import TaskItemSkeleton from '../TaskItemSkeleton';
+import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 type DeleteConfirmationModalProps = {
   isMassDeleteModalOpen: boolean;
   setIsMassDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -38,17 +39,12 @@ const MassDeleteConfirmationModal = ({
           ))}
         <div className="flex gap-2">
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-highlight hover:bg-secondary text-white"
+            className={secondaryButtonStyles}
             onClick={() => setIsMassDeleteModalOpen(false)}
           >
             Cancel
           </button>
-          <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white"
-            onClick={handleDeleteTasks}
-          >
+          <button className={primaryButtonStyles} onClick={handleDeleteTasks}>
             Confirm
           </button>
         </div>

@@ -60,7 +60,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   // we also avoid clipping and CSS-related issues
   return ReactDOM.createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       role="dialog"
       aria-modal="true"
     >

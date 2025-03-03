@@ -2,6 +2,7 @@ import React from 'react';
 import Modal from '../../Modal/Modal';
 import { type TaskWithTags, useTaskStore } from '@/lib/store/task';
 import TaskItemSkeleton from '../../TaskItemSkeleton';
+import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 type DeleteConfirmationModalProps = {
   isDeleteModalOpen: boolean;
   setIsDeleteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,17 +32,12 @@ const DeleteConfirmationModal = ({
         <TaskItemSkeleton task={task} />
         <div className="flex gap-2">
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-highlight hover:bg-secondary text-white"
+            className={secondaryButtonStyles}
             onClick={() => setIsDeleteModalOpen(false)}
           >
             Cancel
           </button>
-          <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white"
-            onClick={handleDeleteTask}
-          >
+          <button className={primaryButtonStyles} onClick={handleDeleteTask}>
             Confirm
           </button>
         </div>

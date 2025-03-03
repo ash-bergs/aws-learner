@@ -77,7 +77,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
 
   return (
     <div
-      className={`relative flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-sm hover:shadow-md transition-shadow gap-2`}
+      className={`relative flex items-center justify-between p-4 mb-2 ${bgColor} ${borderColor} rounded-md shadow-xs hover:shadow-md transition-shadow gap-2`}
       role="group"
       aria-labelledby={`task-label-${task.id}`}
       aria-describedby={task.dueDate ? `task-due-${task.id}` : undefined}

@@ -11,15 +11,15 @@ const PomodoroTimer = ({ expiryTimestamp }: { expiryTimestamp: Date }) => {
       <div className="text-2xl">
         {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
       </div>
-      <button onClick={start} className="m-1 p-1 bg-green-500 rounded">
+      <button onClick={start} className="m-1 p-1 bg-green-500 rounded-sm">
         Start
       </button>
-      <button onClick={pause} className="m-1 p-1 bg-yellow-500 rounded">
+      <button onClick={pause} className="m-1 p-1 bg-yellow-500 rounded-sm">
         Pause
       </button>
       <button
         onClick={() => restart(new Date(Date.now() + 25 * 60 * 1000))}
-        className="m-1 p-1 bg-blue-500 rounded"
+        className="m-1 p-1 bg-blue-500 rounded-sm"
       >
         Restart
       </button>

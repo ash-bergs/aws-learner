@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../../Modal/Modal';
 import { useTaskStore } from '@/lib/store/task';
 import type { TaskWithTags } from '@/lib/store/task';
+import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 
 type DueDateModalProps = {
   isDueDateModalOpen: boolean;
@@ -48,15 +49,13 @@ const DueDateModal = ({
         />
         <div className="flex gap-2">
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-highlight hover:bg-secondary text-white"
+            className={secondaryButtonStyles}
             onClick={() => setIsDueDateModalOpen(false)}
           >
             Cancel
           </button>
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white"
+            className={primaryButtonStyles}
             onClick={handleUpdateTaskDueDate}
           >
             Confirm

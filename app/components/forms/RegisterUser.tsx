@@ -59,7 +59,7 @@ const RegisterUserForm = () => {
             id="username"
             autoComplete="username"
             onChange={(e) => setUsername(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -74,7 +74,7 @@ const RegisterUserForm = () => {
             type="password"
             id="password"
             onChange={(e) => setPassword(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -91,7 +91,7 @@ const RegisterUserForm = () => {
             autoComplete="email"
             placeholder="email@email.com"
             onChange={(e) => setEmail(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -105,7 +105,7 @@ const RegisterUserForm = () => {
             type="firstName"
             id="firstName"
             onChange={(e) => setFirstName(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
@@ -119,7 +119,7 @@ const RegisterUserForm = () => {
             type="lastName"
             id="lastName"
             onChange={(e) => setLastName(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow-sm appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden focus:shadow-outline"
           />
         </div>
         <p className="text-sm">
@@ -130,7 +130,7 @@ const RegisterUserForm = () => {
         </p>
         <button
           type="submit"
-          className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded-sm focus:outline-hidden focus:shadow-outline w-full"
         >
           Register
         </button>

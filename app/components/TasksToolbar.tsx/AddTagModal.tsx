@@ -3,6 +3,7 @@ import Modal from '../Modal/Modal';
 import TagPreview from './TagPreview';
 import { useTagStore } from '@/lib/store/tag';
 import { COLORS } from '@/utils/constants';
+import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 
 type AddTagModalProps = {
   isModalOpen: boolean;
@@ -36,7 +37,7 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
         <h1 className="text-lg font-semibold">Add a Tag</h1>
         <input
           type="text"
-          className="border border-gray-300 rounded p-2"
+          className="border border-text rounded-sm p-2"
           placeholder="Tag Name"
           onChange={(e) => {
             setTagName(e.target.value);
@@ -44,8 +45,8 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
           value={tagName}
           name="Add Tag"
         />
-        <div className="border rounded-md p-2">
-          <p className="font-semibold text-sm text-secondary">Tag Preview</p>
+        <div className="rounded-md p-2 bg-utility">
+          <p className="font-semibold text-text">Tag Preview</p>
           <div className="flex justify-center p-6">
             <TagPreview
               tagText={tagName || 'Tag Name'}
@@ -55,15 +56,13 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
         </div>
         <div className="flex gap-2">
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-highlight hover:bg-secondary text-white"
+            className={secondaryButtonStyles}
             onClick={() => setIsModalOpen(false)}
           >
             Cancel
           </button>
           <button
-            className="w-full text-center font-bold py-2 px-4 rounded-md
-        bg-primary hover:bg-secondary text-white disabled:bg-gray-400"
+            className={primaryButtonStyles}
             onClick={handleAddTag}
             disabled={tagName === ''}
           >
