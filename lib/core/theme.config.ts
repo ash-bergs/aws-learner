@@ -6,8 +6,9 @@
 
 export const THEMES = {
   Lavender: 'Lavender',
-  Forest: 'Forest',
   Nightshade: 'Nightshade',
+  Forest: 'Forest',
+  Evergreen: 'Evergreen',
 };
 
 export type Theme = keyof typeof THEMES;

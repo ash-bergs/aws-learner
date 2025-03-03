@@ -43,6 +43,19 @@
   --color-text-secondary: #2d5b3d; /* Muted deep green */
 }
 
+.Evergreen {
+  --background: #1b2621; /* Dark muted green */
+  --foreground: #25342d; /* Slightly lighter dark green */
+  --color-primary: #6ea282; /* Soft muted green for primary elements */
+  --color-secondary: #4a6f5a; /* Deeper forest green */
+  --color-note: #8cbf9b; /* Light pastel green for notes */
+  --color-utility: #78a47c; /* Soft sage green */
+  --color-highlight: #92c29b; /* Softer bright green */
+  --color-modal: #22332c; /* Dark modal background */
+  --color-text: #dbe8e1; /* Light for accessibility */
+  --color-text-secondary: #a3c2a6; /* Soft muted text contrast */
+}
+
 .Nightshade {
   --background: #1e1a26; /* Dark muted purple */
   --foreground: #2a2233; /* Slightly lighter dark purple */
