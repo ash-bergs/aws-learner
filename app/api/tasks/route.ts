@@ -1,6 +1,14 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
-import type { TaskWithTags } from '@/lib/store/task';
+import { Task, Tag } from '@prisma/client';
+
+export interface PrismaTaskWithTags extends Task {
+  taskTags: Array<{
+    taskId: string;
+    tagId: string;
+    tag: Tag | null;
+  }>;
+}
 
 /**
  * Handles a GET request to fetch tasks for a given user.
@@ -21,11 +29,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId');
 
-  // TODO: Since we're deploying in Amplify, build a small logger for nicely formatted logs
-  // And set up a custom error handler and configure Amplify to use it
-  // console.log('🚀 Incoming request to fetch tasks!');
-  // console.log('🔍 Received userId:', userId);
-  // console.log('🔍 Received tagId:', tagId);
+  // TODO: make sure the types match up with Dexie
 
   if (!userId) {
     console.error('❌ ERROR: Missing userId in request');
@@ -39,7 +43,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   try {
     console.log('🔍 Fetching all tasks for userId:', userId);
-    const tasks: TaskWithTags[] = await prisma.task.findMany({
+    const tasks: PrismaTaskWithTags[] = await prisma.task.findMany({
       where: { userId },
       include: {
         taskTags: {

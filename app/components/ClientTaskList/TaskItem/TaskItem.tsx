@@ -11,7 +11,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import DueDateModal from './DueDateModal';
 import MeatballMenu from '../../MeatballMenu';
 import ToggleCompletionButton from './ToggleCompletionButton';
-import type { TaskWithTags } from '@/lib/store/task';
+import type { TaskWithTags } from '@/lib/services/task';
 
 /**
  * A component to render a single task.
@@ -30,7 +30,11 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const { isLinking } = useNoteStore();
   const { disableColorCodeTasks } = useStore();
 
-  const taskTagColor = task.taskTags.length > 0 && task.taskTags[0].tag.color;
+  const taskTagColor =
+    task.taskTags.length > 0 && task?.taskTags[0]?.tag?.color;
+  // log with formatting
+  console.log(`TaskItem: taskTagColor: ${taskTagColor}`);
+  console.log(`Task Tags: ${JSON.stringify(task.taskTags)}`);
 
   const bgColor =
     task.taskTags.length > 0 && !disableColorCodeTasks
@@ -120,7 +124,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
             className="
               relative appearance-none w-6 h-6 shrink-0 border-2 border-secondary rounded-md 
               flex items-center justify-center 
-              focus:outline focus:outline-2 focus:outline-highlight
+              focus:outline-2 focus:outline-highlight
               checked:bg-highlight checked:border-highlight 
             "
           />

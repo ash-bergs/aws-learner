@@ -1,18 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { taskService } from '@/lib/services';
+import { type TaskWithTags } from '../services/task';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
-import { Task, Tag } from '@prisma/client';
 import { type AddTaskInput } from '@/types/service';
-// Define TaskWithTags to include the `taskTags` relation
-export interface TaskWithTags extends Task {
-  taskTags: Array<{
-    taskId: string;
-    tagId: string;
-    tag: Tag;
-  }>;
-}
+//import { Task, Tag } from '@prisma/client'; // we don't want to use Prisma types here?
+
 interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
@@ -56,7 +50,6 @@ export const useTaskStore = create<TaskStore>()(
         if (!userId) return;
 
         try {
-          // fetch all user's tasks
           const fetchedTasks = await taskService.getAllTasks(userId);
           // Set the tasks in the store
           set({ tasks: fetchedTasks });
