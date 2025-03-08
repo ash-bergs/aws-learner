@@ -168,41 +168,77 @@ class AppDatabase extends Dexie {
       tags: '&id, name, color, userId',
     });
 
-    this.on('populate', () => {
-      // Seed default tags
-      this.tags.bulkAdd([
-        {
-          id: crypto.randomUUID(),
-          name: 'Work',
-          color: 'blue',
-          userId: USER_ID,
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Personal',
-          color: 'purple',
-          userId: USER_ID,
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Urgent',
-          color: 'red',
-          userId: USER_ID,
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Project',
-          color: 'orange',
-          userId: USER_ID,
-        },
-        {
-          id: crypto.randomUUID(),
-          name: 'Home',
-          color: 'pink',
-          userId: USER_ID,
-        },
-      ]);
-    });
+    // TODO: setup a better, external, module to seed
+    // this.on('populate', () => {
+    //   // Seed default tags
+    //   this.tags.bulkAdd([
+    //     {
+    //       id: crypto.randomUUID(),
+    //       name: 'Work',
+    //       color: 'blue',
+    //       userId: USER_ID,
+    //     },
+    //     {
+    //       id: crypto.randomUUID(),
+    //       name: 'Personal',
+    //       color: 'purple',
+    //       userId: USER_ID,
+    //     },
+    //     {
+    //       id: crypto.randomUUID(),
+    //       name: 'Urgent',
+    //       color: 'red',
+    //       userId: USER_ID,
+    //     },
+    //     {
+    //       id: crypto.randomUUID(),
+    //       name: 'Project',
+    //       color: 'orange',
+    //       userId: USER_ID,
+    //     },
+    //     {
+    //       id: crypto.randomUUID(),
+    //       name: 'Home',
+    //       color: 'pink',
+    //       userId: USER_ID,
+    //     },
+    //   ]);
+    // });
+
+    // sync with Prisma
+    // user - adds createdAt and updatedAt
+    // tasks - adds priority
+    this.version(11)
+      .stores({
+        tasks:
+          '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority',
+        notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
+        taskNotes: '[taskId+noteId], taskId, noteId',
+        users:
+          '&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt',
+        taskTags: '[taskId+tagId], taskId, tagId',
+        tags: '&id, name, color, userId, createdAt, updatedAt',
+      })
+      .upgrade(async (tx) => {
+        const now = new Date();
+
+        // Update Users: Backfill createdAt and updatedAt
+        await tx
+          .table('users')
+          .toCollection()
+          .modify((user) => {
+            user.createdAt = now;
+            user.updatedAt = now;
+          });
+
+        // Update Tasks: Backfill priority
+        await tx
+          .table('tasks')
+          .toCollection()
+          .modify((task) => {
+            task.priority = task.priority ?? 0;
+          });
+      });
 
     this.users = this.table('users');
     this.tasks = this.table('tasks');
