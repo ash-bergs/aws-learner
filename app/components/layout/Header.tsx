@@ -2,6 +2,7 @@ import Link from 'next/link';
 import LogoutButton from './LogoutButton';
 import ThemeSwitcher from './ThemeSwitcher';
 import { auth } from '@/auth';
+import { Gi3dStairs } from 'react-icons/gi';
 
 /**
  * The top-level header component, which displays the app title and selectors
@@ -18,7 +19,10 @@ async function Header() {
   return (
     <header className="sticky top-0 bg-secondary p-4 px-6 shadow-md flex justify-between items-center flex-wrap z-10">
       <h1 className="text-xl font-bold text-white">
-        <Link href="/dashboard">HabitNest</Link>
+        <Link href="/dashboard">
+          <Gi3dStairs size={30} className="inline-block mr-2" />
+          TrekBit
+        </Link>
       </h1>
       <div className="flex items-center space-x-4">
         <ThemeSwitcher />

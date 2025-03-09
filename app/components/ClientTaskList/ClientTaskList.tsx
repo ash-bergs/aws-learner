@@ -104,7 +104,7 @@ const ClientTaskList = (): React.ReactElement => {
 
   return (
     <>
-      <h2 className="text-text text-2xl font-bold mb-4">Your Tasks</h2>
+      <h2 className="text-text text-xl font-bold mb-2">Your Tasks</h2>
       <div className="flex flex-col gap-4">
         <TasksToolbar />
         {/* <PomodoroTimer

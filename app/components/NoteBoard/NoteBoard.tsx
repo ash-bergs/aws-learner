@@ -61,7 +61,7 @@ const NoteBoardDisplay = (): React.ReactElement => {
     <>
       {/** if isLinking is true, don't show h2, show the LinkingControls buttons */}
       {!isLinking && (
-        <h2 className="text-text text-2xl font-bold mb-4">Notes</h2>
+        <h2 className="text-text text-xl font-bold mb-2">Notes</h2>
       )}
       {isLinking && <LinkingControls />}
 

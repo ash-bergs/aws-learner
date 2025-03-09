@@ -3,12 +3,13 @@
 import React, { useState } from 'react';
 import { useTaskStore } from '@/lib/store/task';
 import TagSelector from '../AddTasks/TagSelector';
+import { PlannerInputGroup } from './inputs/PlannerInputGroup';
 
 interface PlannerTask {
   text: string;
   date?: string;
   tag?: string;
-  priority?: number; // Int in the table - using as a boolean for now, but we might want levels to priority so an Int made more sense
+  priority?: number;
 }
 
 type SectionKeys = 'contact' | 'schedule' | 'followUp' | 'research' | 'create';
@@ -17,7 +18,12 @@ type Sections = Record<SectionKeys, PlannerTask[]>;
 
 const PlannerForm = () => {
   const { addTask } = useTaskStore();
-  const [bigGoal, setBigGoal] = useState('');
+  const [bigGoal, setBigGoal] = useState({
+    text: '',
+    date: '',
+    tag: '',
+    priority: 0,
+  });
   const [priorities, setPriorities] = useState<PlannerTask[]>([]);
   const [sections, setSections] = useState<Sections>({
     contact: [{ text: '', date: '', tag: '', priority: 0 }],
@@ -90,7 +96,7 @@ const PlannerForm = () => {
         }
       });
     });
-    setBigGoal('');
+    setBigGoal({ text: '', date: '', tag: '', priority: 0 });
     setSections({
       contact: [{ text: '', tag: '', date: '' }],
       schedule: [{ text: '', date: '', tag: '' }],
@@ -114,13 +120,19 @@ const PlannerForm = () => {
         <p className="text-sm">
           What is your most important goal for this week?
         </p>
-        <input
-          type="text"
+        <PlannerInputGroup
           value={bigGoal}
-          onChange={(e) => setBigGoal(e.target.value)}
-          className="w-full p-2 rounded-sm bg-background placeholder-text"
-          placeholder="Describe your most important goal for this week..."
+          onChange={(field, value) =>
+            setBigGoal({ ...bigGoal, [field]: value })
+          }
+          togglePriority={() =>
+            setBigGoal((prev) => ({
+              ...prev,
+              priority: prev.priority === 0 ? 1 : 0,
+            }))
+          }
         />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           {Object.entries(sections).map(([section, items]) => (
             <div key={section} className="space-y-2">
@@ -129,57 +141,16 @@ const PlannerForm = () => {
                 <span>{section.replace(/([A-Z])/g, ' $1')}</span> ...
               </h2>
               {items.map((item, index) => (
-                <div
+                <PlannerInputGroup
                   key={index}
-                  className="flex gap-2 items-center bg-primary p-2 rounded-sm shadow-xs"
-                >
-                  <input
-                    type="text"
-                    value={item.text}
-                    onChange={(e) =>
-                      handleChange(
-                        section as SectionKeys,
-                        index,
-                        'text',
-                        e.target.value
-                      )
-                    }
-                    className="p-2 rounded-sm w-full bg-background text-white placeholder-text"
-                    placeholder="Task"
-                  />
-                  <input
-                    type="date"
-                    value={item.date}
-                    onChange={(e) =>
-                      handleChange(
-                        section as SectionKeys,
-                        index,
-                        'date',
-                        e.target.value
-                      )
-                    }
-                    className="p-2 rounded-sm w-1/4 bg-background text-text"
-                  />
-                  <TagSelector
-                    selectedTag={item.tag || ''}
-                    onTagSelect={(tag) =>
-                      handleChange(section as SectionKeys, index, 'tag', tag)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      togglePriority(section as SectionKeys, index)
-                    }
-                    className={`p-2 rounded ${
-                      priorities.includes(item)
-                        ? 'bg-yellow-400'
-                        : 'bg-gray-200'
-                    }`}
-                  >
-                    ⭐
-                  </button>
-                </div>
+                  value={item}
+                  onChange={(field, value) =>
+                    handleChange(section as SectionKeys, index, field, value)
+                  }
+                  togglePriority={() =>
+                    togglePriority(section as SectionKeys, index)
+                  }
+                />
               ))}
               <button
                 type="button"

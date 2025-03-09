@@ -9,7 +9,7 @@ import DashboardStats from '../components/DashboardStats';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { primaryButtonStyles } from '@/lib/style';
+import { FaCalendarWeek } from 'react-icons/fa6';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -26,11 +26,12 @@ export default async function DashboardPage() {
             <div className="flex justify-between p-2">
               <DashboardGreeting username={username} />
               <Link
-                className={primaryButtonStyles}
+                className="text-text hover:text-primary text-lg font-semibold flex items-center"
                 href={'/plan/week'}
                 role="button"
                 aria-label="Go to weekly planner"
               >
+                <FaCalendarWeek size={20} className="inline-block mr-2" />
                 Weekly Planner
               </Link>
             </div>
