@@ -1,6 +1,7 @@
 import { type ServiceAddTaskInput } from '@/types/service';
 import { db, Task, Tag } from '../db';
 import { v4 as uuidv4 } from 'uuid';
+import type { ServiceResponse } from '@/lib/services';
 
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
@@ -23,32 +24,32 @@ export class TaskService {
    * @returns {Promise<TaskWithTags[]>} A promise resolving to an array of tasks
    * with their associated tags
    */
-  async getAllTasks(userId: string): Promise<TaskWithTags[]> {
+  async getAllTasks(userId: string): Promise<ServiceResponse<TaskWithTags[]>> {
     try {
       // Fetch tasks by user id
       const tasks = await db.tasks.where('userId').equals(userId).toArray();
-
       // If we have no tasks we can return now
-      if (tasks.length === 0) return [];
-
+      if (tasks.length === 0) {
+        return { success: true, data: [] };
+      }
       // We have tasks - do they have tags?
       const taskTags = await db.taskTags
         .where('taskId')
         .anyOf(tasks.map((task) => task.id))
         .toArray();
-
-      // If we have no tags we can return now with the tasks
+      // No tags we can return now with the tasks
       if (taskTags.length === 0) {
-        return tasks.map((task) => ({ ...task, taskTags: [] }));
+        return {
+          success: true,
+          data: tasks.map((task) => ({ ...task, taskTags: [] })),
+        };
       }
-
       // We've found tasks, and they have tags
       const tags = await db.tags.bulkGet(
         taskTags.map((taskTag) => taskTag.tagId)
       );
-
       // Enrich the tasks with their tags
-      return tasks.map((task) => ({
+      const enrichedTasks = tasks.map((task) => ({
         ...task,
         taskTags: taskTags
           .filter((tt) => tt.taskId === task.id)
@@ -58,9 +59,10 @@ export class TaskService {
             tag: tags.find((tag) => tag?.id === tt.tagId) || null,
           })),
       }));
+      return { success: true, data: enrichedTasks };
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
-      return [];
+      return { success: false, error: 'Failed to fetch tasks' };
     }
   }
   /**
@@ -80,7 +82,7 @@ export class TaskService {
     tagIds,
     dueDate,
     priority,
-  }: ServiceAddTaskInput): Promise<TaskWithTags | null> {
+  }: ServiceAddTaskInput): Promise<ServiceResponse<TaskWithTags>> {
     try {
       // Gen. id for task
       const newTaskId = uuidv4();
@@ -90,12 +92,10 @@ export class TaskService {
       const highestPositionTask = await db.tasks
         .where('userId')
         .equals(userId)
-        .sortBy('position'); // Sorts in ascending order
-
+        .sortBy('position');
       const highestPosition = highestPositionTask.length
         ? highestPositionTask[highestPositionTask.length - 1].position
         : 0;
-
       // Assign a new float position (e.g., next step could be highest + 1.0)
       const newTaskPosition = highestPosition + 1.0;
 
@@ -136,13 +136,13 @@ export class TaskService {
         })),
       };
 
-      return taskWithTags;
+      return { success: true, data: taskWithTags };
     } catch (error) {
       console.error('Failed to add task:', error);
-      return null;
+      return { success: false, error: 'Failed to add task' };
     }
   }
-  async deleteTask(id: string): Promise<boolean> {
+  async deleteTask(id: string): Promise<ServiceResponse<boolean>> {
     try {
       // Delete related taskTags first to maintain data integrity
       await db.taskTags.where('taskId').equals(id).delete();
@@ -150,35 +150,37 @@ export class TaskService {
       // Delete the task
       await db.tasks.where('id').equals(id).delete();
 
-      return true;
+      return { success: true, data: true };
     } catch (error) {
       console.error('Failed to delete task:', error);
-      return false;
+      return { success: false, error: 'Failed to delete task' };
     }
   }
-  async deleteTasksByIds(taskIds: string[]): Promise<boolean> {
+  async deleteTasksByIds(taskIds: string[]): Promise<ServiceResponse<boolean>> {
     try {
-      if (taskIds.length === 0) return false;
-
+      if (taskIds.length === 0) {
+        return { success: true, data: true };
+      }
       // Delete related taskTags in bulk
       await db.taskTags.where('taskId').anyOf(taskIds).delete();
-
       // Delete the tasks in bulk
       await db.tasks.where('id').anyOf(taskIds).delete();
-
-      return true;
+      return { success: true, data: true };
     } catch (error) {
       console.error('Failed to delete tasks:', error);
-      return false;
+      return { success: false, error: 'Failed to delete tasks' };
     }
   }
-  async toggleComplete(id: string, userId: string, completed: boolean) {
+  async toggleComplete(
+    id: string,
+    userId: string,
+    completed: boolean
+  ): Promise<ServiceResponse<Task>> {
     try {
       const dateUpdated = new Date();
       const task = await db.tasks.get(id);
       if (!task) {
-        console.log(`❌ Task not found: ${id}`);
-        return null;
+        return { success: false, error: 'Task not found' };
       }
 
       // Update the task in Dexie
@@ -190,18 +192,21 @@ export class TaskService {
       };
       await db.tasks.update(id, updatedTask);
 
-      return updatedTask;
+      return { success: true, data: updatedTask };
     } catch (error) {
       console.error('Failed to toggle task completion:', error);
-      return null;
+      return { success: false, error: 'Failed to toggle task completion' };
     }
   }
-  async updateTaskDueDate(id: string, dueDate: Date) {
+  async updateTaskDueDate(
+    id: string,
+    dueDate: Date
+  ): Promise<ServiceResponse<Task>> {
     try {
       const task = await db.tasks.get(id);
       if (!task) {
         console.log(`❌ Task not found: ${id}`);
-        return null;
+        return { success: false, error: 'Task not found' };
       }
 
       // Update the due date
@@ -211,19 +216,22 @@ export class TaskService {
       };
       await db.tasks.update(id, updatedTask);
 
-      return updatedTask;
+      return { success: true, data: updatedTask };
     } catch (error) {
       console.error('Failed to update task due date:', error);
-      return null;
+      return { success: false, error: 'Failed to update task due date' };
     }
   }
-  async updateTaskPosition(id: string, newPosition: number) {
+  async updateTaskPosition(
+    id: string,
+    newPosition: number
+  ): Promise<ServiceResponse<Task>> {
     try {
       const dateUpdated = new Date();
       const task = await db.tasks.get(id);
       if (!task) {
         console.log(`❌ Task not found: ${id}`);
-        return null;
+        return { success: false, error: 'Task not found' };
       }
 
       const updatedTask: Task = {
@@ -233,10 +241,10 @@ export class TaskService {
       };
       await db.tasks.update(id, updatedTask);
 
-      return updatedTask;
+      return { success: true, data: updatedTask };
     } catch (error) {
       console.error('Failed to update task order:', error);
-      return null;
+      return { success: false, error: 'Failed to update task order' };
     }
   }
 }

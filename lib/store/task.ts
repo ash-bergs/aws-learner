@@ -50,8 +50,10 @@ export const useTaskStore = create<TaskStore>()(
         if (!userId) return;
 
         try {
-          const fetchedTasks = await taskService.getAllTasks(userId);
-          // Set the tasks in the store
+          const response = await taskService.getAllTasks(userId);
+          if (!response.success) throw new Error(response.error);
+
+          const fetchedTasks = response.data;
           set({ tasks: fetchedTasks });
           set({ loadingTasks: false });
         } catch (error) {
@@ -59,19 +61,24 @@ export const useTaskStore = create<TaskStore>()(
         }
       },
       addTask: async ({ text, tagIds, dueDate, priority }) => {
-        const userId = useStore.getState().userId;
-        if (!userId) return;
+        try {
+          const userId = useStore.getState().userId;
+          if (!userId) return;
 
-        const newTask = await taskService.addTask({
-          userId,
-          text,
-          tagIds,
-          dueDate,
-          priority,
-        });
-        if (!newTask) throw new Error('There was a problem adding the task');
+          const response = await taskService.addTask({
+            userId,
+            text,
+            tagIds,
+            dueDate,
+            priority,
+          });
+          if (!response.success) throw new Error(response.error);
 
-        set((state) => ({ tasks: [...state.tasks, newTask] }));
+          const newTask = response.data;
+          set((state) => ({ tasks: [...state.tasks, newTask] }));
+        } catch (error) {
+          console.error('Failed to add task:', error);
+        }
       },
       /**
        * Selects all tasks based on current filters and updates the selectedTaskIds.
