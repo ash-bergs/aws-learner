@@ -5,8 +5,8 @@ import './globals.css';
 import '@fontsource/poppins/index.css';
 
 export const metadata: Metadata = {
-  title: 'Habit Nest',
-  description: 'Stay on track with Habit Nest',
+  title: 'Trekbit',
+  description: 'Level up your habits',
 };
 
 export default function RootLayout({

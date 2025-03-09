@@ -2,14 +2,10 @@
 
 import React, { useState } from 'react';
 import { useTaskStore } from '@/lib/store/task';
-import TagSelector from '../AddTasks/TagSelector';
-
-interface PlannerTask {
-  text: string;
-  date?: string;
-  tag?: string;
-  priority?: number; // Int in the table - using as a boolean for now, but we might want levels to priority so an Int made more sense
-}
+import {
+  PlannerInputGroup,
+  type PlannerTask,
+} from './inputs/PlannerInputGroup';
 
 type SectionKeys = 'contact' | 'schedule' | 'followUp' | 'research' | 'create';
 
@@ -17,8 +13,12 @@ type Sections = Record<SectionKeys, PlannerTask[]>;
 
 const PlannerForm = () => {
   const { addTask } = useTaskStore();
-  const [bigGoal, setBigGoal] = useState('');
-  const [priorities, setPriorities] = useState<PlannerTask[]>([]);
+  const [bigGoal, setBigGoal] = useState({
+    text: '',
+    date: '',
+    tag: '',
+    priority: 0,
+  });
   const [sections, setSections] = useState<Sections>({
     contact: [{ text: '', date: '', tag: '', priority: 0 }],
     schedule: [{ text: '', date: '', tag: '', priority: 0 }],
@@ -53,30 +53,9 @@ const PlannerForm = () => {
     }));
   };
 
-  const togglePriority = (section: SectionKeys, index: number) => {
-    const item = sections[section][index];
-    // if there's no text, don't proceed
-    if (!item.text) return;
-    setSections((prev) => {
-      const updated = { ...prev };
-      const task = updated[section][index];
-
-      // Toggle priority in Sections state
-      task.priority = task.priority === 0 ? 1 : 0;
-
-      return { ...updated };
-    });
-    // Toggle priority in Priorities state
-    setPriorities((prev) => {
-      if (prev.includes(item)) {
-        return prev.filter((p) => p !== item);
-      }
-      return [...prev, item];
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Adds section tasks
     Object.entries(sections).forEach(([, items]) => {
       items.forEach(async (item) => {
         console.log(item);
@@ -90,7 +69,14 @@ const PlannerForm = () => {
         }
       });
     });
-    setBigGoal('');
+    // Adds big goal
+    await addTask({
+      text: bigGoal.text,
+      tagIds: bigGoal.tag ? [bigGoal.tag] : [], // eventually we want to support adding more than 1 tag
+      dueDate: bigGoal.date,
+      priority: bigGoal.priority,
+    });
+    setBigGoal({ text: '', date: '', tag: '', priority: 0 });
     setSections({
       contact: [{ text: '', tag: '', date: '' }],
       schedule: [{ text: '', date: '', tag: '' }],
@@ -98,7 +84,6 @@ const PlannerForm = () => {
       research: [{ text: '', tag: '', date: '' }],
       create: [{ text: '', tag: '', date: '' }],
     });
-    setPriorities([]);
   };
 
   return (
@@ -114,13 +99,13 @@ const PlannerForm = () => {
         <p className="text-sm">
           What is your most important goal for this week?
         </p>
-        <input
-          type="text"
+        <PlannerInputGroup
           value={bigGoal}
-          onChange={(e) => setBigGoal(e.target.value)}
-          className="w-full p-2 rounded-sm bg-background placeholder-text"
-          placeholder="Describe your most important goal for this week..."
+          onChange={(field, value) =>
+            setBigGoal({ ...bigGoal, [field]: value })
+          }
         />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           {Object.entries(sections).map(([section, items]) => (
             <div key={section} className="space-y-2">
@@ -129,57 +114,13 @@ const PlannerForm = () => {
                 <span>{section.replace(/([A-Z])/g, ' $1')}</span> ...
               </h2>
               {items.map((item, index) => (
-                <div
+                <PlannerInputGroup
                   key={index}
-                  className="flex gap-2 items-center bg-primary p-2 rounded-sm shadow-xs"
-                >
-                  <input
-                    type="text"
-                    value={item.text}
-                    onChange={(e) =>
-                      handleChange(
-                        section as SectionKeys,
-                        index,
-                        'text',
-                        e.target.value
-                      )
-                    }
-                    className="p-2 rounded-sm w-full bg-background text-white placeholder-text"
-                    placeholder="Task"
-                  />
-                  <input
-                    type="date"
-                    value={item.date}
-                    onChange={(e) =>
-                      handleChange(
-                        section as SectionKeys,
-                        index,
-                        'date',
-                        e.target.value
-                      )
-                    }
-                    className="p-2 rounded-sm w-1/4 bg-background text-text"
-                  />
-                  <TagSelector
-                    selectedTag={item.tag || ''}
-                    onTagSelect={(tag) =>
-                      handleChange(section as SectionKeys, index, 'tag', tag)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      togglePriority(section as SectionKeys, index)
-                    }
-                    className={`p-2 rounded ${
-                      priorities.includes(item)
-                        ? 'bg-yellow-400'
-                        : 'bg-gray-200'
-                    }`}
-                  >
-                    ⭐
-                  </button>
-                </div>
+                  value={item}
+                  onChange={(field, value) =>
+                    handleChange(section as SectionKeys, index, field, value)
+                  }
+                />
               ))}
               <button
                 type="button"
@@ -191,17 +132,6 @@ const PlannerForm = () => {
             </div>
           ))}
         </div>
-
-        {priorities.length > 0 && (
-          <div className="mt-6 p-4 border rounded-sm bg-gray-100">
-            <h2 className="font-bold text-lg">Top Priorities</h2>
-            <ul className="list-disc list-inside">
-              {priorities.map((p, idx) => (
-                <li key={idx}>{p.text || ''}</li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         <button
           type="submit"
