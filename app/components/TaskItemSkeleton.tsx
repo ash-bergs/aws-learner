@@ -1,8 +1,8 @@
-import { TaskWithTags } from '@/lib/store/task';
+import type { TaskWithTags } from '@/lib/services/task';
 import { COLORS } from '@/utils/constants';
 
 const TaskItemSkeleton = ({ task }: { task: TaskWithTags }) => {
-  const taskTagColor = task.taskTags.length > 0 && task.taskTags[0].tag.color;
+  const taskTagColor = task.taskTags.length > 0 && task.taskTags[0]?.tag?.color;
   const bgColor =
     task.taskTags.length > 0
       ? COLORS.find((color) => color.name === taskTagColor)?.background
