@@ -2,15 +2,10 @@
 
 import React, { useState } from 'react';
 import { useTaskStore } from '@/lib/store/task';
-import TagSelector from '../AddTasks/TagSelector';
-import { PlannerInputGroup } from './inputs/PlannerInputGroup';
-
-interface PlannerTask {
-  text: string;
-  date?: string;
-  tag?: string;
-  priority?: number;
-}
+import {
+  PlannerInputGroup,
+  type PlannerTask,
+} from './inputs/PlannerInputGroup';
 
 type SectionKeys = 'contact' | 'schedule' | 'followUp' | 'research' | 'create';
 
@@ -24,7 +19,6 @@ const PlannerForm = () => {
     tag: '',
     priority: 0,
   });
-  const [priorities, setPriorities] = useState<PlannerTask[]>([]);
   const [sections, setSections] = useState<Sections>({
     contact: [{ text: '', date: '', tag: '', priority: 0 }],
     schedule: [{ text: '', date: '', tag: '', priority: 0 }],
@@ -59,30 +53,9 @@ const PlannerForm = () => {
     }));
   };
 
-  const togglePriority = (section: SectionKeys, index: number) => {
-    const item = sections[section][index];
-    // if there's no text, don't proceed
-    if (!item.text) return;
-    setSections((prev) => {
-      const updated = { ...prev };
-      const task = updated[section][index];
-
-      // Toggle priority in Sections state
-      task.priority = task.priority === 0 ? 1 : 0;
-
-      return { ...updated };
-    });
-    // Toggle priority in Priorities state
-    setPriorities((prev) => {
-      if (prev.includes(item)) {
-        return prev.filter((p) => p !== item);
-      }
-      return [...prev, item];
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Adds section tasks
     Object.entries(sections).forEach(([, items]) => {
       items.forEach(async (item) => {
         console.log(item);
@@ -96,6 +69,13 @@ const PlannerForm = () => {
         }
       });
     });
+    // Adds big goal
+    await addTask({
+      text: bigGoal.text,
+      tagIds: bigGoal.tag ? [bigGoal.tag] : [], // eventually we want to support adding more than 1 tag
+      dueDate: bigGoal.date,
+      priority: bigGoal.priority,
+    });
     setBigGoal({ text: '', date: '', tag: '', priority: 0 });
     setSections({
       contact: [{ text: '', tag: '', date: '' }],
@@ -104,7 +84,6 @@ const PlannerForm = () => {
       research: [{ text: '', tag: '', date: '' }],
       create: [{ text: '', tag: '', date: '' }],
     });
-    setPriorities([]);
   };
 
   return (
@@ -125,12 +104,6 @@ const PlannerForm = () => {
           onChange={(field, value) =>
             setBigGoal({ ...bigGoal, [field]: value })
           }
-          togglePriority={() =>
-            setBigGoal((prev) => ({
-              ...prev,
-              priority: prev.priority === 0 ? 1 : 0,
-            }))
-          }
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
@@ -147,9 +120,6 @@ const PlannerForm = () => {
                   onChange={(field, value) =>
                     handleChange(section as SectionKeys, index, field, value)
                   }
-                  togglePriority={() =>
-                    togglePriority(section as SectionKeys, index)
-                  }
                 />
               ))}
               <button
@@ -162,17 +132,6 @@ const PlannerForm = () => {
             </div>
           ))}
         </div>
-
-        {priorities.length > 0 && (
-          <div className="mt-6 p-4 border rounded-sm bg-gray-100">
-            <h2 className="font-bold text-lg">Top Priorities</h2>
-            <ul className="list-disc list-inside">
-              {priorities.map((p, idx) => (
-                <li key={idx}>{p.text || ''}</li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         <button
           type="submit"

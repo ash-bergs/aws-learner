@@ -1,7 +1,7 @@
 import React from 'react';
 import TagSelector from '../../AddTasks/TagSelector';
 
-interface PlannerTask {
+export interface PlannerTask {
   text: string;
   date?: string;
   tag?: string;
@@ -14,13 +14,11 @@ interface PlannerInputGroupProps {
     field: K,
     value: PlannerTask[K]
   ) => void;
-  togglePriority: () => void; // Handle this differently?
 }
 
 export const PlannerInputGroup: React.FC<PlannerInputGroupProps> = ({
   value,
   onChange,
-  togglePriority,
 }) => {
   return (
     <div className="flex gap-2 items-center bg-primary p-2 rounded-sm shadow-xs">
@@ -47,10 +45,12 @@ export const PlannerInputGroup: React.FC<PlannerInputGroupProps> = ({
         onTagSelect={(tag) => onChange('tag', tag)}
       />
 
-      {/* Priority Toggle */}
+      {/* Priority Toggle
+        //TODO: Enhance priority handling - but for now this works
+      */}
       <button
         type="button"
-        onClick={togglePriority}
+        onClick={() => onChange('priority', value.priority === 0 ? 1 : 0)}
         className={`p-2 rounded ${
           value.priority ? 'bg-yellow-400' : 'bg-gray-200'
         }`}
