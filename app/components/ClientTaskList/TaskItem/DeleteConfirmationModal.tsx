@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '../../Modal/Modal';
-import { type TaskWithTags, useTaskStore } from '@/lib/store/task';
+import { useTaskStore } from '@/lib/store/task';
+import type { TaskWithTags } from '@/lib/services/task';
 import TaskItemSkeleton from '../../TaskItemSkeleton';
 import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 type DeleteConfirmationModalProps = {

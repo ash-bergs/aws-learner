@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../../Modal/Modal';
 import { useTaskStore } from '@/lib/store/task';
-import type { TaskWithTags } from '@/lib/store/task';
+import type { TaskWithTags } from '@/lib/services/task';
 import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
 
 type DueDateModalProps = {

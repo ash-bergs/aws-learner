@@ -14,6 +14,7 @@ export interface Task {
   position: number;
   userId?: string; // the id of the user that created the task
   dueDate?: Date;
+  priority?: number;
 }
 
 export interface Tag {

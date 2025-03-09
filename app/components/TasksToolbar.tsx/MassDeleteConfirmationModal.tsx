@@ -21,7 +21,7 @@ const MassDeleteConfirmationModal = ({
   );
 
   const handleDeleteTasks = () => {
-    if (selectedTasks) return;
+    if (!selectedTasks) return;
     deleteSelectedTasks();
     setIsMassDeleteModalOpen(false);
   };

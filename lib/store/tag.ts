@@ -19,12 +19,12 @@ export const useTagStore = create<TagStore>()(
       currentTag: null,
       fetchTags: async () => {
         const userId = useStore.getState().userId;
-        if (!userId) return;
+        if (!userId) return console.warn('User ID is required');
         try {
-          const userTags = await tagsService.getTagsByUser(userId);
-          if (!userTags.ok) throw new Error('Failed to fetch tags');
-          const allTags = await userTags.json();
-          set({ tags: allTags });
+          const response = await tagsService.getTagsByUser(userId);
+          if (!response.success) throw new Error(response.error);
+          const userTags = response.data;
+          set({ tags: userTags });
         } catch (error) {
           console.error('Failed to fetch tags:', error);
         }
@@ -32,8 +32,9 @@ export const useTagStore = create<TagStore>()(
       addTag: async (name: string, color?: string) => {
         const userId = useStore.getState().userId;
         if (!userId) return console.warn('User ID is required');
-        const newTag = await tagsService.createTag(userId, name, color);
-        if (!newTag) throw new Error('Failed to create tag');
+        const response = await tagsService.createTag(userId, name, color);
+        if (!response.success) throw new Error(response.error);
+        const newTag = response.data;
         set((state) => ({ tags: [...state.tags, newTag] }));
       },
       setCurrentTag: (tag) => {

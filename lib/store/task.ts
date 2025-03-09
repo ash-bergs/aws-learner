@@ -1,18 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { taskService } from '@/lib/services';
+import { type TaskWithTags } from '../services/task';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
-import { Task, Tag } from '@prisma/client';
 import { type AddTaskInput } from '@/types/service';
-// Define TaskWithTags to include the `taskTags` relation
-export interface TaskWithTags extends Task {
-  taskTags: Array<{
-    taskId: string;
-    tagId: string;
-    tag: Tag;
-  }>;
-}
+//import { Task, Tag } from '@prisma/client'; // we don't want to use Prisma types here?
+
 interface TaskStore {
   tasks: TaskWithTags[];
   fetchTasks: () => Promise<void>;
@@ -56,9 +50,10 @@ export const useTaskStore = create<TaskStore>()(
         if (!userId) return;
 
         try {
-          // fetch all user's tasks
-          const fetchedTasks = await taskService.getAllTasks(userId);
-          // Set the tasks in the store
+          const response = await taskService.getAllTasks(userId);
+          if (!response.success) throw new Error(response.error);
+
+          const fetchedTasks = response.data;
           set({ tasks: fetchedTasks });
           set({ loadingTasks: false });
         } catch (error) {
@@ -66,19 +61,24 @@ export const useTaskStore = create<TaskStore>()(
         }
       },
       addTask: async ({ text, tagIds, dueDate, priority }) => {
-        const userId = useStore.getState().userId;
-        if (!userId) return;
+        try {
+          const userId = useStore.getState().userId;
+          if (!userId) return;
 
-        const newTask = await taskService.addTask({
-          userId,
-          text,
-          tagIds,
-          dueDate,
-          priority,
-        });
-        if (!newTask) throw new Error('There was a problem adding the task');
+          const response = await taskService.addTask({
+            userId,
+            text,
+            tagIds,
+            dueDate,
+            priority,
+          });
+          if (!response.success) throw new Error(response.error);
 
-        set((state) => ({ tasks: [...state.tasks, newTask] }));
+          const newTask = response.data;
+          set((state) => ({ tasks: [...state.tasks, newTask] }));
+        } catch (error) {
+          console.error('Failed to add task:', error);
+        }
       },
       /**
        * Selects all tasks based on current filters and updates the selectedTaskIds.
@@ -174,11 +174,10 @@ export const useTaskStore = create<TaskStore>()(
 
         // Find index of task being dragged
         const activeIndex = tasks.findIndex((task) => task.id === activeId);
-        // And task being hovered over
+        // Find index of task being hovered over
         const overIndex = tasks.findIndex((task) => task.id === overId);
 
         if (
-          // If either task is not found, do nothing
           activeIndex === -1 ||
           overIndex === -1 ||
           activeIndex === overIndex
@@ -190,21 +189,21 @@ export const useTaskStore = create<TaskStore>()(
         const [movedTask] = tasks.splice(activeIndex, 1);
         tasks.splice(overIndex, 0, movedTask);
 
-        // Calculate the new position for moved task
-        const prevTask = tasks[overIndex - 1];
-        const nextTask = tasks[overIndex + 1];
+        // Get surrounding tasks
+        const prevTask = tasks[overIndex - 1] || null; // Ensure it's either a task or null
+        const nextTask = tasks[overIndex + 1] || null;
 
-        let newPosition;
+        let newPosition: number;
 
-        if (prevTask.position && nextTask.position) {
+        if (prevTask && nextTask) {
           // Average of adjacent task positions
           newPosition = (prevTask.position + nextTask.position) / 2;
-        } else if (prevTask.position) {
+        } else if (prevTask) {
           newPosition = prevTask.position + 1; // Place at the end
-        } else if (nextTask.position) {
+        } else if (nextTask) {
           newPosition = nextTask.position / 2; // Place at the start
         } else {
-          newPosition = 1; // Fallback - place at start
+          newPosition = 1; // Fallback if no neighbors exist
         }
 
         await taskService.updateTaskPosition(activeId, newPosition);
