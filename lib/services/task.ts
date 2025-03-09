@@ -5,10 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 /** This file holds the Task service
  * The Task service is responsible for CRUD operations on the tasks table in the database
  */
-
-// TODO:
-// Update the types with Prisma types - add Promise<type> returns
-
 export interface TaskWithTags extends Task {
   taskTags: Array<{
     taskId: string;
@@ -68,6 +64,17 @@ export class TaskService {
     }
   }
 
+  /**
+   * Adds a new task for a given user with the given properties.
+   *
+   * Finds the highest position value among the user's tasks, assigns a new float
+   * position (e.g., next step could be highest + 1.0), and creates a new task with
+   * the given properties. If there are tags, creates task-tag relationships.
+   *
+   * @param {ServiceAddTaskInput} input The input object for the new task
+   * @returns {Promise<TaskWithTags | null>} A promise resolving to the added task,
+   * or null if there was an error
+   */
   async addTask({
     userId,
     text,
@@ -150,7 +157,6 @@ export class TaskService {
       return false;
     }
   }
-
   async deleteTasksByIds(taskIds: string[]): Promise<boolean> {
     try {
       if (taskIds.length === 0) return false;
@@ -193,16 +199,19 @@ export class TaskService {
   }
   async updateTaskDueDate(id: string, dueDate: Date) {
     try {
-      const response = await fetch('/api/tasks', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: id, dueDate }),
-      });
+      const task = await db.tasks.get(id);
+      if (!task) {
+        console.log(`❌ Task not found: ${id}`);
+        return null;
+      }
 
-      if (!response.ok) throw new Error('Failed to update task due date');
-      const updatedTask = await response.json();
+      // Update the due date
+      const updatedTask: Task = {
+        ...task,
+        dueDate,
+      };
+      await db.tasks.update(id, updatedTask);
+
       return updatedTask;
     } catch (error) {
       console.error('Failed to update task due date:', error);
@@ -211,16 +220,20 @@ export class TaskService {
   }
   async updateTaskPosition(id: string, newPosition: number) {
     try {
-      const response = await fetch('/api/tasks', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: id, position: newPosition }),
-      });
+      const dateUpdated = new Date();
+      const task = await db.tasks.get(id);
+      if (!task) {
+        console.log(`❌ Task not found: ${id}`);
+        return null;
+      }
 
-      if (!response.ok) throw new Error('Failed to update task order');
-      const updatedTask = await response.json();
+      const updatedTask: Task = {
+        ...task,
+        position: newPosition,
+        dateUpdated,
+      };
+      await db.tasks.update(id, updatedTask);
+
       return updatedTask;
     } catch (error) {
       console.error('Failed to update task order:', error);

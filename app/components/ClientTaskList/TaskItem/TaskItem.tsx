@@ -32,9 +32,6 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
 
   const taskTagColor =
     task.taskTags.length > 0 && task?.taskTags[0]?.tag?.color;
-  // log with formatting
-  console.log(`TaskItem: taskTagColor: ${taskTagColor}`);
-  console.log(`Task Tags: ${JSON.stringify(task.taskTags)}`);
 
   const bgColor =
     task.taskTags.length > 0 && !disableColorCodeTasks
