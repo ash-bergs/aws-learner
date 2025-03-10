@@ -17,6 +17,7 @@ import {
 import { useNoteStore } from '@/lib/store/note';
 import SortableNoteDisplay from './SortableNoteDisplay';
 import LinkingControls from './LinkingControls';
+import { FaRegStickyNote } from 'react-icons/fa';
 
 /**
  * A component that renders a draggable and sortable list of notes.
@@ -61,7 +62,14 @@ const NoteBoardDisplay = (): React.ReactElement => {
     <>
       {/** if isLinking is true, don't show h2, show the LinkingControls buttons */}
       {!isLinking && (
-        <h2 className="text-text text-xl font-bold mb-2">Notes</h2>
+        <h2 className="text-text text-xl font-bold mb-2">
+          <FaRegStickyNote
+            size={20}
+            aria-hidden="true"
+            className="inline-block mr-2"
+          />
+          Notes
+        </h2>
       )}
       {isLinking && <LinkingControls />}
 

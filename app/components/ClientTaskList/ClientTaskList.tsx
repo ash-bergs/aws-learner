@@ -21,6 +21,8 @@ import LoadingSpinner from '../LoadingSpinner';
 import SortableTaskItem from './SortableTaskItem';
 import TasksToolbar from '../TasksToolbar.tsx';
 import { getSession } from 'next-auth/react';
+import { GoCheckbox } from 'react-icons/go';
+
 // import PomodoroTimer from '../Timer';
 /**
  * A component that renders a draggable and sortable list of tasks.
@@ -104,7 +106,14 @@ const ClientTaskList = (): React.ReactElement => {
 
   return (
     <>
-      <h2 className="text-text text-xl font-bold mb-2">Your Tasks</h2>
+      <h2 className="text-text text-xl font-bold mb-2">
+        <GoCheckbox
+          size={22}
+          aria-hidden="true"
+          className="inline-block mr-2"
+        />
+        Tasks
+      </h2>
       <div className="flex flex-col gap-4">
         <TasksToolbar />
         {/* <PomodoroTimer

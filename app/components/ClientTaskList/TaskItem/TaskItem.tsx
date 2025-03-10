@@ -30,6 +30,8 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const { isLinking } = useNoteStore();
   const { disableColorCodeTasks } = useStore();
 
+  console.log(`🚀 TaskItem, Task:`, task);
+
   const taskTagColor =
     task.taskTags.length > 0 && task?.taskTags[0]?.tag?.color;
 
@@ -37,6 +39,11 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
     task.taskTags.length > 0 && !disableColorCodeTasks
       ? COLORS.find((color) => color.name === taskTagColor)?.background
       : 'bg-note';
+
+  const textColor =
+    task.taskTags.length > 0 && !disableColorCodeTasks
+      ? COLORS.find((color) => color.name === taskTagColor)?.text
+      : 'text-secondary';
 
   // TODO - better classes - clsx?
   const borderColor = selectedTaskIds.includes(task.id)
@@ -65,6 +72,12 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
       onClick: () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
         setMenuOpen(false);
+      },
+    },
+    {
+      label: 'Edit Task',
+      onClick: () => {
+        console.log('Open the edit task modal');
       },
     },
   ];
@@ -150,14 +163,27 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
           )}
         </label>
 
-        {task.dueDate && (
-          <span
-            id={`task-due-${task.id}`}
-            className="text-gray-500 text-xs ml-2"
-          >
-            Due: {new Date(task.dueDate).toDateString()}
-          </span>
-        )}
+        {/** This can be its own component */}
+        <div className={`flex gap-2 pt-2 items-center ${textColor}`}>
+          {task.dueDate && (
+            <span id={`task-due-${task.id}`} className="text-sm">
+              Due: {new Date(task.dueDate).toDateString()}
+            </span>
+          )}
+          {task.taskTags.length > 0 && (
+            <>
+              <span>|</span>
+              {task.taskTags.map((taskTag) => (
+                <span
+                  key={taskTag.taskId + taskTag.tagId}
+                  className={`text-sm italic`}
+                >
+                  {taskTag.tag?.name}
+                </span>
+              ))}
+            </>
+          )}
+        </div>
       </div>
       <div className="flex items-center">
         <ToggleCompletionButton
