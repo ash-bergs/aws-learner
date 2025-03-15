@@ -30,8 +30,6 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const { isLinking } = useNoteStore();
   const { disableColorCodeTasks } = useStore();
 
-  console.log(`🚀 TaskItem, Task:`, task);
-
   const taskTagColor =
     task.taskTags.length > 0 && task?.taskTags[0]?.tag?.color;
 

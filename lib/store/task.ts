@@ -23,6 +23,7 @@ interface TaskStore {
   selectedTagIds: string[];
   setSelectedTagId: (tagId: string) => void;
   clearSelectedTags: () => void;
+  syncTasks: (id: string) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -142,6 +143,9 @@ export const useTaskStore = create<TaskStore>()(
             task.id === id ? { ...task, dueDate } : task
           ),
         }));
+      },
+      syncTasks: async (id) => {
+        await taskService.syncTasks(id);
       },
       deleteTask: async (id) => {
         await taskService.deleteTask(id);

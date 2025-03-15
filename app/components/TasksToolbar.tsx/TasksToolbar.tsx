@@ -22,6 +22,7 @@ const TasksToolbar = () => {
     setSelectedTagId,
     selectedTagIds,
     clearSelectedTags,
+    syncTasks,
   } = useTaskStore();
   const { selectedTaskIds, clearSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
@@ -31,6 +32,7 @@ const TasksToolbar = () => {
     toggleHideCompletedTasks,
     disableColorCodeTasks,
     toggleColorCodeTasks,
+    userId,
   } = useStore();
 
   const handleTagChange = (tagId: string) => {
@@ -109,6 +111,13 @@ const TasksToolbar = () => {
                 disabled={selectedTagIds.length === 0}
               >
                 Clear Filters
+              </button>
+              <button
+                className={buttonClass}
+                onClick={() => syncTasks(userId)}
+                //disabled={isLinking || !selectedTaskIds.length}
+              >
+                Sync Tasks
               </button>
             </div>
 

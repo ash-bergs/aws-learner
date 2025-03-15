@@ -244,6 +244,28 @@ class AppDatabase extends Dexie {
           });
       });
 
+    // Add sync status
+    this.version(12)
+      .stores({
+        tasks:
+          '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus',
+        notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
+        taskNotes: '[taskId+noteId], taskId, noteId',
+        users:
+          '&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt',
+        taskTags: '[taskId+tagId], taskId, tagId',
+        tags: '&id, name, color, userId, createdAt, updatedAt',
+      })
+      .upgrade(async (tx) => {
+        // Update Tasks: Backfill priority
+        await tx
+          .table('tasks')
+          .toCollection()
+          .modify((task) => {
+            task.syncStatus = task.syncStatus ?? 'new';
+          });
+      });
+
     this.users = this.table('users');
     this.tasks = this.table('tasks');
     this.tags = this.table('tags');

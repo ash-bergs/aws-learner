@@ -259,6 +259,7 @@ export class TaskService {
   // Sync tasks
   // Pulls pending changes from Dexie and sends them to the server
   // Marks Dexie tasks synced after successful sync
+  // returns the count of synced tasks
   async syncTasks(userId: string): Promise<ServiceResponse<number>> {
     try {
       // fetch:
@@ -277,8 +278,8 @@ export class TaskService {
         .where('syncStatus')
         .equals('deleted')
         .toArray();
-      // Hit 'api/tasks/sync' endpoint, POST with the above data
-      const response = await fetch('/api/tasks/sync', {
+      // Hit 'api/tasks/' endpoint, POST with the above data
+      const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
