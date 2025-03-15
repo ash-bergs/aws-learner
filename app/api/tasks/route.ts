@@ -10,6 +10,37 @@ export interface PrismaTaskWithTags extends Task {
   }>;
 }
 
+// NEW SYNC ROUTE
+
+export async function POST(req: NextRequest) {
+  try {
+    // get the data from request
+    const { userId, newTasks, updatedTasks, deletedTasks } = await req.json();
+
+    if (!userId)
+      return NextResponse.json(
+        { error: 'UserId is required' },
+        { status: 400 }
+      );
+
+    // Handle new tasks first
+
+    // Handle updated tasks
+
+    // Handle deleted tasks
+
+    return NextResponse.json(
+      { message: 'Tasks synced successfully' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Sync failed: ', error);
+    return NextResponse.json({ error: 'Sync failed' }, { status: 500 });
+  }
+}
+
+// END NEW
+
 /**
  * Handles a GET request to fetch tasks for a given user.
  *
@@ -68,64 +99,64 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { userId, text, tagIds, taskDueDate, priority } = body;
+// export async function POST(req: NextRequest) {
+//   const body = await req.json();
+//   const { userId, text, tagIds, taskDueDate, priority } = body;
 
-  if (!text || !userId) {
-    return NextResponse.json(
-      { error: 'Text and UserId are required' },
-      { status: 400 }
-    );
-  }
+//   if (!text || !userId) {
+//     return NextResponse.json(
+//       { error: 'Text and UserId are required' },
+//       { status: 400 }
+//     );
+//   }
 
-  try {
-    // Find the position of the last task in the list
-    const lastTask = await prisma.task.findFirst({
-      where: { userId },
-      orderBy: { position: 'desc' },
-    });
-    // Place the new task after the last task
-    const newTaskPosition = lastTask?.position ? lastTask.position + 1 : 1;
+//   try {
+//     // Find the position of the last task in the list
+//     const lastTask = await prisma.task.findFirst({
+//       where: { userId },
+//       orderBy: { position: 'desc' },
+//     });
+//     // Place the new task after the last task
+//     const newTaskPosition = lastTask?.position ? lastTask.position + 1 : 1;
 
-    const newTask = await prisma.task.create({
-      data: {
-        text,
-        userId,
-        position: newTaskPosition,
-        dueDate: taskDueDate,
-        priority,
-      },
-    });
+//     const newTask = await prisma.task.create({
+//       data: {
+//         text,
+//         userId,
+//         position: newTaskPosition,
+//         dueDate: taskDueDate,
+//         priority,
+//       },
+//     });
 
-    // If tagIds are provided, create TaskTag associations
-    if (tagIds && tagIds.length > 0) {
-      await prisma.taskTag.createMany({
-        data: tagIds.map((tagId: string) => ({
-          taskId: newTask.id,
-          tagId,
-        })),
-      });
-    }
+//     // If tagIds are provided, create TaskTag associations
+//     if (tagIds && tagIds.length > 0) {
+//       await prisma.taskTag.createMany({
+//         data: tagIds.map((tagId: string) => ({
+//           taskId: newTask.id,
+//           tagId,
+//         })),
+//       });
+//     }
 
-    // get the task and include the tags
-    const taskWithTags = await prisma.task.findUnique({
-      where: { id: newTask.id },
-      include: {
-        taskTags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
-    });
+//     // get the task and include the tags
+//     const taskWithTags = await prisma.task.findUnique({
+//       where: { id: newTask.id },
+//       include: {
+//         taskTags: {
+//           include: {
+//             tag: true,
+//           },
+//         },
+//       },
+//     });
 
-    return NextResponse.json(taskWithTags, { status: 201 });
-  } catch (error) {
-    console.error('Failed to add task:', error);
-    return NextResponse.json({ error: 'Failed to add task' }, { status: 500 });
-  }
-}
+//     return NextResponse.json(taskWithTags, { status: 201 });
+//   } catch (error) {
+//     console.error('Failed to add task:', error);
+//     return NextResponse.json({ error: 'Failed to add task' }, { status: 500 });
+//   }
+// }
 
 export async function DELETE(req: NextRequest) {
   const body = await req.json();

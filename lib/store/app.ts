@@ -18,6 +18,7 @@ interface AppState {
   setTheme: (theme: Theme) => void;
 }
 
+// TODO: Add "turn off due dates", "turn off visible tags on tasks"
 export const useStore = create<AppState>()(
   persist(
     (set) => ({

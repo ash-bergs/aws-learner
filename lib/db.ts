@@ -15,6 +15,9 @@ export interface Task {
   userId?: string; // the id of the user that created the task
   dueDate?: Date;
   priority?: number;
+  // Sync status - only on Dexie (not in RDS/Prisma)
+  // TODO: new version, and update old tasks
+  syncStatus: 'pending' | 'synced' | 'deleted';
 }
 
 export interface Tag {

@@ -247,4 +247,22 @@ export class TaskService {
       return { success: false, error: 'Failed to update task order' };
     }
   }
+  // Sync tasks
+  // Pulls pending changes from Dexie and sends them to the server
+  // Marks Dexie tasks synced after successful sync
+  async syncTasks(userId: string) {
+    try {
+      // fetch:
+      // New tasks - sync status new - separate new and pending? Use the same one?
+      // Updated tasks - sync status pending
+      // Deleted tasks - sync status deleted
+      // Hit 'api/tasks/sync' endpoint, POST with the above data
+      // we provide deletedTaskIds - an array of taskIds
+      // if response not okay - throw error
+      // Mark synced tasks in Dexie
+      // Something like: db.tasks.where('syncStatus').anyof([*statuses*]).modify({syncStatus: 'synced'})
+    } catch (error) {
+      console.error('Failed to sync tasks:', error);
+    }
+  }
 }
