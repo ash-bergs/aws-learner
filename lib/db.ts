@@ -16,8 +16,8 @@ export interface Task {
   dueDate?: Date;
   priority?: number;
   // Sync status - only on Dexie (not in RDS/Prisma)
-  // TODO: new version, and update old tasks
-  syncStatus: 'pending' | 'synced' | 'deleted';
+  // TODO: new db version, and update old tasks with default
+  syncStatus: 'new' | 'pending' | 'synced' | 'deleted';
 }
 
 export interface Tag {

@@ -12,6 +12,25 @@ export interface PrismaTaskWithTags extends Task {
 
 // NEW SYNC ROUTE
 
+/**
+ * Handles a POST request to sync tasks for a given user.
+ *
+ * This function accepts a JSON payload containing `userId`, `newTasks`,
+ * `updatedTasks`, and `deletedTasks`. It processes the tasks by creating
+ * new tasks, updating existing tasks, and deleting specified tasks as
+ * requested in the payload.
+ *
+ * @param {NextRequest} req - The incoming request object containing the
+ * tasks data to be synced.
+ *
+ * @returns {NextResponse} - A JSON response indicating the result of
+ * the sync operation, with a status of 200 on success, or an error
+ * message with a corresponding error status if the operation fails.
+ *
+ * @throws Will log an error if any operation fails and respond with a
+ * 500 status if task synchronization fails. Responds with a 400 status
+ * if `userId` is not provided in the request.
+ */
 export async function POST(req: NextRequest) {
   try {
     // get the data from request
@@ -24,10 +43,22 @@ export async function POST(req: NextRequest) {
       );
 
     // Handle new tasks first
-
+    if (newTasks.length) {
+      await prisma.task.createMany({ data: newTasks });
+    }
     // Handle updated tasks
-
+    for (const task of updatedTasks) {
+      await prisma.task.update({
+        where: { id: task.id },
+        data: task,
+      });
+    }
     // Handle deleted tasks
+    if (deletedTasks.length) {
+      await prisma.task.deleteMany({
+        where: { id: { in: deletedTasks } },
+      });
+    }
 
     return NextResponse.json(
       { message: 'Tasks synced successfully' },
