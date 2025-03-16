@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { taskService } from '@/lib/services';
-import { type TaskWithTags } from '../services/task';
+import { TaskWithTags } from '@/lib/db';
 import { useSelectedTaskStore } from './selected.task';
 import { useStore } from './app';
 import { type AddTaskInput } from '@/types/service';
