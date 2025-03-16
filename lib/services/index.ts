@@ -1,4 +1,4 @@
-import { TaskService } from './Task';
+import { TaskService } from '@/lib/services/Task';
 import { NoteService } from './note';
 import { TagsService } from './tags';
 

@@ -4,7 +4,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import TaskItem from './TaskItem/TaskItem';
-import { TaskWithTags } from '@/lib/db';
+import type { TaskWithTags } from '@/lib/db';
 // SEE DOCS: https://docs.dndkit.com/presets/sortable
 
 /**
