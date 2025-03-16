@@ -144,7 +144,7 @@ export const useTaskStore = create<TaskStore>()(
           ),
         }));
       },
-      syncTasks: async (id) => {
+      syncTasks: async (id: string) => {
         await taskService.syncTasks(id);
       },
       deleteTask: async (id) => {

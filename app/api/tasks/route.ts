@@ -11,8 +11,6 @@ export interface PrismaTaskWithTags extends Task {
   }>;
 }
 
-// NEW SYNC ROUTE
-
 /**
  * Handles a POST request to sync tasks for a given user.
  *
@@ -35,18 +33,15 @@ export interface PrismaTaskWithTags extends Task {
 export async function POST(req: NextRequest) {
   try {
     // get the data from request
-    const { userId, newTasks, updatedTasks, deletedTasks } = await req.json();
-
-    console.log(
-      '🔍 Syncing tasks for userId:',
+    const {
       userId,
-      'newTasks:',
       newTasks,
-      'updatedTasks:',
       updatedTasks,
-      'deletedTasks:',
-      deletedTasks
-    );
+      deletedTasks,
+      // newTaskTags,
+      // updatedTaskTags,
+    } = await req.json();
+
     if (!userId)
       return NextResponse.json(
         { error: 'UserId is required' },
@@ -55,25 +50,52 @@ export async function POST(req: NextRequest) {
 
     // Strip `syncStatus` from new tasks
     // TODO: fix this more elegantly
-    const sanitizedNewTasks = newTasks.map(({ syncStatus, ...task }) => task);
+    const sanitizedNewTasks: Task[] = newTasks.map(
+      ({ syncStatus, ...task }) => task
+    );
 
-    // Handle new tasks first
-    if (sanitizedNewTasks.length) {
-      await prisma.task.createMany({ data: sanitizedNewTasks });
-    }
-    // // Handle updated tasks
-    // for (const task of updatedTasks) {
-    //   await prisma.task.update({
-    //     where: { id: task.id },
-    //     data: task,
-    //   });
-    // }
-    // // Handle deleted tasks
-    // if (deletedTasks.length) {
-    //   await prisma.task.deleteMany({
-    //     where: { id: { in: deletedTasks } },
-    //   });
-    // }
+    await prisma.$transaction(async (prisma) => {
+      // ✅ Insert new tasks first
+      if (sanitizedNewTasks.length) {
+        await prisma.task.createMany({ data: sanitizedNewTasks });
+      }
+
+      // This won't work until Tags are synced
+      // ✅ Insert new task-tags
+      // if (newTaskTags.length) {
+      //   await prisma.taskTag.createMany({ data: newTaskTags });
+      // }
+
+      // ✅ Update existing tasks
+      for (const task of updatedTasks) {
+        const { syncStatus, ...sanitizedTask } = task;
+        await prisma.task.update({
+          where: { id: task.id },
+          data: sanitizedTask,
+        });
+      }
+
+      // This won't work until Tags are synced
+      // ✅ Update task-tags (delete old ones and insert new ones)
+      // if (updatedTaskTags.length) {
+      //   const updatedTaskIds = updatedTaskTags.map((tt) => tt.taskId);
+      //   await prisma.taskTag.deleteMany({
+      //     where: { taskId: { in: updatedTaskIds } },
+      //   });
+      //   await prisma.taskTag.createMany({ data: updatedTaskTags });
+      // }
+
+      // ✅ Handle deleted tasks
+      if (deletedTasks.length) {
+        //   await prisma.taskTag.deleteMany({
+        //     where: { taskId: { in: deletedTaskIds } },
+        //   });
+        const deletedTaskIds = deletedTasks.map((t) => t.id);
+        await prisma.task.deleteMany({
+          where: { id: { in: deletedTaskIds } },
+        });
+      }
+    });
 
     return NextResponse.json(
       { message: 'Tasks synced successfully' },
@@ -85,11 +107,8 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// END NEW
-
 // DEPRECATED
 // We should be able to delete, build and test first
-
 // /**
 //  * Handles a GET request to fetch tasks for a given user.
 //  *

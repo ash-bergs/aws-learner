@@ -27,7 +27,11 @@ export class TaskService {
   async getAllTasks(userId: string): Promise<ServiceResponse<TaskWithTags[]>> {
     try {
       // Fetch tasks by user id
-      const tasks = await db.tasks.where('userId').equals(userId).toArray();
+      const tasks = await db.tasks
+        .where('userId')
+        .equals(userId)
+        // .filter((task) => task.syncStatus !== 'deleted')
+        .toArray();
       // If we have no tasks we can return now
       if (tasks.length === 0) {
         return { success: true, data: [] };
@@ -145,12 +149,16 @@ export class TaskService {
   }
   async deleteTask(id: string): Promise<ServiceResponse<boolean>> {
     try {
+      // TODO: update this, but we need to add Tags to syncing
       // Delete related taskTags first to maintain data integrity
       await db.taskTags.where('taskId').equals(id).delete();
 
-      // Delete the task
-      await db.tasks.where('id').equals(id).delete();
+      // // Delete the task
+      // await db.tasks.where('id').equals(id).delete();
 
+      // Mark items for deletion until synced with RDS
+      // TODO: Unless user has opted-out of data-sharing/syncing, then we can do the above
+      await db.tasks.update(id, { syncStatus: 'deleted' });
       return { success: true, data: true };
     } catch (error) {
       console.error('Failed to delete task:', error);
@@ -162,10 +170,18 @@ export class TaskService {
       if (taskIds.length === 0) {
         return { success: true, data: true };
       }
-      // Delete related taskTags in bulk
-      await db.taskTags.where('taskId').anyOf(taskIds).delete();
-      // Delete the tasks in bulk
-      await db.tasks.where('id').anyOf(taskIds).delete();
+      // // Delete related taskTags in bulk
+      // await db.taskTags.where('taskId').anyOf(taskIds).delete();
+      // // Delete the tasks in bulk
+      // await db.tasks.where('id').anyOf(taskIds).delete();
+
+      // Mark items for deletion until synced with RDS
+      // TODO: Unless user has opted-out of data-sharing/syncing, then we can do the above
+      await db.tasks
+        .where('id')
+        .anyOf(taskIds)
+        .modify({ syncStatus: 'deleted' });
+
       return { success: true, data: true };
     } catch (error) {
       console.error('Failed to delete tasks:', error);
@@ -185,11 +201,14 @@ export class TaskService {
       }
 
       // Update the task in Dexie
+      const syncStatus =
+        task.syncStatus === 'synced' ? 'pending' : task.syncStatus;
       const updatedTask: Task = {
         ...task,
         completed,
         completedBy: completed ? userId : undefined, // if removing completion, set completedBy to null
         dateUpdated,
+        syncStatus,
       };
       await db.tasks.update(id, updatedTask);
 
@@ -211,9 +230,12 @@ export class TaskService {
       }
 
       // Update the due date
+      const syncStatus =
+        task.syncStatus === 'synced' ? 'pending' : task.syncStatus;
       const updatedTask: Task = {
         ...task,
         dueDate,
+        syncStatus,
       };
       await db.tasks.update(id, updatedTask);
 
@@ -278,6 +300,17 @@ export class TaskService {
         .where('syncStatus')
         .equals('deleted')
         .toArray();
+
+      // Handle Task Tags
+      const newTaskTags = await db.taskTags
+        .where('taskId')
+        .anyOf(newTasks.map((t) => t.id))
+        .toArray();
+      const updatedTaskTags = await db.taskTags
+        .where('taskId')
+        .anyOf(updatedTasks.map((t) => t.id))
+        .toArray();
+
       // Hit 'api/tasks/' endpoint, POST with the above data
       const response = await fetch('/api/tasks', {
         method: 'POST',
@@ -288,16 +321,21 @@ export class TaskService {
           userId,
           newTasks,
           updatedTasks,
-          deletedTaskIds: deletedTasks.map((t) => t.id),
+          newTaskTags,
+          updatedTaskTags,
+          deletedTasks,
         }),
       });
       // if response not okay - throw error
       if (!response.ok) throw new Error('Failed to sync tasks');
+
+      // Delete removed tasks from Dexie
+      await db.tasks.where('syncStatus').equals('deleted').delete();
       // Mark synced tasks in Dexie
       // Something like: db.tasks.where('syncStatus').anyof([*statuses*]).modify({syncStatus: 'synced'})
       const updated = await db.tasks
         .where('syncStatus')
-        .anyOf(['new', 'pending', 'deleted'])
+        .anyOf(['new', 'pending'])
         .modify({ syncStatus: 'synced' });
 
       return { success: true, data: updated };
@@ -306,3 +344,13 @@ export class TaskService {
     }
   }
 }
+
+/** Our Task Scenarios:
+ *
+ * 1. A task is added, it receives 'new' sync status
+ *   1 a. Is a 'new' task is updated - it remains 'new' - it will not exist in the AWS db yet
+ *   2 b. Is a 'new' task is deleted - it's completely removed, it will not exist in the AWS db, and does not need to be synced
+ * 2. A task synced with AWS is updated, it receives 'pending' sync status
+ *  2 a. Is a 'pending' task is deleted - it's marked deleted
+ * 3. A task is deleted, it receives 'deleted' sync status - to support this we need to rethink how we handle deleting tasks above
+ */

@@ -114,8 +114,8 @@ const TasksToolbar = () => {
               </button>
               <button
                 className={buttonClass}
-                onClick={() => syncTasks(userId)}
-                //disabled={isLinking || !selectedTaskIds.length}
+                onClick={() => userId && syncTasks(userId)}
+                //disabled={true}
               >
                 Sync Tasks
               </button>
