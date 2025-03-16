@@ -7,11 +7,12 @@ import { useStore } from '@/lib/store/app';
 import TagItem from './TagItem';
 import AddTagModal from './AddTagModal';
 import MassDeleteConfirmationModal from './MassDeleteConfirmationModal';
+import TooltipButton from '../TooltipButton';
 
 //TODO: break this component up
 
 const buttonClass =
-  'bg-primary rounded-sm disabled:bg-gray-400 hover:bg-secondary text-white p-2 font-semibold text-sm';
+  'bg-primary rounded-sm disabled:bg-gray-400 hover:bg-secondary text-white p-2 font-semibold text-sm cursor-pointer disabled:cursor-not-allowed';
 const checkboxLabelClass = 'flex items-center text-sm font-semibold text-text';
 const TasksToolbar = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -22,6 +23,7 @@ const TasksToolbar = () => {
     setSelectedTagId,
     selectedTagIds,
     clearSelectedTags,
+    //syncTasks,
   } = useTaskStore();
   const { selectedTaskIds, clearSelectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
@@ -31,6 +33,7 @@ const TasksToolbar = () => {
     toggleHideCompletedTasks,
     disableColorCodeTasks,
     toggleColorCodeTasks,
+    //userId,
   } = useStore();
 
   const handleTagChange = (tagId: string) => {
@@ -110,6 +113,13 @@ const TasksToolbar = () => {
               >
                 Clear Filters
               </button>
+              <TooltipButton
+                className={buttonClass}
+                disabled
+                // onClick={() => userId && syncTasks(userId)}
+                label="Sync Tasks"
+                tooltip="Coming soon - Sync tasks with AWS!"
+              />
             </div>
 
             {isModalOpen && (

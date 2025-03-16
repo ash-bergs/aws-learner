@@ -15,6 +15,9 @@ export interface Task {
   userId?: string; // the id of the user that created the task
   dueDate?: Date;
   priority?: number;
+  // Sync status - only on Dexie (not in RDS/Prisma)
+  // TODO: new db version, and update old tasks with default
+  syncStatus: 'new' | 'pending' | 'synced' | 'deleted';
 }
 
 export interface Tag {
@@ -238,6 +241,28 @@ class AppDatabase extends Dexie {
           .toCollection()
           .modify((task) => {
             task.priority = task.priority ?? 0;
+          });
+      });
+
+    // Add sync status
+    this.version(12)
+      .stores({
+        tasks:
+          '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus',
+        notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
+        taskNotes: '[taskId+noteId], taskId, noteId',
+        users:
+          '&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt',
+        taskTags: '[taskId+tagId], taskId, tagId',
+        tags: '&id, name, color, userId, createdAt, updatedAt',
+      })
+      .upgrade(async (tx) => {
+        // Update Tasks: Backfill priority
+        await tx
+          .table('tasks')
+          .toCollection()
+          .modify((task) => {
+            task.syncStatus = task.syncStatus ?? 'new';
           });
       });
 
