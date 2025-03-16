@@ -7,6 +7,12 @@ import { useStore } from '@/lib/store/app';
 import TagItem from './TagItem';
 import AddTagModal from './AddTagModal';
 import MassDeleteConfirmationModal from './MassDeleteConfirmationModal';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 //TODO: break this component up
 
@@ -112,13 +118,26 @@ const TasksToolbar = () => {
               >
                 Clear Filters
               </button>
-              <button
-                className={buttonClass}
-                onClick={() => userId && syncTasks(userId)}
-                //disabled={true}
-              >
-                Sync Tasks
-              </button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className={buttonClass}
+                      disabled
+                      onClick={() => userId && syncTasks(userId)}
+                    >
+                      Sync Tasks
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    sideOffset={3}
+                    className="bg-highlight text-white rounded-md px-3 py-2 shadow-lg"
+                  >
+                    Coming Soon!
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             {isModalOpen && (
