@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { Task, Tag } from '@prisma/client';
-
+import { removeSyncMetadataArray, removeSyncMetadataSingle } from '@/lib/utils';
 // probably don't need this interface - but we'll see how it goes
 export interface PrismaTaskWithTags extends Task {
   taskTags: Array<{
@@ -50,10 +50,7 @@ export async function POST(req: NextRequest) {
 
     // Strip `syncStatus` from new tasks
     // TODO: fix this more elegantly
-    const sanitizedNewTasks: Task[] = newTasks.map(
-      ({ syncStatus, ...task }) => task
-    );
-
+    const sanitizedNewTasks = removeSyncMetadataArray<Task>(newTasks);
     await prisma.$transaction(async (prisma) => {
       // ✅ Insert new tasks first
       if (sanitizedNewTasks.length) {
@@ -68,7 +65,7 @@ export async function POST(req: NextRequest) {
 
       // ✅ Update existing tasks
       for (const task of updatedTasks) {
-        const { syncStatus, ...sanitizedTask } = task;
+        const sanitizedTask = removeSyncMetadataSingle<Task>(task);
         await prisma.task.update({
           where: { id: task.id },
           data: sanitizedTask,
@@ -90,7 +87,7 @@ export async function POST(req: NextRequest) {
         //   await prisma.taskTag.deleteMany({
         //     where: { taskId: { in: deletedTaskIds } },
         //   });
-        const deletedTaskIds = deletedTasks.map((t) => t.id);
+        const deletedTaskIds = deletedTasks.map((t: Task) => t.id);
         await prisma.task.deleteMany({
           where: { id: { in: deletedTaskIds } },
         });

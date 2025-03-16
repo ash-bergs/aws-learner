@@ -9,21 +9,21 @@ import { type AddTaskInput } from '@/types/service';
 
 interface TaskStore {
   tasks: TaskWithTags[];
-  fetchTasks: () => Promise<void>;
   loadingTasks: boolean;
   addTask: (task: AddTaskInput) => Promise<void>;
   deleteTask: (id: string) => void;
   deleteSelectedTasks: () => void;
-  toggleComplete: (id: string) => void;
+  fetchTasks: () => Promise<void>;
   reorderTask: (activeId: string, overId: string) => void;
   selectAllTasks: () => void;
+  toggleComplete: (id: string) => void;
+  syncTasks: (id: string) => Promise<void>;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
   // Tag management
   // TODO: this could all be it's own store
   selectedTagIds: string[];
   setSelectedTagId: (tagId: string) => void;
   clearSelectedTags: () => void;
-  syncTasks: (id: string) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -120,7 +120,6 @@ export const useTaskStore = create<TaskStore>()(
           });
         }
       },
-
       toggleComplete: async (id) => {
         const userId = useStore.getState().userId;
         if (!userId) return;
@@ -143,9 +142,6 @@ export const useTaskStore = create<TaskStore>()(
             task.id === id ? { ...task, dueDate } : task
           ),
         }));
-      },
-      syncTasks: async (id: string) => {
-        await taskService.syncTasks(id);
       },
       deleteTask: async (id) => {
         await taskService.deleteTask(id);
@@ -217,6 +213,18 @@ export const useTaskStore = create<TaskStore>()(
             task.id === activeId ? { ...task, position: newPosition } : task
           ),
         });
+      },
+      /**
+       * Syncs all tasks in the store for a given user with the server.
+       *
+       * This function is a wrapper around the `TaskService.syncTasks` method.
+       * It is used to sync the tasks store with through manual triggering.
+       *
+       * @param {string} id The id of the user for which to sync tasks.
+       * @returns {Promise<void>} A promise resolving when the sync is complete.
+       */
+      syncTasks: async (id: string) => {
+        await taskService.syncTasks(id);
       },
     }),
     {
