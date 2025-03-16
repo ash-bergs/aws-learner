@@ -30,7 +30,7 @@ export class TaskService {
       const tasks = await db.tasks
         .where('userId')
         .equals(userId)
-        // .filter((task) => task.syncStatus !== 'deleted')
+        .filter((task) => task.syncStatus !== 'deleted')
         .toArray();
       // If we have no tasks we can return now
       if (tasks.length === 0) {
@@ -278,29 +278,42 @@ export class TaskService {
       return { success: false, error: 'Failed to update task order' };
     }
   }
-  // Sync tasks
-  // Pulls pending changes from Dexie and sends them to the server
-  // Marks Dexie tasks synced after successful sync
-  // returns the count of synced tasks
+  /**
+   * Syncs tasks for a given user with the server.
+   *
+   * This function collects tasks with different sync statuses ('new', 'pending', 'deleted')
+   * for the specified user and prepares them for synchronization with the server.
+   * It also handles associated task tags for new and updated tasks.
+   *
+   * The function sends a POST request to the server with the user's tasks and task tags
+   * to perform the synchronization. Upon successful synchronization, it marks new and
+   * pending tasks as 'synced' and deletes the tasks marked as 'deleted'.
+   *
+   * @param {string} userId - The ID of the user whose tasks need to be synchronized.
+   * @returns {Promise<ServiceResponse<number>>} A promise that resolves to the number of tasks
+   * updated during the sync or an error message if the sync fails.
+   */
   async syncTasks(userId: string): Promise<ServiceResponse<number>> {
     try {
       // fetch:
-      // New tasks - sync status new - separate new and pending? Use the same one?
+      // New tasks - sync status new
       const newTasks = await db.tasks
-        .where('syncStatus')
-        .equals('new')
+        .where('userId')
+        .equals(userId)
+        .and((t) => t.syncStatus === 'new')
         .toArray();
       // Updated tasks - sync status pending
       const updatedTasks = await db.tasks
-        .where('syncStatus')
-        .equals('pending')
+        .where('userId')
+        .equals(userId)
+        .and((t) => t.syncStatus === 'pending')
         .toArray();
       // Deleted tasks - sync status deleted
       const deletedTasks = await db.tasks
-        .where('syncStatus')
-        .equals('deleted')
+        .where('userId')
+        .equals(userId)
+        .and((t) => t.syncStatus === 'deleted')
         .toArray();
-
       // Handle Task Tags
       const newTaskTags = await db.taskTags
         .where('taskId')
@@ -311,7 +324,8 @@ export class TaskService {
         .anyOf(updatedTasks.map((t) => t.id))
         .toArray();
 
-      // Hit 'api/tasks/' endpoint, POST with the above data
+      //TODO: if NONE of this data is returned - throw error
+
       const response = await fetch('/api/tasks', {
         method: 'POST',
         headers: {
@@ -326,13 +340,10 @@ export class TaskService {
           deletedTasks,
         }),
       });
-      // if response not okay - throw error
       if (!response.ok) throw new Error('Failed to sync tasks');
 
-      // Delete removed tasks from Dexie
+      // Delete and/or mark synced tasks
       await db.tasks.where('syncStatus').equals('deleted').delete();
-      // Mark synced tasks in Dexie
-      // Something like: db.tasks.where('syncStatus').anyof([*statuses*]).modify({syncStatus: 'synced'})
       const updated = await db.tasks
         .where('syncStatus')
         .anyOf(['new', 'pending'])
