@@ -27,6 +27,14 @@ export interface Tag {
   userId: string; // User who created the tag
 }
 
+export interface TaskWithTags extends Task {
+  taskTags: Array<{
+    taskId: string;
+    tagId: string;
+    tag: Tag | null;
+  }>;
+}
+
 export interface Note {
   id: string;
   content: Record<string, object>; // better reflect the JSON received from TipTap
