@@ -1,4 +1,4 @@
-import { TaskService } from './Task/task';
+import { TaskService } from './Task';
 import { NoteService } from './note';
 import { TagsService } from './tags';
 
