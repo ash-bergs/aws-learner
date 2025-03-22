@@ -2,7 +2,6 @@
 
 import React from "react";
 import { useStatStore } from "@/lib/store/stat";
-import { useAchievementStore } from "@/lib/store/achievements";
 import { GoGoal } from "react-icons/go";
 
 const DashboardStats = () => {
@@ -14,16 +13,6 @@ const DashboardStats = () => {
     completedDueThisWeek,
     completedDueToday,
   } = useStatStore();
-  const { achievements, unlockedAchievements } = useAchievementStore();
-
-  console.log(
-    "🚀 ~ file: DashboardStats.tsx:22 ~ DashboardStats ~ unlockedAchievements:",
-    unlockedAchievements
-  );
-  console.log(
-    "🚀 ~ file: DashboardStats.tsx:22 ~ DashboardStats ~ achievements:",
-    achievements
-  );
 
   return (
     <div className="p-2">

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, type JSX } from 'react';
+import React, { useEffect, useState, type JSX } from "react";
 
 //TODO: Think on the appearance of this section more - design something in Figma
 /**
@@ -11,22 +11,22 @@ import React, { useEffect, useState, type JSX } from 'react';
  * @returns {JSX.Element} A JSX element representing the greeting message
  */
 const DashboardGreeting = ({ username }: { username: string }): JSX.Element => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const time = new Date().getHours();
     const greeting =
       time >= 4 && time < 12
-        ? 'Good morning, '
+        ? "Good morning, "
         : time >= 12 && time < 18
-        ? 'Good afternoon, '
-        : 'Good evening, ';
+        ? "Good afternoon, "
+        : "Good evening, ";
     setMessage(greeting);
   }, []);
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-2xl text-textSecondary">
+      <p className="text-xl text-textSecondary">
         {message} <span className="font-bold">{username}</span>
       </p>
     </div>

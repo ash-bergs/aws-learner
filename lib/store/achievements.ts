@@ -5,11 +5,11 @@ import { db, type Task } from "@/lib/db";
 import { useStore as appStore } from "./app";
 import { useTaskStore } from "./task";
 
-// --- Types ---
+// --- Types --- // TODO: Once this is in tables, etc, move to a central types file
 export type Condition = {
   field: keyof Task; // TODO: expand to work with more tables, e.g. notes
   operator: "within" | "equals";
-  value: any; // We'll guard later on
+  value: unknown; //TODO: We'll guard later on
 };
 
 export type ConditionBasedAchievement = {
@@ -79,21 +79,13 @@ const evaluateAchievementProgress = async (
   return tasks.length;
 };
 
-/** Achievement ideas */
-/**
- * Scribe - take 5 notes in a day
- * [Tag] Taskmaster - complete 3 tasks in [tag] in a day
- * [Tag] Mastermind - complete [Tag] Taskmaster 3x in a week - how would we do achievements that build on each other? how do we record that?
- */
-
-// --- Zustand Store ---
 export const useAchievementStore = create<AchievementsState>()(
   persist(
     (set, get) => ({
       achievements: {
         scheduler: {
           id: "scheduler",
-          name: "Scheduler!",
+          name: "Scheduler",
           description: "Schedule 3 tasks this week",
           active: true,
           progress: 0,
@@ -107,7 +99,7 @@ export const useAchievementStore = create<AchievementsState>()(
             },
           ],
         },
-        dailyCloser: {
+        daily_closer: {
           id: "daily_closer",
           name: "Daily Closer",
           description: "Complete 3 tasks today",
@@ -142,6 +134,11 @@ export const useAchievementStore = create<AchievementsState>()(
        *    the unlockedAchievements state and sets the achievement to inactive.
        * 3. It sets the progress of the achievement in the achievements state.
        * 4. Finally, it sets the unlockedAchievements state.
+       *
+       * Think about:
+       * How can we make this lighter - once certain sets of achievements are unlocked, move them
+       * from an 'active' queue to an 'unlocked' queue?
+       * How can we make this more performant? How much time is it really taking?
        */
       checkAchievements: async () => {
         const userId = appStore.getState().userId;
@@ -280,5 +277,14 @@ Resources:
     },
   ],
 }
+
+Night Owl
+Early Bird 
+Task Master - complete all tasks due this week
+Unknown - Complete 3 tasks in 3 categories in a single day
+Sorter 
+Project Master
+Label Acolyte
+Label Practitioner
 
  */

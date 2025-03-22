@@ -1,40 +1,17 @@
-'use server';
+"use server";
 
-import AddTasks from '../components/AddTasks/AddTasks';
-import ClientTaskList from '../components/ClientTaskList';
-import NoteDisplay from '../components/NoteBoard';
-import TextEditor from '../components/TextEditor';
-import DashboardGreeting from '../components/DashboardGreeting';
-import DashboardStats from '../components/DashboardStats';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { FaCalendarWeek } from 'react-icons/fa6';
+import AddTasks from "../components/AddTasks/AddTasks";
+import ClientTaskList from "../components/ClientTaskList";
+import NoteDisplay from "../components/NoteBoard";
+import TextEditor from "../components/TextEditor";
+import DashboardStats from "../components/DashboardStats";
 
 export default async function DashboardPage() {
-  const session = await auth();
-  const username = session?.user?.name || session?.user?.email || 'User';
-
-  if (!session) {
-    redirect('/login');
-  }
   return (
     <main>
       <div>
-        <div className="text-text p-4 flex justify-between">
+        <div className="text-text px-4 flex justify-between">
           <div className="flex flex-col w-[100%]">
-            <div className="flex justify-between p-2">
-              <DashboardGreeting username={username} />
-              <Link
-                className="text-text hover:text-primary text-lg font-semibold flex items-center"
-                href={'/plan/week'}
-                role="button"
-                aria-label="Go to weekly planner"
-              >
-                <FaCalendarWeek size={20} className="inline-block mr-2" />
-                Weekly Planner
-              </Link>
-            </div>
             <DashboardStats />
           </div>
         </div>
