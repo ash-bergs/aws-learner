@@ -14,12 +14,7 @@ const DashboardStats = () => {
     completedDueThisWeek,
     completedDueToday,
   } = useStatStore();
-  const { achievements, unlockedAchievements, checkAchievements } =
-    useAchievementStore();
-
-  React.useEffect(() => {
-    checkAchievements();
-  }, [checkAchievements]);
+  const { achievements, unlockedAchievements } = useAchievementStore();
 
   console.log(
     "🚀 ~ file: DashboardStats.tsx:22 ~ DashboardStats ~ unlockedAchievements:",

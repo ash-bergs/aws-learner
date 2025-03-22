@@ -1,10 +1,10 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { taskService } from '@/lib/services';
-import { TaskWithTags } from '@/lib/db';
-import { useSelectedTaskStore } from './selected.task';
-import { useStore } from './app';
-import { type AddTaskInput } from '@/types/service';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { taskService } from "@/lib/services";
+import { TaskWithTags } from "@/lib/db";
+import { useSelectedTaskStore } from "./selected.task";
+import { useStore } from "./app";
+import { type AddTaskInput } from "@/types/service";
 //import { Task, Tag } from '@prisma/client'; // we don't want to use Prisma types here?
 
 interface TaskStore {
@@ -58,7 +58,7 @@ export const useTaskStore = create<TaskStore>()(
           set({ tasks: fetchedTasks });
           set({ loadingTasks: false });
         } catch (error) {
-          console.error('Failed to fetch tasks:', error);
+          console.error("Failed to fetch tasks:", error);
         }
       },
       addTask: async ({ text, tagIds, dueDate, priority }) => {
@@ -78,7 +78,7 @@ export const useTaskStore = create<TaskStore>()(
           const newTask = response.data;
           set((state) => ({ tasks: [...state.tasks, newTask] }));
         } catch (error) {
-          console.error('Failed to add task:', error);
+          console.error("Failed to add task:", error);
         }
       },
       /**
@@ -228,7 +228,7 @@ export const useTaskStore = create<TaskStore>()(
       },
     }),
     {
-      name: 'task-store',
+      name: "task-store",
       /**
        * Rehydrates the tasks store by fetching all tasks from the database and
        * saving them to the store.

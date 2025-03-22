@@ -3,11 +3,11 @@ import { persist } from "zustand/middleware";
 import moment from "moment";
 import { db, type Task } from "@/lib/db";
 import { useStore as appStore } from "./app";
-import { useStatStore } from "./stat";
+import { useTaskStore } from "./task";
 
 // --- Types ---
 export type Condition = {
-  field: keyof Task;
+  field: keyof Task; // TODO: expand to work with more tables, e.g. notes
   operator: "within";
   value: "week" | "day";
 };
@@ -20,7 +20,8 @@ export type ConditionBasedAchievement = {
   repeat?: boolean;
   active: boolean;
   tag?: string;
-  conditions: Condition[];
+  conditions?: Condition[];
+  customEvaluator?: (tasks: Task[]) => number | Promise<number>;
   threshold: number;
 };
 
@@ -40,6 +41,14 @@ const evaluateAchievementProgress = async (
     .equals(userId)
     .filter((task) => task.syncStatus !== "deleted")
     .toArray();
+
+  if (achievement.customEvaluator) {
+    const response = await achievement.customEvaluator(tasks);
+
+    return response;
+  }
+
+  if (!achievement.conditions) return 0;
 
   for (const condition of achievement.conditions) {
     if (condition.operator === "within") {
@@ -88,7 +97,7 @@ export const useAchievementStore = create<AchievementsState>()(
           active: true,
           progress: 0,
           repeat: true,
-          threshold: 5,
+          threshold: 3,
           conditions: [
             {
               field: "dueDate",
@@ -96,6 +105,30 @@ export const useAchievementStore = create<AchievementsState>()(
               value: "week",
             },
           ],
+        },
+        dailyCloser: {
+          id: "daily_closer",
+          name: "Daily Closer",
+          description: "Complete 3 tasks today",
+          active: true,
+          progress: 0,
+          repeat: true,
+          threshold: 3,
+          customEvaluator: (tasks) => {
+            const today = moment();
+            const startOfDay = today.startOf("day").toDate();
+            const endOfDay = today.endOf("day").toDate();
+
+            const completedToday = tasks.filter(
+              (task) =>
+                task.completed === true &&
+                task.dateUpdated &&
+                task.dateUpdated >= startOfDay &&
+                task.dateUpdated <= endOfDay
+            );
+
+            return completedToday.length;
+          },
         },
       },
       unlockedAchievements: {},
@@ -157,8 +190,9 @@ export const useAchievementStore = create<AchievementsState>()(
   )
 );
 
-useAchievementStore.subscribe(() => {
-  useStatStore.getState().updateStats();
+// Subscribe to task store updates
+useTaskStore.subscribe(() => {
+  useAchievementStore.getState().checkAchievements();
 });
 
 /**
