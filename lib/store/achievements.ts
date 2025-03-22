@@ -8,8 +8,8 @@ import { useTaskStore } from "./task";
 // --- Types ---
 export type Condition = {
   field: keyof Task; // TODO: expand to work with more tables, e.g. notes
-  operator: "within";
-  value: "week" | "day";
+  operator: "within" | "equals";
+  value: any; // We'll guard later on
 };
 
 export type ConditionBasedAchievement = {
@@ -20,8 +20,7 @@ export type ConditionBasedAchievement = {
   repeat?: boolean;
   active: boolean;
   tag?: string;
-  conditions?: Condition[];
-  customEvaluator?: (tasks: Task[]) => number | Promise<number>;
+  conditions: Condition[];
   threshold: number;
 };
 
@@ -42,37 +41,39 @@ const evaluateAchievementProgress = async (
     .filter((task) => task.syncStatus !== "deleted")
     .toArray();
 
-  if (achievement.customEvaluator) {
-    const response = await achievement.customEvaluator(tasks);
+  if (!achievement.conditions || achievement.conditions.length === 0) return 0;
 
-    return response;
-  }
-
-  if (!achievement.conditions) return 0;
-
+  // Apply each condition in sequence
   for (const condition of achievement.conditions) {
-    if (condition.operator === "within") {
-      const now = moment();
-      let rangeStart: Date;
-      let rangeEnd: Date;
+    tasks = tasks.filter((task) => {
+      const fieldValue = task[condition.field];
 
-      if (condition.value === "week") {
-        rangeStart = now.startOf("isoWeek").toDate();
-        rangeEnd = now.endOf("isoWeek").toDate();
-      } else {
-        rangeStart = now.startOf("day").toDate();
-        rangeEnd = now.endOf("day").toDate();
+      switch (condition.operator) {
+        case "within": {
+          const now = moment();
+          const rangeStart =
+            condition.value === "week"
+              ? now.startOf("isoWeek").toDate()
+              : now.startOf("day").toDate();
+          const rangeEnd =
+            condition.value === "week"
+              ? now.endOf("isoWeek").toDate()
+              : now.endOf("day").toDate();
+
+          return (
+            fieldValue instanceof Date &&
+            fieldValue >= rangeStart &&
+            fieldValue <= rangeEnd
+          );
+        }
+
+        case "equals":
+          return fieldValue === condition.value;
+
+        default:
+          return false;
       }
-
-      tasks = tasks.filter((task) => {
-        const fieldValue = task[condition.field];
-        return (
-          fieldValue instanceof Date &&
-          fieldValue >= rangeStart &&
-          fieldValue <= rangeEnd
-        );
-      });
-    }
+    });
   }
 
   return tasks.length;
@@ -93,7 +94,7 @@ export const useAchievementStore = create<AchievementsState>()(
         scheduler: {
           id: "scheduler",
           name: "Scheduler!",
-          description: "Schedule 5 tasks this week",
+          description: "Schedule 3 tasks this week",
           active: true,
           progress: 0,
           repeat: true,
@@ -114,21 +115,18 @@ export const useAchievementStore = create<AchievementsState>()(
           progress: 0,
           repeat: true,
           threshold: 3,
-          customEvaluator: (tasks) => {
-            const today = moment();
-            const startOfDay = today.startOf("day").toDate();
-            const endOfDay = today.endOf("day").toDate();
-
-            const completedToday = tasks.filter(
-              (task) =>
-                task.completed === true &&
-                task.dateUpdated &&
-                task.dateUpdated >= startOfDay &&
-                task.dateUpdated <= endOfDay
-            );
-
-            return completedToday.length;
-          },
+          conditions: [
+            {
+              field: "dateUpdated",
+              operator: "within",
+              value: "day",
+            },
+            {
+              field: "completed",
+              operator: "equals",
+              value: true,
+            },
+          ],
         },
       },
       unlockedAchievements: {},
@@ -149,14 +147,17 @@ export const useAchievementStore = create<AchievementsState>()(
         const userId = appStore.getState().userId;
         if (!userId) return;
 
-        const { achievements } = get();
-        const unlocked: Record<string, ConditionBasedAchievement> = {};
+        const { achievements, unlockedAchievements: previousUnlocked } = get();
+        const newUnlocked: Record<string, ConditionBasedAchievement> = {
+          ...previousUnlocked,
+        };
 
         for (const [id, achievement] of Object.entries(achievements)) {
           const progress = await evaluateAchievementProgress(
             achievement,
             userId
           );
+          console.log("Progress for achievement", id, progress);
           const hasMetThreshold = progress >= achievement.threshold;
 
           set((state) => ({
@@ -170,17 +171,21 @@ export const useAchievementStore = create<AchievementsState>()(
             },
           }));
 
+          // Update unlocked achievements
           if (hasMetThreshold) {
-            unlocked[id] = {
+            newUnlocked[id] = {
               ...achievement,
               progress,
               active: false,
             };
+          } else if (achievement.repeat && id in newUnlocked) {
+            // If it’s repeatable and no longer meets criteria, remove it
+            delete newUnlocked[id];
           }
         }
 
         set(() => ({
-          unlockedAchievements: unlocked,
+          unlockedAchievements: newUnlocked,
         }));
       },
     }),
@@ -239,4 +244,41 @@ useTaskStore.subscribe(() => {
 
 Resources: 
 - https://www.nected.ai/us/blog-us/rules-based-systems#:~:text=A%20rules%2Dbased%20system%20is,discount%20rate%20can%20be%2010%25.
+ */
+
+/**
+ * {
+  id: "weekly_warrior",
+  name: "Weekly Warrior",
+  description: "Complete 10 tasks this week",
+  active: true,
+  progress: 0,
+  repeat: true,
+  threshold: 10,
+  conditions: [
+    {
+      field: "dateUpdated",
+      operator: "within",
+      value: "week",
+    },
+  ],
+}
+
+{
+  id: "rapid_fire",
+  name: "Rapid Fire",
+  description: "Add 5 tasks today",
+  active: true,
+  progress: 0,
+  repeat: true,
+  threshold: 5,
+  conditions: [
+    {
+      field: "dateAdded",
+      operator: "within",
+      value: "day",
+    },
+  ],
+}
+
  */
