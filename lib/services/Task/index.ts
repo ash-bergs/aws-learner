@@ -1,6 +1,3 @@
-import { ServiceAddTaskInput } from '@/types/service';
-import { ServiceResponse } from '..';
-import { Task, TaskWithTags } from '../../db';
 import { addTask } from '@/lib/services/Task/methods/add';
 import {
   deleteTask,
@@ -13,6 +10,9 @@ import {
   updateTaskDueDate,
   updateTaskPosition,
 } from '@/lib/services/Task/methods/update';
+import type { ServiceAddTaskInput } from '@/types/service';
+import type { ServiceResponse } from '@/lib/services';
+import type { Task, TaskWithTags } from '@/lib/db';
 
 /**
  * TaskService is a class that contains all the methods for interacting with tasks

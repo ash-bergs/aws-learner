@@ -1,4 +1,4 @@
-import { TaskWithTags } from '@/lib/db';
+import type { TaskWithTags } from '@/lib/db';
 import { COLORS } from '@/utils/constants';
 
 const TaskItemSkeleton = ({ task }: { task: TaskWithTags }) => {

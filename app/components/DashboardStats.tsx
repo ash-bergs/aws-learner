@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useStatStore } from '@/lib/store/stat';
-import { GoGoal } from 'react-icons/go';
+import React from "react";
+import { useStatStore } from "@/lib/store/stat";
+import { GoGoal } from "react-icons/go";
 
 const DashboardStats = () => {
   const {
@@ -88,7 +88,7 @@ interface StatItemProps {
 
 const StatItem = ({ label, ariaLabel, value, total, due }: StatItemProps) => {
   // determine background color based on due status
-  const bgColor = due ? 'bg-highlight' : 'bg-utility';
+  const bgColor = due ? "bg-highlight" : "bg-utility";
   return (
     <li
       className={`${bgColor} rounded-sm p-2 text-xs font-semibold text-text shadow-xs`}

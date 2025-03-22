@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Modal from '../../Modal/Modal';
 import { useTaskStore } from '@/lib/store/task';
-import { TaskWithTags } from '@/lib/db';
 import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
+import type { TaskWithTags } from '@/lib/db';
 
 type DueDateModalProps = {
   isDueDateModalOpen: boolean;

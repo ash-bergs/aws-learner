@@ -11,7 +11,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import DueDateModal from './DueDateModal';
 import MeatballMenu from '../../MeatballMenu';
 import ToggleCompletionButton from './ToggleCompletionButton';
-import { TaskWithTags } from '@/lib/db';
+import type { TaskWithTags } from '@/lib/db';
 
 /**
  * A component to render a single task.
