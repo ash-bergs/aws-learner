@@ -1,58 +1,136 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { useStatStore } from './stat';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import moment from "moment";
+import { db, type Task } from "@/lib/db";
+import { useStore as appStore } from "./app";
+import { useStatStore } from "./stat";
 
-// What we think Achievements might eventually look like in the database
-type Achievement = {
+// --- Types ---
+export type Condition = {
+  field: keyof Task;
+  operator: "within";
+  value: "week" | "day";
+};
+
+export type ConditionBasedAchievement = {
   id: string;
   name: string;
   description: string;
   progress?: number;
   repeat?: boolean;
   active: boolean;
-  tag?: string; // maybe this should be a join table? see taskTags
+  tag?: string;
+  conditions: Condition[];
+  threshold: number;
 };
 
 interface AchievementsState {
-  achievements: Record<string, Achievement>;
-  unlockedAchievements: Record<string, Achievement>;
-  // in progress achievements?
+  achievements: Record<string, ConditionBasedAchievement>;
+  unlockedAchievements: Record<string, ConditionBasedAchievement>;
+  checkAchievements: () => Promise<void>;
 }
 
-// Let's start with the Scheduler badge:
-// If 5 tasks are scheduled this week, then they've unlocked the "Scheduler!" badge
-// We can get that value from the Stats store.
-// How can we structure this in the store in a way that makes it easier to add future badges?
+// --- Achievement Evaluation Function ---
+const evaluateAchievementProgress = async (
+  achievement: ConditionBasedAchievement,
+  userId: string
+): Promise<number> => {
+  let tasks = await db.tasks.where("userId").equals(userId).toArray();
 
-export const useStore = create<AchievementsState>()(
+  for (const condition of achievement.conditions) {
+    if (condition.operator === "within") {
+      const now = moment();
+      let rangeStart: Date;
+      let rangeEnd: Date;
+
+      if (condition.value === "week") {
+        rangeStart = now.startOf("isoWeek").toDate();
+        rangeEnd = now.endOf("isoWeek").toDate();
+      } else {
+        rangeStart = now.startOf("day").toDate();
+        rangeEnd = now.endOf("day").toDate();
+      }
+
+      tasks = tasks.filter((task) => {
+        const fieldValue = task[condition.field];
+        return (
+          fieldValue instanceof Date &&
+          fieldValue >= rangeStart &&
+          fieldValue <= rangeEnd
+        );
+      });
+    }
+  }
+
+  return tasks.length;
+};
+
+// --- Zustand Store ---
+export const useAchievementStore = create<AchievementsState>()(
   persist(
-    (set) => ({
-      /** State, actions, etc. */
+    (set, get) => ({
       achievements: {
         scheduler: {
-          id: 'scheduler',
-          name: 'Scheduler!',
-          description: 'Schedule 5 tasks this week',
+          id: "scheduler",
+          name: "Scheduler!",
+          description: "Schedule 5 tasks this week",
           active: true,
           progress: 0,
           repeat: true,
+          threshold: 5,
           conditions: [
             {
-              field: 'dueDate',
-              operator: 'within',
-              value: 'week',
+              field: "dueDate",
+              operator: "within",
+              value: "week",
             },
-          ], // condition-based rule system approach
-          threshold: 5,
+          ],
         },
       },
       unlockedAchievements: {},
+      checkAchievements: async () => {
+        const userId = appStore.getState().userId;
+        if (!userId) return;
+
+        const { achievements, unlockedAchievements } = get();
+        const unlocked = { ...unlockedAchievements };
+
+        for (const [id, achievement] of Object.entries(achievements)) {
+          const progress = await evaluateAchievementProgress(
+            achievement,
+            userId
+          );
+
+          if (progress >= achievement.threshold) {
+            unlocked[id] = { ...achievement, progress, active: false };
+          } else {
+            // Optional progress update
+            set((state) => ({
+              achievements: {
+                ...state.achievements,
+                [id]: { ...state.achievements[id], progress },
+              },
+            }));
+          }
+        }
+
+        set((state) => ({
+          unlockedAchievements: {
+            ...state.unlockedAchievements,
+            ...unlocked,
+          },
+        }));
+      },
     }),
     {
-      name: 'achievements-storage',
+      name: "achievements-storage",
     }
   )
 );
+
+useAchievementStore.subscribe(() => {
+  useStatStore.getState().updateStats();
+});
 
 /**
  * Types to think about:
