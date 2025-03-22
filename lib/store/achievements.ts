@@ -35,7 +35,11 @@ const evaluateAchievementProgress = async (
   achievement: ConditionBasedAchievement,
   userId: string
 ): Promise<number> => {
-  let tasks = await db.tasks.where("userId").equals(userId).toArray();
+  let tasks = await db.tasks
+    .where("userId")
+    .equals(userId)
+    .filter((task) => task.syncStatus !== "deleted")
+    .toArray();
 
   for (const condition of achievement.conditions) {
     if (condition.operator === "within") {
@@ -65,6 +69,13 @@ const evaluateAchievementProgress = async (
   return tasks.length;
 };
 
+/** Achievement ideas */
+/**
+ * Scribe - take 5 notes in a day
+ * [Tag] Taskmaster - complete 3 tasks in [tag] in a day
+ * [Tag] Mastermind - complete [Tag] Taskmaster 3x in a week - how would we do achievements that build on each other? how do we record that?
+ */
+
 // --- Zustand Store ---
 export const useAchievementStore = create<AchievementsState>()(
   persist(
@@ -88,37 +99,55 @@ export const useAchievementStore = create<AchievementsState>()(
         },
       },
       unlockedAchievements: {},
+      // TODO: Add to db table
+      // TODO: Add to service - add to another? create a new one? - update local db state there
+      /**
+       * Checks all achievements for a user and updates the achievements state.
+       *
+       * @remarks
+       * The following steps are taken:
+       * 1. It iterates over all achievements and evaluates the progress.
+       * 2. If the progress meets the threshold, it adds the achievement to
+       *    the unlockedAchievements state and sets the achievement to inactive.
+       * 3. It sets the progress of the achievement in the achievements state.
+       * 4. Finally, it sets the unlockedAchievements state.
+       */
       checkAchievements: async () => {
         const userId = appStore.getState().userId;
         if (!userId) return;
 
-        const { achievements, unlockedAchievements } = get();
-        const unlocked = { ...unlockedAchievements };
+        const { achievements } = get();
+        const unlocked: Record<string, ConditionBasedAchievement> = {};
 
         for (const [id, achievement] of Object.entries(achievements)) {
           const progress = await evaluateAchievementProgress(
             achievement,
             userId
           );
+          const hasMetThreshold = progress >= achievement.threshold;
 
-          if (progress >= achievement.threshold) {
-            unlocked[id] = { ...achievement, progress, active: false };
-          } else {
-            // Optional progress update
-            set((state) => ({
-              achievements: {
-                ...state.achievements,
-                [id]: { ...state.achievements[id], progress },
+          set((state) => ({
+            achievements: {
+              ...state.achievements,
+              [id]: {
+                ...state.achievements[id],
+                progress,
+                active: !hasMetThreshold, // Only active if the criteria is not met - but active might serve a different purpose later
               },
-            }));
+            },
+          }));
+
+          if (hasMetThreshold) {
+            unlocked[id] = {
+              ...achievement,
+              progress,
+              active: false,
+            };
           }
         }
 
-        set((state) => ({
-          unlockedAchievements: {
-            ...state.unlockedAchievements,
-            ...unlocked,
-          },
+        set(() => ({
+          unlockedAchievements: unlocked,
         }));
       },
     }),
