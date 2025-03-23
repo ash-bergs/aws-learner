@@ -23,6 +23,8 @@ interface TaskStore {
   // TODO: this could all be it's own store
   selectedTagIds: string[];
   setSelectedTagId: (tagId: string) => void;
+  setSelectedTagIds: (ids: string[]) => void;
+
   clearSelectedTags: () => void;
 }
 
@@ -35,6 +37,10 @@ export const useTaskStore = create<TaskStore>()(
       clearSelectedTags: () => {
         set({ selectedTagIds: [] });
       },
+      setSelectedTagIds: (tagIds) => {
+        set({ selectedTagIds: tagIds });
+      },
+
       setSelectedTagId: (tagId) => {
         set((state) => {
           const isTagSelected = state.selectedTagIds.includes(tagId);

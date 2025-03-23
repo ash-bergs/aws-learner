@@ -1,7 +1,7 @@
-import { db, Task, TaskWithTags } from '@/lib/db';
-import type { ServiceResponse } from '@/lib/services';
-import { type ServiceAddTaskInput } from '@/types/service';
-import { v4 as uuidv4 } from 'uuid';
+import { db, Task, TaskWithTags } from "@/lib/db";
+import type { ServiceResponse } from "@/lib/services";
+import { type ServiceAddTaskInput } from "@/types/service";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Adds a new task for a given user with the given properties.
@@ -28,9 +28,9 @@ export async function addTask({
 
     // Find the highest position value among the user's tasks
     const highestPositionTask = await db.tasks
-      .where('userId')
+      .where("userId")
       .equals(userId)
-      .sortBy('position');
+      .sortBy("position");
     const highestPosition = highestPositionTask.length
       ? highestPositionTask[highestPositionTask.length - 1].position
       : 0;
@@ -45,11 +45,11 @@ export async function addTask({
       completed: false,
       completedBy: undefined,
       color: undefined,
-      dateAdded: new Date(),
-      dateUpdated: new Date(),
+      dateAdded: new Date(), // TODO: createdAt
+      dateUpdated: new Date(), // TODO: updatedAt
       position: newTaskPosition,
       dueDate: taskDueDate,
-      syncStatus: 'new',
+      syncStatus: "new",
       priority,
     };
 
@@ -77,7 +77,7 @@ export async function addTask({
 
     return { success: true, data: taskWithTags };
   } catch (error) {
-    console.error('Failed to add task:', error);
-    return { success: false, error: 'Failed to add task' };
+    console.error("Failed to add task:", error);
+    return { success: false, error: "Failed to add task" };
   }
 }

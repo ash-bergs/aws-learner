@@ -1,11 +1,12 @@
-import React from 'react';
-import { Tag } from '@/lib/db';
-import { COLORS } from '@/utils/constants';
+import React from "react";
+import { Tag } from "@/lib/db";
+import { COLORS } from "@/utils/constants";
 
 type TagSortingProps = {
-  selectedTagIds: string[];
+  selectedTagIds?: string[];
   handleTagChange: (tagId: string) => void;
   tag: Tag;
+  active?: boolean;
 };
 
 /**
@@ -17,22 +18,27 @@ type TagSortingProps = {
  *
  * @param {TagSortingProps} props - The props for the component.
  */
-const TagItem = ({ tag, selectedTagIds, handleTagChange }: TagSortingProps) => {
-  const isSelected = selectedTagIds.includes(tag.id);
+const TagItem = ({
+  tag,
+  selectedTagIds,
+  handleTagChange,
+  active,
+}: TagSortingProps) => {
+  const isSelected = active || selectedTagIds?.includes(tag.id) || false;
   const bgColor = tag.color
     ? COLORS.find((color) => color.name === tag.color)?.class
-    : 'bg-note';
+    : "bg-note";
   const textColor = tag.color
     ? COLORS.find((color) => color.name === tag.color)?.text
-    : 'text-text';
+    : "text-text";
   return (
     <button
       key={tag.id}
       className={`
                 p-1 px-2 rounded-full text-sm font-semibold shadow ${bgColor} ${textColor} ${
         isSelected
-          ? 'border-2 border-highlight font-bold'
-          : 'border-2 border-transparent'
+          ? "border-2 border-highlight font-bold"
+          : "border-2 border-transparent"
       }`}
       onClick={() => handleTagChange(tag.id)}
     >

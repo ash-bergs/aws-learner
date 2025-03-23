@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import Modal from '../Modal/Modal';
-import TagPreview from './TagPreview';
-import { useTagStore } from '@/lib/store/tag';
-import { COLORS } from '@/utils/constants';
-import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
+import React, { useState } from "react";
+import Modal from "../Modal/Modal";
+import TagPreview from "./TagPreview";
+import { useTagStore } from "@/lib/store/tag";
+import { COLORS } from "@/utils/constants";
+import { primaryButtonStyles, secondaryButtonStyles } from "@/lib/style";
+import NestedTagList from "../NestedTagList";
 
 type AddTagModalProps = {
   isModalOpen: boolean;
@@ -11,17 +12,21 @@ type AddTagModalProps = {
 };
 
 const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
-  const [tagName, setTagName] = useState('');
+  const [tagName, setTagName] = useState("");
+  const [selectedPath, setSelectedPath] = useState<string[]>([]);
   const [color, setColor] = useState(COLORS[2].name);
   const { addTag } = useTagStore();
 
+  if (!isModalOpen) return null;
+
   const handleAddTag = async () => {
-    if (tagName === '') return;
+    if (tagName === "") return;
     try {
-      await addTag(tagName, color);
+      const parentId = selectedPath[selectedPath.length - 1];
+      await addTag(tagName, color, parentId);
       setIsModalOpen(false);
       // clear state
-      setTagName('');
+      setTagName("");
       setColor(COLORS[2].name);
     } catch (error) {
       console.error(error);
@@ -35,6 +40,13 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
     <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
       <div className="flex flex-col gap-4">
         <h1 className="text-lg font-semibold">Add a Tag</h1>
+        <div>
+          Available Parent tags:
+          <NestedTagList
+            selectedPath={selectedPath}
+            setSelectedPath={setSelectedPath}
+          />
+        </div>
         <input
           type="text"
           className="border border-text rounded-sm p-2"
@@ -49,7 +61,7 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
           <p className="font-semibold text-text">Tag Preview</p>
           <div className="flex justify-center p-6">
             <TagPreview
-              tagText={tagName || 'Tag Name'}
+              tagText={tagName || "Tag Name"}
               onColorSelect={onColorSelect}
             />
           </div>
@@ -64,7 +76,7 @@ const AddTagModal = ({ isModalOpen, setIsModalOpen }: AddTagModalProps) => {
           <button
             className={primaryButtonStyles}
             onClick={handleAddTag}
-            disabled={tagName === ''}
+            disabled={tagName === ""}
           >
             Confirm
           </button>

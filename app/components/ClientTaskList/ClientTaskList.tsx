@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,21 +9,22 @@ import {
   useSensors,
   PointerSensor,
   TouchSensor,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useTaskStore } from '@/lib/store/task';
-import { useNoteStore } from '@/lib/store/note';
-import { useStore } from '@/lib/store/app';
-import LoadingSpinner from '../LoadingSpinner';
-import SortableTaskItem from './SortableTaskItem';
-import TasksToolbar from '../TasksToolbar.tsx';
-import { getSession } from 'next-auth/react';
-import { GoCheckbox } from 'react-icons/go';
+} from "@dnd-kit/sortable";
+import { useTaskStore } from "@/lib/store/task";
+import { useNoteStore } from "@/lib/store/note";
+import { useStore } from "@/lib/store/app";
+import LoadingSpinner from "../LoadingSpinner";
+import SortableTaskItem from "./SortableTaskItem";
+import TasksToolbar from "../TasksToolbar.tsx";
+import { useSession } from "next-auth/react";
+import { GoCheckbox } from "react-icons/go";
+import { useTagStore } from "@/lib/store/tag";
+import { getAllDescendantTagIds } from "@/lib/helpers/tag-tree";
 
-// import PomodoroTimer from '../Timer';
 /**
  * A component that renders a draggable and sortable list of tasks.
  *
@@ -41,44 +42,47 @@ import { GoCheckbox } from 'react-icons/go';
 const ClientTaskList = (): React.ReactElement => {
   const { tasks, reorderTask, selectedTagIds, loadingTasks } = useTaskStore();
   const { userId, setUserId, hideCompletedTasks } = useStore();
+  const { flatTags } = useTagStore();
   const { isLinking } = useNoteStore();
+  const { data: session } = useSession();
 
-  // Filter tasks in memory based on the current tag
+  const expandedTagIds = React.useMemo(() => {
+    if (selectedTagIds.length === 0) return [];
+    const expanded = new Set<string>();
+
+    selectedTagIds.forEach((tagId) => {
+      expanded.add(tagId);
+      const descendants = getAllDescendantTagIds(tagId, flatTags);
+      descendants.forEach((id) => expanded.add(id));
+    });
+
+    return Array.from(expanded);
+  }, [selectedTagIds, flatTags]);
+
   const filteredTasks = React.useMemo(() => {
-    return (
-      tasks
-        // Filter out completed tasks if hideCompletedTasks is true
-        .filter((task) => (hideCompletedTasks ? !task.completed : true))
-        // Filter tasks by selected tags
-        .filter((task) =>
-          selectedTagIds.length > 0
-            ? task.taskTags.some((taskTag) =>
-                selectedTagIds.includes(taskTag.tagId)
-              )
-            : true
-        )
-    );
-  }, [tasks, selectedTagIds, hideCompletedTasks]);
+    return tasks
+      .filter((task) => (hideCompletedTasks ? !task.completed : true))
+      .filter((task) =>
+        expandedTagIds.length > 0
+          ? task.taskTags.some((taskTag) =>
+              expandedTagIds.includes(taskTag.tagId)
+            )
+          : true
+      );
+  }, [tasks, expandedTagIds, hideCompletedTasks]);
 
-  //TODO: better classes - clsx?
-  const listPadding = isLinking ? 'py-2 px-4' : '';
-  const listBorder = isLinking ? 'border-2 border-highlight rounded-lg' : '';
+  const listPadding = isLinking ? "py-2 px-4" : "";
+  const listBorder = isLinking ? "border-2 border-highlight rounded-lg" : "";
 
-  // TODO: do this a better way?
-  // set the userId in the params on the dashboard page...?
   React.useEffect(() => {
     const loadSession = async () => {
-      // TODO: useSession instead? How does this work in AppRouter?
-      const session = await getSession();
       if (session?.user?.id && session.user.id !== userId) {
         setUserId(session.user.id);
       }
     };
-
     loadSession();
-  }, [userId, setUserId]);
+  }, [userId, setUserId, session?.user?.id]);
 
-  // https://docs.dndkit.com/api-documentation/sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -87,18 +91,15 @@ const ClientTaskList = (): React.ReactElement => {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250, // ms delay
+        delay: 250,
         tolerance: 5,
       },
     })
   );
 
-  // dnd setup
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (!over) return;
-
     if (active.id !== over.id) {
       reorderTask(String(active.id), String(over.id));
     }
@@ -116,9 +117,6 @@ const ClientTaskList = (): React.ReactElement => {
       </h2>
       <div className="flex flex-col gap-4">
         <TasksToolbar />
-        {/* <PomodoroTimer
-          expiryTimestamp={new Date(Date.now() + 25 * 60 * 1000)}
-        /> */}
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}

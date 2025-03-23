@@ -1,33 +1,33 @@
-import React from 'react';
-import { useTaskStore } from '@/lib/store/task';
-import { useSelectedTaskStore } from '@/lib/store/selected.task';
-import { useNoteStore } from '@/lib/store/note';
-import { useTagStore } from '@/lib/store/tag';
-import { useStore } from '@/lib/store/app';
-import TagItem from './TagItem';
-import AddTagModal from './AddTagModal';
-import MassDeleteConfirmationModal from './MassDeleteConfirmationModal';
-import TooltipButton from '../TooltipButton';
+import React from "react";
+import { useTaskStore } from "@/lib/store/task";
+import { useSelectedTaskStore } from "@/lib/store/selected.task";
+import { useNoteStore } from "@/lib/store/note";
+import { useStore } from "@/lib/store/app";
+import AddTagModal from "./AddTagModal";
+import MassDeleteConfirmationModal from "./MassDeleteConfirmationModal";
+import TooltipButton from "../TooltipButton";
+import NestedTagTree from "../NestedTagTree";
 
 //TODO: break this component up
 
 const buttonClass =
-  'bg-primary rounded-sm disabled:bg-gray-400 hover:bg-secondary text-white p-2 font-semibold text-sm cursor-pointer disabled:cursor-not-allowed';
-const checkboxLabelClass = 'flex items-center text-sm font-semibold text-text';
+  "bg-primary rounded-sm disabled:bg-gray-400 hover:bg-secondary text-white p-2 font-semibold text-sm cursor-pointer disabled:cursor-not-allowed";
+const checkboxLabelClass = "flex items-center text-sm font-semibold text-text";
 const TasksToolbar = () => {
+  const clearExpandedRef = React.useRef<() => void>(() => {});
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isMassDeleteModalOpen, setIsMassDeleteModalOpen] =
     React.useState(false);
+
   const {
     selectAllTasks,
-    setSelectedTagId,
     selectedTagIds,
     clearSelectedTags,
-    //syncTasks,
+    setSelectedTagIds,
   } = useTaskStore();
-  const { selectedTaskIds, clearSelectedTaskIds } = useSelectedTaskStore();
+  const { selectedTaskIds } = useSelectedTaskStore();
   const { isLinking } = useNoteStore();
-  const { tags } = useTagStore();
+
   const {
     hideCompletedTasks,
     toggleHideCompletedTasks,
@@ -35,12 +35,6 @@ const TasksToolbar = () => {
     toggleColorCodeTasks,
     //userId,
   } = useStore();
-
-  const handleTagChange = (tagId: string) => {
-    // now we can have more than 1
-    clearSelectedTaskIds();
-    setSelectedTagId(tagId);
-  };
 
   return (
     <div className="p-4 rounded-sm shadow-sm bg-utility flex flex-col gap-2">
@@ -51,14 +45,15 @@ const TasksToolbar = () => {
           </div>
         </div>
         <div className="flex gap-1 flex-wrap">
-          {tags.map((tag) => (
-            <TagItem
-              key={tag.id}
-              tag={tag}
-              selectedTagIds={selectedTagIds}
-              handleTagChange={handleTagChange}
-            />
-          ))}
+          <NestedTagTree
+            selectedTagIds={new Set(selectedTagIds)}
+            setSelectedTagIds={(updatedSet) =>
+              setSelectedTagIds(Array.from(updatedSet))
+            }
+            onClearExpanded={(fn) => {
+              clearExpandedRef.current = fn;
+            }}
+          />
         </div>
       </div>
 
@@ -108,7 +103,12 @@ const TasksToolbar = () => {
               </button>
               <button
                 className={buttonClass}
-                onClick={() => clearSelectedTags()}
+                onClick={() => {
+                  clearSelectedTags();
+                  // Slightly hacky, but it works
+                  // TODO: Refactor to a cleaner solution
+                  clearExpandedRef.current?.();
+                }}
                 disabled={selectedTagIds.length === 0}
               >
                 Clear Filters
