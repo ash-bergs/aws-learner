@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import Modal from '../../Modal/Modal';
-import { useTaskStore } from '@/lib/store/task';
-import { primaryButtonStyles, secondaryButtonStyles } from '@/lib/style';
-import type { TaskWithTags } from '@/lib/db';
+import React, { useState } from "react";
+import Modal from "../../Modal/Modal";
+import { useTaskStore } from "@/lib/store/task";
+import { primaryButtonStyles, secondaryButtonStyles } from "@/lib/style";
+import type { TaskWithTags } from "@/lib/db";
+import moment from "moment";
 
 type DueDateModalProps = {
   isDueDateModalOpen: boolean;
@@ -15,24 +16,20 @@ const DueDateModal = ({
   isDueDateModalOpen,
   setIsDueDateModalOpen,
 }: DueDateModalProps) => {
-  const [localDueDate, setLocalDueDate] = useState<string | undefined>(
-    task.dueDate ? String(task.dueDate) : undefined
+  const [localDueDate, setLocalDueDate] = useState<string>(
+    task.dueDate ? moment(task.dueDate).format("YYYY-MM-DD") : ""
   );
-  const { updateTaskDueDate } = useTaskStore();
+  const [timeTracked, setTimeTracked] = useState<number>(task.timeTracked ?? 0);
+  const { updateTaskProperty } = useTaskStore();
 
   const handleUpdateTaskDueDate = () => {
     if (!localDueDate) return;
 
-    // Split the date string into year, month, and day
-    const [year, month, day] = localDueDate.split('-').map(Number);
-
-    // Construct a new Date object in the local timezone
-    const dueDate = new Date(year, month - 1, day); // Month is 0-based
-
-    if (!isNaN(dueDate.getTime())) {
-      updateTaskDueDate(task.id, dueDate);
-      setIsDueDateModalOpen(false);
-    }
+    updateTaskProperty(task.id, {
+      dueDate: moment(localDueDate, "YYYY-MM-DD").toDate(),
+      timeTracked,
+    });
+    setIsDueDateModalOpen(false);
   };
   return (
     <Modal
@@ -44,8 +41,17 @@ const DueDateModal = ({
         <input
           type="date"
           className="mb-4 p-2 border border-highlight rounded-md text-primary w-full"
-          value={String(localDueDate)}
+          value={localDueDate}
           onChange={(e) => setLocalDueDate(e.target.value)}
+        />
+        {/** Input to put in minutes for time tracking */}
+        <input
+          className="mb-4 p-2 border border-highlight rounded-md text-primary w-full"
+          type="number"
+          step="10"
+          placeholder="Minutes"
+          value={timeTracked}
+          onChange={(e) => setTimeTracked(Number(e.target.value))}
         />
         <div className="flex gap-2">
           <button

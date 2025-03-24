@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
   DndContext,
   closestCenter,
@@ -9,21 +9,52 @@ import {
   useSensors,
   PointerSensor,
   TouchSensor,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useTaskStore } from '@/lib/store/task';
-import { useNoteStore } from '@/lib/store/note';
-import { useStore } from '@/lib/store/app';
-import LoadingSpinner from '../LoadingSpinner';
-import SortableTaskItem from './SortableTaskItem';
-import TasksToolbar from '../TasksToolbar.tsx';
-import { getSession } from 'next-auth/react';
-import { GoCheckbox } from 'react-icons/go';
+} from "@dnd-kit/sortable";
+import { useTaskStore } from "@/lib/store/task";
+import { useNoteStore } from "@/lib/store/note";
+import { useStore } from "@/lib/store/app";
+import LoadingSpinner from "../LoadingSpinner";
+import SortableTaskItem from "./SortableTaskItem";
+import TasksToolbar from "../TasksToolbar.tsx";
+import { useSession } from "next-auth/react";
+import { GoCheckbox } from "react-icons/go";
+import { useTagStore } from "@/lib/store/tag";
+import { getAllDescendantTagIds } from "@/lib/helpers/tag-tree";
+import type { Tag } from "@/lib/db";
 
-// import PomodoroTimer from '../Timer';
+const getEffectiveTagSets = (
+  selectedTagIds: string[],
+  flatTags: Tag[]
+): Set<string>[] => {
+  // Wrap in a Set for fast lookups
+  const selected = new Set(selectedTagIds);
+
+  // Get the 'most specific' tags
+  // When we select "Work" and it has 2 subtasks like "Work" -> "E2E" and "Workshop", we'll be getting all tasks for "E2E" and "Workshop"
+  // But when we select "E2E", it has narrowed the search to just tasks with a tag id that is a descendant of "E2E"
+  const mostSpecific = selectedTagIds.filter((id) => {
+    // For each selected tag, get all its descendants
+    const descendants = getAllDescendantTagIds(id, flatTags);
+    // If any of those descendants are selected, this tag is not the most specific - return false
+    // If no descendants are selected, this tag is the most specific - return true
+    return !descendants.some((descId) => selected.has(descId));
+  });
+
+  // For each 'most specific' tag
+  return mostSpecific.map((id) => {
+    // Get all its descendants
+    const set = new Set(getAllDescendantTagIds(id, flatTags));
+    // Add the tag itself
+    set.add(id);
+    // Return the set to be used to filter tasks
+    return set;
+  });
+};
+
 /**
  * A component that renders a draggable and sortable list of tasks.
  *
@@ -41,44 +72,42 @@ import { GoCheckbox } from 'react-icons/go';
 const ClientTaskList = (): React.ReactElement => {
   const { tasks, reorderTask, selectedTagIds, loadingTasks } = useTaskStore();
   const { userId, setUserId, hideCompletedTasks } = useStore();
+  const { flatTags } = useTagStore();
   const { isLinking } = useNoteStore();
+  const { data: session } = useSession();
 
-  // Filter tasks in memory based on the current tag
+  const effectiveTagSets = React.useMemo(
+    () => getEffectiveTagSets(selectedTagIds, flatTags),
+    [selectedTagIds, flatTags]
+  );
+
   const filteredTasks = React.useMemo(() => {
     return (
       tasks
-        // Filter out completed tasks if hideCompletedTasks is true
+        // hide completed tasks if hideCompletedTasks is true
         .filter((task) => (hideCompletedTasks ? !task.completed : true))
-        // Filter tasks by selected tags
-        .filter((task) =>
-          selectedTagIds.length > 0
-            ? task.taskTags.some((taskTag) =>
-                selectedTagIds.includes(taskTag.tagId)
-              )
-            : true
-        )
+        // filter by most specific selected tags
+        .filter((task) => {
+          if (effectiveTagSets.length === 0) return true;
+          return effectiveTagSets.some((tagSet) =>
+            task.taskTags.some((taskTag) => tagSet.has(taskTag.tagId))
+          );
+        })
     );
-  }, [tasks, selectedTagIds, hideCompletedTasks]);
+  }, [tasks, effectiveTagSets, hideCompletedTasks]);
 
-  //TODO: better classes - clsx?
-  const listPadding = isLinking ? 'py-2 px-4' : '';
-  const listBorder = isLinking ? 'border-2 border-highlight rounded-lg' : '';
+  const listPadding = isLinking ? "py-2 px-4" : "";
+  const listBorder = isLinking ? "border-2 border-highlight rounded-lg" : "";
 
-  // TODO: do this a better way?
-  // set the userId in the params on the dashboard page...?
   React.useEffect(() => {
     const loadSession = async () => {
-      // TODO: useSession instead? How does this work in AppRouter?
-      const session = await getSession();
       if (session?.user?.id && session.user.id !== userId) {
         setUserId(session.user.id);
       }
     };
-
     loadSession();
-  }, [userId, setUserId]);
+  }, [userId, setUserId, session?.user?.id]);
 
-  // https://docs.dndkit.com/api-documentation/sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -87,18 +116,15 @@ const ClientTaskList = (): React.ReactElement => {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250, // ms delay
+        delay: 250,
         tolerance: 5,
       },
     })
   );
 
-  // dnd setup
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (!over) return;
-
     if (active.id !== over.id) {
       reorderTask(String(active.id), String(over.id));
     }
@@ -116,9 +142,6 @@ const ClientTaskList = (): React.ReactElement => {
       </h2>
       <div className="flex flex-col gap-4">
         <TasksToolbar />
-        {/* <PomodoroTimer
-          expiryTimestamp={new Date(Date.now() + 25 * 60 * 1000)}
-        /> */}
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}

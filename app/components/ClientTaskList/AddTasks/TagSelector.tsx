@@ -1,7 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useTagStore } from '@/lib/store/tag';
+import React, { type JSX } from "react";
+import { useTagStore } from "@/lib/store/tag";
+import { TagNode } from "@/lib/services/tags";
+
 const TagSelector = ({
   selectedTag,
   onTagSelect,
@@ -10,8 +12,21 @@ const TagSelector = ({
   onTagSelect: (tag: string) => void;
 }) => {
   const { tags } = useTagStore();
+  if (!tags.length) return null;
 
-  if (tags.length === 0) return null;
+  // Recursive function to flatten tree with indentation
+  const renderOptions = (nodes: TagNode[], depth = 0): JSX.Element[] => {
+    return nodes.flatMap((node) => {
+      const indent = "—".repeat(depth); // visual indent
+      const option = (
+        <option key={node.id} value={node.id}>
+          {indent} {node.name}
+        </option>
+      );
+      const children = renderOptions(node.children, depth + 1);
+      return [option, ...children];
+    });
+  };
 
   return (
     <div className="relative w-min">
@@ -24,11 +39,7 @@ const TagSelector = ({
         onChange={(e) => onTagSelect(e.target.value)}
       >
         <option value="">Select a Tag</option>
-        {tags.map((tag) => (
-          <option key={tag.id} value={tag.id}>
-            {tag.name}
-          </option>
-        ))}
+        {renderOptions(tags)}
       </select>
       <div className="absolute inset-y-0 right-2 text-text flex items-center pointer-events-none">
         <svg

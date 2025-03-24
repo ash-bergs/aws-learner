@@ -1,7 +1,4 @@
-import Dexie from 'dexie';
-
-// fake string (uuid) for user id testing
-export const USER_ID = 'c8d6e5f5-9da0-4b0d-8e8d-9da0-4b0d-8e8d';
+import Dexie from "dexie";
 
 export interface Task {
   id: string;
@@ -17,7 +14,8 @@ export interface Task {
   priority?: number;
   // Sync status - only on Dexie (not in RDS/Prisma)
   // TODO: new db version, and update old tasks with default
-  syncStatus: 'new' | 'pending' | 'synced' | 'deleted';
+  syncStatus: "new" | "pending" | "synced" | "deleted";
+  timeTracked?: number;
 }
 
 export interface Tag {
@@ -25,6 +23,7 @@ export interface Tag {
   name: string; // Name of the tag (e.g., "Work", "Personal")
   color?: string; // Optional color for the tag
   userId: string; // User who created the tag
+  parentId?: string; // TODO: Add to Prisma schema
 }
 
 export interface TaskWithTags extends Task {
@@ -77,35 +76,35 @@ class AppDatabase extends Dexie {
   taskTags: Dexie.Table<TaskTag, [string, string]>;
 
   constructor() {
-    super('ProductivityAppDB');
+    super("ProductivityAppDB");
 
     this.version(1).stores({
-      tasks: 'id, text, completed, dateAdded, dateUpdated',
-      notes: 'id, text, dateAdded, dateUpdated',
+      tasks: "id, text, completed, dateAdded, dateUpdated",
+      notes: "id, text, dateAdded, dateUpdated",
     });
 
     // &id - marks the id as a unique primary key
     this.version(2).stores({
-      tasks: '&id, text, completed, dateAdded, dateUpdated',
-      notes: '&id, text, dateAdded, dateUpdated',
+      tasks: "&id, text, completed, dateAdded, dateUpdated",
+      notes: "&id, text, dateAdded, dateUpdated",
     });
 
     // update Note table structure (text -> content)
     this.version(3).stores({
-      tasks: '&id, text, completed, dateAdded, dateUpdated',
-      notes: '&id, content, dateAdded, dateUpdated',
+      tasks: "&id, text, completed, dateAdded, dateUpdated",
+      notes: "&id, content, dateAdded, dateUpdated",
     });
 
     // update:
     // colors on tasks and notes
     // links tasks and notes with a taskNotes table
     this.version(4).stores({
-      tasks: '&id, text, completed, color, dateAdded, dateUpdated',
-      notes: '&id, content, color, dateAdded, dateUpdated',
+      tasks: "&id, text, completed, color, dateAdded, dateUpdated",
+      notes: "&id, content, color, dateAdded, dateUpdated",
       // composite key for primary key, a tuple with 2 elements
       // prevents duplicate relationships for the same task and note
       // how would this scale?
-      taskNotes: '[taskId+noteId], taskId, noteId',
+      taskNotes: "[taskId+noteId], taskId, noteId",
     });
 
     // update:
@@ -114,9 +113,9 @@ class AppDatabase extends Dexie {
     // this is useful for reordering because we can use the average between adjacent tasks
     // and avoid shifting the entire list when reordering
     this.version(5).stores({
-      tasks: '&id, text, completed, color, dateAdded, dateUpdated, position',
-      notes: '&id, content, color, dateAdded, dateUpdated',
-      taskNotes: '[taskId+noteId], taskId, noteId',
+      tasks: "&id, text, completed, color, dateAdded, dateUpdated, position",
+      notes: "&id, content, color, dateAdded, dateUpdated",
+      taskNotes: "[taskId+noteId], taskId, noteId",
     });
     // migrate existing tasks
     // .upgrade((tx) => {
@@ -131,29 +130,29 @@ class AppDatabase extends Dexie {
 
     this.version(6).stores({
       tasks:
-        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
-      notes: '&id, content, color, dateAdded, dateUpdated, userId',
-      taskNotes: '[taskId+noteId], taskId, noteId',
-      users: '&id, email, password, settings',
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users: "&id, email, password, settings",
     });
 
     // update: Adds username, and first and last name to User
     // makes email optional but a unique username is required
     this.version(7).stores({
       tasks:
-        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
-      notes: '&id, content, color, dateAdded, dateUpdated, userId',
-      taskNotes: '[taskId+noteId], taskId, noteId',
-      users: '&id, email, password, username, firstName, lastName, settings',
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users: "&id, email, password, username, firstName, lastName, settings",
     });
 
     // update: adds position to notes
     this.version(8).stores({
       tasks:
-        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
-      notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
-      taskNotes: '[taskId+noteId], taskId, noteId',
-      users: '&id, email, password, username, firstName, lastName, settings',
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users: "&id, email, password, username, firstName, lastName, settings",
     });
 
     // update: add tags to tasks
@@ -161,23 +160,23 @@ class AppDatabase extends Dexie {
     // we will probably make a separate table for tags and notes
     this.version(9).stores({
       tasks:
-        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId',
-      notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
-      taskNotes: '[taskId+noteId], taskId, noteId',
-      users: '&id, email, password, username, firstName, lastName, settings',
-      taskTags: '[taskId+tagId], taskId, tagId',
-      tags: '&id, name, color, userId',
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users: "&id, email, password, username, firstName, lastName, settings",
+      taskTags: "[taskId+tagId], taskId, tagId",
+      tags: "&id, name, color, userId",
     });
 
     // update: add due dates to tasks
     this.version(10).stores({
       tasks:
-        '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate',
-      notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
-      taskNotes: '[taskId+noteId], taskId, noteId',
-      users: '&id, email, password, username, firstName, lastName, settings',
-      taskTags: '[taskId+tagId], taskId, tagId',
-      tags: '&id, name, color, userId',
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users: "&id, email, password, username, firstName, lastName, settings",
+      taskTags: "[taskId+tagId], taskId, tagId",
+      tags: "&id, name, color, userId",
     });
 
     // TODO: setup a better, external, module to seed
@@ -223,20 +222,20 @@ class AppDatabase extends Dexie {
     this.version(11)
       .stores({
         tasks:
-          '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority',
-        notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
-        taskNotes: '[taskId+noteId], taskId, noteId',
+          "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority",
+        notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+        taskNotes: "[taskId+noteId], taskId, noteId",
         users:
-          '&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt',
-        taskTags: '[taskId+tagId], taskId, tagId',
-        tags: '&id, name, color, userId, createdAt, updatedAt',
+          "&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt",
+        taskTags: "[taskId+tagId], taskId, tagId",
+        tags: "&id, name, color, userId, createdAt, updatedAt",
       })
       .upgrade(async (tx) => {
         const now = new Date();
 
         // Update Users: Backfill createdAt and updatedAt
         await tx
-          .table('users')
+          .table("users")
           .toCollection()
           .modify((user) => {
             user.createdAt = now;
@@ -245,7 +244,7 @@ class AppDatabase extends Dexie {
 
         // Update Tasks: Backfill priority
         await tx
-          .table('tasks')
+          .table("tasks")
           .toCollection()
           .modify((task) => {
             task.priority = task.priority ?? 0;
@@ -256,30 +255,54 @@ class AppDatabase extends Dexie {
     this.version(12)
       .stores({
         tasks:
-          '&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus',
-        notes: '&id, content, color, dateAdded, dateUpdated, userId, position',
-        taskNotes: '[taskId+noteId], taskId, noteId',
+          "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus",
+        notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+        taskNotes: "[taskId+noteId], taskId, noteId",
         users:
-          '&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt',
-        taskTags: '[taskId+tagId], taskId, tagId',
-        tags: '&id, name, color, userId, createdAt, updatedAt',
+          "&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt",
+        taskTags: "[taskId+tagId], taskId, tagId",
+        tags: "&id, name, color, userId, createdAt, updatedAt",
       })
       .upgrade(async (tx) => {
         // Update Tasks: Backfill priority
         await tx
-          .table('tasks')
+          .table("tasks")
           .toCollection()
           .modify((task) => {
-            task.syncStatus = task.syncStatus ?? 'new';
+            task.syncStatus = task.syncStatus ?? "new";
           });
       });
 
-    this.users = this.table('users');
-    this.tasks = this.table('tasks');
-    this.tags = this.table('tags');
-    this.notes = this.table('notes');
-    this.taskNotes = this.table('taskNotes');
-    this.taskTags = this.table('taskTags');
+    // Add parentId to tags
+    this.version(13).stores({
+      tasks:
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users:
+        "&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt",
+      taskTags: "[taskId+tagId], taskId, tagId",
+      tags: "&id, name, color, userId, createdAt, updatedAt, parentId",
+    });
+
+    // Add timeTracked to tasks
+    this.version(14).stores({
+      tasks:
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus, timeTracked",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users:
+        "&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt",
+      taskTags: "[taskId+tagId], taskId, tagId",
+      tags: "&id, name, color, userId, createdAt, updatedAt, parentId",
+    });
+
+    this.users = this.table("users");
+    this.tasks = this.table("tasks");
+    this.tags = this.table("tags");
+    this.notes = this.table("notes");
+    this.taskNotes = this.table("taskNotes");
+    this.taskTags = this.table("taskTags");
   }
 }
 
