@@ -1,18 +1,19 @@
-import { addTask } from '@/lib/services/Task/methods/add';
+import { addTask } from "@/lib/services/Task/methods/add";
 import {
   deleteTask,
   deleteTasksByIds,
-} from '@/lib/services/Task/methods/delete';
-import { getAllTasks } from '@/lib/services/Task/methods/get';
-import { syncTasks } from '@/lib/services/Task/methods/sync';
+} from "@/lib/services/Task/methods/delete";
+import { getAllTasks } from "@/lib/services/Task/methods/get";
+import { syncTasks } from "@/lib/services/Task/methods/sync";
 import {
   toggleComplete,
   updateTaskDueDate,
   updateTaskPosition,
-} from '@/lib/services/Task/methods/update';
-import type { ServiceAddTaskInput } from '@/types/service';
-import type { ServiceResponse } from '@/lib/services';
-import type { Task, TaskWithTags } from '@/lib/db';
+  updateTaskProperty,
+} from "@/lib/services/Task/methods/update";
+import type { ServiceAddTaskInput } from "@/types/service";
+import type { ServiceResponse } from "@/lib/services";
+import type { Task, TaskWithTags } from "@/lib/db";
 
 /**
  * TaskService is a class that contains all the methods for interacting with tasks
@@ -66,4 +67,9 @@ export class TaskService {
     id: string,
     newPosition: number
   ) => Promise<ServiceResponse<Task>> = updateTaskPosition;
+  /** Updates any property of a task */
+  public updateTaskProperty: (
+    id: string,
+    updates: Partial<Task>
+  ) => Promise<ServiceResponse<Task>> = updateTaskProperty;
 }

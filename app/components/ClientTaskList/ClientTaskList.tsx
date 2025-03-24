@@ -24,6 +24,36 @@ import { useSession } from "next-auth/react";
 import { GoCheckbox } from "react-icons/go";
 import { useTagStore } from "@/lib/store/tag";
 import { getAllDescendantTagIds } from "@/lib/helpers/tag-tree";
+import type { Tag } from "@/lib/db";
+
+const getEffectiveTagSets = (
+  selectedTagIds: string[],
+  flatTags: Tag[]
+): Set<string>[] => {
+  // Wrap in a Set for fast lookups
+  const selected = new Set(selectedTagIds);
+
+  // Get the 'most specific' tags
+  // When we select "Work" and it has 2 subtasks like "Work" -> "E2E" and "Workshop", we'll be getting all tasks for "E2E" and "Workshop"
+  // But when we select "E2E", it has narrowed the search to just tasks with a tag id that is a descendant of "E2E"
+  const mostSpecific = selectedTagIds.filter((id) => {
+    // For each selected tag, get all its descendants
+    const descendants = getAllDescendantTagIds(id, flatTags);
+    // If any of those descendants are selected, this tag is not the most specific - return false
+    // If no descendants are selected, this tag is the most specific - return true
+    return !descendants.some((descId) => selected.has(descId));
+  });
+
+  // For each 'most specific' tag
+  return mostSpecific.map((id) => {
+    // Get all its descendants
+    const set = new Set(getAllDescendantTagIds(id, flatTags));
+    // Add the tag itself
+    set.add(id);
+    // Return the set to be used to filter tasks
+    return set;
+  });
+};
 
 /**
  * A component that renders a draggable and sortable list of tasks.
@@ -46,30 +76,25 @@ const ClientTaskList = (): React.ReactElement => {
   const { isLinking } = useNoteStore();
   const { data: session } = useSession();
 
-  const expandedTagIds = React.useMemo(() => {
-    if (selectedTagIds.length === 0) return [];
-    const expanded = new Set<string>();
-
-    selectedTagIds.forEach((tagId) => {
-      expanded.add(tagId);
-      const descendants = getAllDescendantTagIds(tagId, flatTags);
-      descendants.forEach((id) => expanded.add(id));
-    });
-
-    return Array.from(expanded);
-  }, [selectedTagIds, flatTags]);
+  const effectiveTagSets = React.useMemo(
+    () => getEffectiveTagSets(selectedTagIds, flatTags),
+    [selectedTagIds, flatTags]
+  );
 
   const filteredTasks = React.useMemo(() => {
-    return tasks
-      .filter((task) => (hideCompletedTasks ? !task.completed : true))
-      .filter((task) =>
-        expandedTagIds.length > 0
-          ? task.taskTags.some((taskTag) =>
-              expandedTagIds.includes(taskTag.tagId)
-            )
-          : true
-      );
-  }, [tasks, expandedTagIds, hideCompletedTasks]);
+    return (
+      tasks
+        // hide completed tasks if hideCompletedTasks is true
+        .filter((task) => (hideCompletedTasks ? !task.completed : true))
+        // filter by most specific selected tags
+        .filter((task) => {
+          if (effectiveTagSets.length === 0) return true;
+          return effectiveTagSets.some((tagSet) =>
+            task.taskTags.some((taskTag) => tagSet.has(taskTag.tagId))
+          );
+        })
+    );
+  }, [tasks, effectiveTagSets, hideCompletedTasks]);
 
   const listPadding = isLinking ? "py-2 px-4" : "";
   const listBorder = isLinking ? "border-2 border-highlight rounded-lg" : "";

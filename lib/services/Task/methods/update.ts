@@ -1,5 +1,5 @@
-import { db, Task } from '@/lib/db';
-import type { ServiceResponse } from '@/lib/services';
+import { db, Task } from "@/lib/db";
+import type { ServiceResponse } from "@/lib/services";
 
 export async function toggleComplete(
   id: string,
@@ -10,12 +10,12 @@ export async function toggleComplete(
     const dateUpdated = new Date();
     const task = await db.tasks.get(id);
     if (!task) {
-      return { success: false, error: 'Task not found' };
+      return { success: false, error: "Task not found" };
     }
 
     // Update the task in Dexie
     const syncStatus =
-      task.syncStatus === 'synced' ? 'pending' : task.syncStatus;
+      task.syncStatus === "synced" ? "pending" : task.syncStatus;
     const updatedTask: Task = {
       ...task,
       completed,
@@ -27,8 +27,8 @@ export async function toggleComplete(
 
     return { success: true, data: updatedTask };
   } catch (error) {
-    console.error('Failed to toggle task completion:', error);
-    return { success: false, error: 'Failed to toggle task completion' };
+    console.error("Failed to toggle task completion:", error);
+    return { success: false, error: "Failed to toggle task completion" };
   }
 }
 export async function updateTaskDueDate(
@@ -39,12 +39,12 @@ export async function updateTaskDueDate(
     const task = await db.tasks.get(id);
     if (!task) {
       console.log(`❌ Task not found: ${id}`);
-      return { success: false, error: 'Task not found' };
+      return { success: false, error: "Task not found" };
     }
 
     // Update the due date
     const syncStatus =
-      task.syncStatus === 'synced' ? 'pending' : task.syncStatus;
+      task.syncStatus === "synced" ? "pending" : task.syncStatus;
     const updatedTask: Task = {
       ...task,
       dueDate,
@@ -54,8 +54,37 @@ export async function updateTaskDueDate(
 
     return { success: true, data: updatedTask };
   } catch (error) {
-    console.error('Failed to update task due date:', error);
-    return { success: false, error: 'Failed to update task due date' };
+    console.error("Failed to update task due date:", error);
+    return { success: false, error: "Failed to update task due date" };
+  }
+}
+
+// function to update whatever property of a task
+// We can replace the other update functions with this for simplicity
+// we should be able to update multiple properties at once
+export async function updateTaskProperty(
+  id: string,
+  updates: Partial<Task>
+): Promise<ServiceResponse<Task>> {
+  try {
+    const task = await db.tasks.get(id);
+    if (!task) {
+      console.log(`❌ Task not found: ${id}`);
+      return { success: false, error: "Task not found" };
+    }
+    const syncStatus =
+      task.syncStatus === "synced" ? "pending" : task.syncStatus;
+
+    const updatedTask: Task = {
+      ...task,
+      ...updates,
+      syncStatus,
+    };
+    await db.tasks.update(id, updatedTask);
+    return { success: true, data: updatedTask };
+  } catch (error) {
+    console.error("Failed to update task property:", error);
+    return { success: false, error: "Failed to update task property" };
   }
 }
 /**
@@ -78,7 +107,7 @@ export async function updateTaskPosition(
     const task = await db.tasks.get(id);
     if (!task) {
       console.log(`❌ Task not found: ${id}`);
-      return { success: false, error: 'Task not found' };
+      return { success: false, error: "Task not found" };
     }
 
     // TODO: make this more readable
@@ -86,7 +115,7 @@ export async function updateTaskPosition(
     // if currently is 'synced' - update to 'pending'
     // otherwise keep current sync status
     const syncStatus =
-      task.syncStatus === 'synced' ? 'pending' : task.syncStatus;
+      task.syncStatus === "synced" ? "pending" : task.syncStatus;
 
     const updatedTask: Task = {
       ...task,
@@ -98,7 +127,7 @@ export async function updateTaskPosition(
 
     return { success: true, data: updatedTask };
   } catch (error) {
-    console.error('Failed to update task order:', error);
-    return { success: false, error: 'Failed to update task order' };
+    console.error("Failed to update task order:", error);
+    return { success: false, error: "Failed to update task order" };
   }
 }

@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { COLORS } from '@/utils/constants';
-import { useTaskStore } from '@/lib/store/task';
-import { useNoteStore } from '@/lib/store/note';
-import { useStatStore } from '@/lib/store/stat';
-import { useStore } from '@/lib/store/app';
-import { useSelectedTaskStore } from '@/lib/store/selected.task';
-import DeleteConfirmationModal from './DeleteConfirmationModal';
-import DueDateModal from './DueDateModal';
-import MeatballMenu from '../../MeatballMenu';
-import ToggleCompletionButton from './ToggleCompletionButton';
-import type { TaskWithTags } from '@/lib/db';
+import { useState } from "react";
+import { COLORS } from "@/utils/constants";
+import { useTaskStore } from "@/lib/store/task";
+import { useNoteStore } from "@/lib/store/note";
+import { useStatStore } from "@/lib/store/stat";
+import { useStore } from "@/lib/store/app";
+import { useSelectedTaskStore } from "@/lib/store/selected.task";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import DueDateModal from "./DueDateModal";
+import MeatballMenu from "../../MeatballMenu";
+import ToggleCompletionButton from "./ToggleCompletionButton";
+import type { TaskWithTags } from "@/lib/db";
 
 /**
  * A component to render a single task.
@@ -36,17 +36,17 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
   const bgColor =
     task.taskTags.length > 0 && !disableColorCodeTasks
       ? COLORS.find((color) => color.name === taskTagColor)?.background
-      : 'bg-note';
+      : "bg-note";
 
   const textColor =
     task.taskTags.length > 0 && !disableColorCodeTasks
       ? COLORS.find((color) => color.name === taskTagColor)?.text
-      : 'text-secondary';
+      : "text-secondary";
 
   // TODO - better classes - clsx?
   const borderColor = selectedTaskIds.includes(task.id)
-    ? 'border-2 border-highlight'
-    : 'border-2 border-transparent';
+    ? "border-2 border-highlight"
+    : "border-2 border-transparent";
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -59,23 +59,23 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
 
   const menuItems = [
     {
-      label: 'Due Date',
+      label: "Due Date",
       onClick: () => {
         setIsDueDateModalOpen(!isDueDateModalOpen);
         setMenuOpen(false);
       },
     },
     {
-      label: 'Delete',
+      label: "Delete",
       onClick: () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
         setMenuOpen(false);
       },
     },
     {
-      label: 'Edit Task',
+      label: "Edit Task",
       onClick: () => {
-        console.log('Open the edit task modal');
+        console.log("Open the edit task modal");
       },
     },
   ];
@@ -126,7 +126,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
             type="checkbox"
             id={`task-${task.id}`}
             name={`task-${task.id}`}
-            aria-label={`${checked ? 'Unselect' : 'Select'} task ${task.text}`}
+            aria-label={`${checked ? "Unselect" : "Select"} task ${task.text}`}
             checked={checked}
             onChange={handleCheckboxChange}
             className="
@@ -138,7 +138,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
           />
           <span
             className={`text-gray-900 ${
-              task.completed && 'line-through italic'
+              task.completed && "line-through italic"
             }`}
           >
             {task.text}
@@ -181,6 +181,12 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
               ))}
             </>
           )}
+          {task.timeTracked && task.timeTracked > 0 ? (
+            <>
+              <span>|</span>
+              <span className="text-sm">{task.timeTracked} minutes</span>
+            </>
+          ) : null}
         </div>
       </div>
       <div className="flex items-center">
@@ -188,7 +194,7 @@ const TaskItem = ({ task }: { task: TaskWithTags }): React.ReactElement => {
           isCompleted={task.completed}
           onToggle={() => toggleCompleteTask(task.id)}
           ariaLabel={`Mark task ${task.text} as ${
-            task.completed ? 'incomplete' : 'complete'
+            task.completed ? "incomplete" : "complete"
           }`}
         />
         <MeatballMenu

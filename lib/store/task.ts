@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { taskService } from "@/lib/services";
-import { TaskWithTags } from "@/lib/db";
+import { Task, TaskWithTags } from "@/lib/db";
 import { useSelectedTaskStore } from "./selected.task";
 import { useStore } from "./app";
 import { type AddTaskInput } from "@/types/service";
@@ -19,6 +19,7 @@ interface TaskStore {
   toggleComplete: (id: string) => void;
   syncTasks: (id: string) => Promise<void>;
   updateTaskDueDate: (id: string, dueDate: Date) => void;
+  updateTaskProperty: (id: string, updates: Partial<Task>) => void;
   // Tag management
   // TODO: this could all be it's own store
   selectedTagIds: string[];
@@ -126,6 +127,7 @@ export const useTaskStore = create<TaskStore>()(
           });
         }
       },
+      //TODO: Deprecate
       toggleComplete: async (id) => {
         const userId = useStore.getState().userId;
         if (!userId) return;
@@ -141,11 +143,20 @@ export const useTaskStore = create<TaskStore>()(
           ),
         }));
       },
+      //TODO: Deprecate
       updateTaskDueDate: async (id, dueDate) => {
         await taskService.updateTaskDueDate(id, dueDate);
         set((state) => ({
           tasks: state.tasks.map((task) =>
             task.id === id ? { ...task, dueDate } : task
+          ),
+        }));
+      },
+      updateTaskProperty: async (id, updates) => {
+        await taskService.updateTaskProperty(id, updates);
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === id ? { ...task, ...updates } : task
           ),
         }));
       },

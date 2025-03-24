@@ -15,6 +15,7 @@ export interface Task {
   // Sync status - only on Dexie (not in RDS/Prisma)
   // TODO: new db version, and update old tasks with default
   syncStatus: "new" | "pending" | "synced" | "deleted";
+  timeTracked?: number;
 }
 
 export interface Tag {
@@ -22,7 +23,7 @@ export interface Tag {
   name: string; // Name of the tag (e.g., "Work", "Personal")
   color?: string; // Optional color for the tag
   userId: string; // User who created the tag
-  parentId?: string;
+  parentId?: string; // TODO: Add to Prisma schema
 }
 
 export interface TaskWithTags extends Task {
@@ -273,9 +274,21 @@ class AppDatabase extends Dexie {
       });
 
     // Add parentId to tags
-    this.version(12).stores({
+    this.version(13).stores({
       tasks:
         "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus",
+      notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
+      taskNotes: "[taskId+noteId], taskId, noteId",
+      users:
+        "&id, email, password, username, firstName, lastName, settings, createdAt, updatedAt",
+      taskTags: "[taskId+tagId], taskId, tagId",
+      tags: "&id, name, color, userId, createdAt, updatedAt, parentId",
+    });
+
+    // Add timeTracked to tasks
+    this.version(14).stores({
+      tasks:
+        "&id, text, completed, completedBy, color, dateAdded, dateUpdated, position, userId, dueDate, priority, syncStatus, timeTracked",
       notes: "&id, content, color, dateAdded, dateUpdated, userId, position",
       taskNotes: "[taskId+noteId], taskId, noteId",
       users:
