@@ -30,6 +30,9 @@ const getEffectiveTagSets = (
   selectedTagIds: string[],
   flatTags: Tag[]
 ): Set<string>[] => {
+  if (selectedTagIds.length === 0) {
+    return [];
+  }
   // Wrap in a Set for fast lookups
   const selected = new Set(selectedTagIds);
 

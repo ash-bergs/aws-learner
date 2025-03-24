@@ -35,6 +35,7 @@ export async function SecondaryHeader() {
   const session = await auth();
   const username = session?.user?.name || session?.user?.email || "User";
 
+  if (!session) return null;
   return (
     <section>
       <div className="flex justify-between px-6 py-4 text-text">
